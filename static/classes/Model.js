@@ -1,5 +1,5 @@
 class Model {
-    constructor(path, name) {
+    constructor(path, name) { // path to gltf file & optional mesh name
         this.path = path
         this.name = name
         this.gltf = null
@@ -17,6 +17,7 @@ class Model {
                 console.log(gltf);
                 this.gltf = gltf
                 this.mesh = gltf.scene
+                this.mesh.name = this.name
 
                 this.animations = gltf.animations
                 this.mixer = new THREE.AnimationMixer(this.mesh);

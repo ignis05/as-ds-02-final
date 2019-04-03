@@ -34,7 +34,7 @@ $(document).ready(async function () {
     var light = new THREE.AmbientLight(0xffffff, 1, 1000); // ambient light bc gltf textures always require light
     scene.add(light)
 
-    var testmodel = new Model("/static/models/robot/scene.gltf")
+    var testmodel = new Model("/static/models/robot/scene.gltf", "robot")
     await testmodel.loadGLTF()
     testmodel.addTo(scene)
 
