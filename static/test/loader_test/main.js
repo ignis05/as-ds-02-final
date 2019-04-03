@@ -17,7 +17,7 @@ $(document).ready(async function () {
         45,    // kąt patrzenia kamery (FOV - field of view)
         $(window).width() / $(window).height(),   // proporcje widoku, powinny odpowiadać proporjom naszego ekranu przeglądarki
         0.1,    // minimalna renderowana odległość
-        10000    // maxymalna renderowana odległość od kamery 
+        10000000    // maxymalna renderowana odległość od kamery 
     );
     camera.position.set(50, 50, 50)
     camera.lookAt(scene.position)
@@ -34,11 +34,16 @@ $(document).ready(async function () {
     var light = new THREE.AmbientLight(0xffffff, 1, 1000); // ambient light bc gltf textures always require light
     scene.add(light)
 
-    var testmodel = new Model("/static/models/robot/scene.gltf", "robot")
-    await testmodel.loadGLTF()
+    //      !!! model ----------------
+
+    // var testmodel = new ModelGLTF("/static/models/sphere_bot/scene.gltf", "robot")
+    var testmodel = new ModelFBX("/static/models/laser_gun/Laser_Gun_Tower-(FBX 7.4 binary mit Animation).fbx")
+    await testmodel.load()
     testmodel.addTo(scene)
 
     testmodel.createButtons()
+
+    //      !!! model ----------------
 
     function render() {
 
