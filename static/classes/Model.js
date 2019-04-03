@@ -71,7 +71,7 @@ class Model {
             button.css(`background`, `#000000cc`)
             button.css(`padding`, `3px`)
             button.css(`color`, `white`)
-            button.css(`width`, `100px`)
+            button.css(`width`, `auto`)
             button.css(`display`, `flex`)
             button.css(`align-items`, `center`)
             button.css(`justify-content`, `center`)
