@@ -1,41 +1,13 @@
 class Model {
-    constructor(path, name) { // path to gltf file & optional mesh name
+    constructor(path, name) { // path to file & optional mesh name
         this.path = path
         this.name = name
-        this.gltf = null
         this.mesh = null
         this.animations = null
         this.mixer = null
         this.currentAnimation = null
         this.clock = new THREE.Clock();
     }
-
-    loadGLTF() { // loads file, always call with "await" or ".then()"
-        return new Promise(resolve => {
-            const loader = new THREE.GLTFLoader();
-            loader.load(this.path, gltf => {
-                console.log(gltf);
-                this.gltf = gltf
-                this.mesh = gltf.scene
-                this.mesh.name = this.name
-
-                this.animations = gltf.animations
-                this.mixer = new THREE.AnimationMixer(this.mesh);
-                resolve()
-            },
-                (xhr) => {
-                    // called while loading is progressing
-                    console.log(`${~~((xhr.loaded / xhr.total * 100))}% loaded`);
-                },
-                (error) => {
-                    // called when loading has errors
-                    console.error('An error happened', error);
-                },
-            );
-        })
-    }
-
-
     // update mixera
     animate() {
         var delta = this.clock.getDelta();
@@ -64,7 +36,7 @@ class Model {
         container.style.top = "0"
         container.style.left = "0"
         document.body.appendChild(container)
-        this.gltf.animations.forEach((animation, index) => {
+        this.animations.forEach((animation, index) => {
             var button = $("<div>")
             button.text(animation.name)
             button.addClass(`animationDisplayButton`)
@@ -84,7 +56,7 @@ class Model {
                     e.target.style.color = "blue"
                     this.mixer.uncacheRoot(this.mesh)
                     console.log(e.target.innerText);
-                    this.mixer.clipAction(this.gltf.animations[i]).play()
+                    this.mixer.clipAction(this.animations[i]).play()
                     this.currentAnimation = e.target.innerText
                 }
                 else {
