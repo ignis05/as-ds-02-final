@@ -14,7 +14,7 @@ app.get("/", function (req, res) {
 });
 
 //routing automatyczny
-app.use(express.static("/"))
+app.use(express.static("."))
 
 //nasłuch na określonym porcie
 app.listen(PORT, function () {
