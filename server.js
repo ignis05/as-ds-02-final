@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded({ extended: true }))
 
 //routing dla "/"
 app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname + `/static/test/loader_test/test.html`))
+    res.sendFile(path.join(__dirname + `/static/pages/main_page/main.html`))
 });
 
 //routing automatyczny

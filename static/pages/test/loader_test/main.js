@@ -36,7 +36,7 @@ $(document).ready(async function () {
 
     //      !!! model ----------------
     let path = window.prompt("specify path to file (in /models/ directory)", Cookies.get("path"))
-    var testmodel = new Model(`/static/models/${path}`,"testmodel")
+    var testmodel = new Model(`/static/res/models/${path}`,"testmodel")
     await testmodel.load()
     Cookies.set("path", path, 30)
     testmodel.addTo(scene)
