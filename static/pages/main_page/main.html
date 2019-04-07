@@ -6,14 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Projekt</title>
-    <link rel="shortcut icon" href="/static/img/flavicon.png" type="image/x-icon">
-    <link rel="stylesheet" href="./main.css">
-    <script src="./main.js"></script>
+    <link rel="shortcut icon" href="/static/res/img/flavicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/reset.css">
+    <link rel="stylesheet" href="/static/pages/main_page/main.css">
+    <script src="/libs/jquery-3.3.1.js"></script>
+    <script src="/static/pages/main_page/main.js"></script>
 </head>
 
 <body>
     <div id="root">
-        <a href="/static/pages/test/loader_test/test.html">Model test</a>
+        <div id="menu">
+            <button id="btPlay" class="btLink">Play</button>
+            <button id="btInstructions" class="btLink">Instructions</button>
+            <details id="test">
+                <summary id="btTest" class="btLink">Test</summary>
+                <button id="btModelTest" class="btLink btTest">Model Test</button>
+            </details>
+        </div>
     </div>
 </body>
 

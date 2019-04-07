@@ -35,10 +35,10 @@ $(document).ready(async function () {
     scene.add(light)
 
     //      !!! model ----------------
-    let path = window.prompt("specify path to file (in /models/ directory)", Cookies.get("path"))
+    let path = window.prompt("specify path to file (in /models/ directory)", Cookies.get("model_test-model_path"))
     var testmodel = new Model(`/static/res/models/${path}`,"testmodel")
     await testmodel.load()
-    Cookies.set("path", path, 30)
+    Cookies.set("model_test-model_path", path, 30)
     testmodel.addTo(scene)
 
     testmodel.createButtons()

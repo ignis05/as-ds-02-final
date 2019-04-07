@@ -39,3 +39,9 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
+
+/* remove arrow from <details> tag */
+
+details summary::-webkit-details-marker {
+    display: none;
+}
