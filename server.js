@@ -100,12 +100,26 @@ app.post("/database_count", function (req, res) {
 app.post("/database_remove", function (req, res) {
     let data = req.body
     console.log("/database_remove: ", data)
+    if (!data.match) data.match = {}
     if (!data.params) data.params = {}
 
     let db = ServerDB.databases[data.id].db
 
     db.remove(data.match, data.params, function (err, count) {
         console.log(`removed ${count} entries`)
+        res.send({ msg: "OK", count: count });
+    });
+})
+
+app.post("/database_update", function (req, res) {
+    let data = req.body
+    console.log("/database_update: ", data)
+    if (!data.params) data.params = {}
+
+    let db = ServerDB.databases[data.id].db
+
+    db.update(data.match, { $set: data.entry }, {}, function (err, count) {
+        console.log("updated " + count)
         res.send({ msg: "OK", count: count });
     });
 })

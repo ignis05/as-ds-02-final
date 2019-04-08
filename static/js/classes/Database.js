@@ -171,6 +171,29 @@ class Database {
         })
     }
 
+    // updates matching entries with values given in entry obj, adds keys if needed. match by _id to update one
+    update(match, entry) {
+        console.log(`replacing entries matching: `, match);
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/database_update",
+                data: {
+                    id: this.id,
+                    match: match,
+                    entry: entry
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data.count)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            });
+        })
+    }
+
 
 
     //aliases

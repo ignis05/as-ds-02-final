@@ -43,7 +43,7 @@ $(document).ready(async () => {
 
     // >>>  counting all entries <<<
     res = await testDB1.countAll()
-    console.log(res);
+    console.log(res)
 
     // >>>  removing single matching entry <<<
     res = await testDB1.removeOne({ xd: "xdddd" })
@@ -54,6 +54,14 @@ $(document).ready(async () => {
     console.log(`removed ${res} entries`);
 
     // display db after remove
+    res = await testDB1.getAll()
+    console.log(res);
+
+    // >>>  update all matching entries <<<
+    res = await testDB1.update({ 2137: "asdds" }, { 2138: "2139" })
+    console.log(`updated ${res} entries`);
+
+    // display db after replace
     res = await testDB1.getAll()
     console.log(res);
 })
