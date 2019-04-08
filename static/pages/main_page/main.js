@@ -14,6 +14,10 @@ $(document).ready(() => {
         window.location = "/static/pages/test/loader_test/test.html"
     })
 
+    $("#btDatabaseTest").click(() => {
+        window.location = "/static/pages/test/database_test/main.html"
+    })
+
     $("#test").click(() => {
         setTimeout(() => {
             let status = document.getElementById("test").open
