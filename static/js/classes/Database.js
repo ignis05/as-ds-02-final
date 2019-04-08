@@ -49,35 +49,6 @@ class Database {
         })
     }
 
-    // returns whole database
-    findAll() {
-        console.log(`requesting whole database`);
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: "/database_findAll",
-                data: {
-                    id: this.id,
-                },
-                type: "POST",
-                success: data => {
-                    resolve(data.entries)
-                },
-                error: (xhr, status, error) => {
-                    console.log(xhr);
-                    reject(new Error("promise rejected"))
-                },
-            });
-        })
-    }
-
-    //aliases
-    requestAll(){
-        return this.findAll()
-    }
-    getAll(){
-        return this.findAll()
-    }
-
     // returns first matching entry (returns null if no entry found)
     findOne(match) {
         console.log(`finding entry matching: `, match);
@@ -120,5 +91,44 @@ class Database {
                 },
             });
         })
+    }
+
+    // returns whole database
+    findAll() {
+        return this.find({})
+    }
+    //aliases
+    requestAll() {
+        return this.find({})
+    }
+    getAll() {
+        return this.find({})
+    }
+
+    // counts all matching entries
+    count(match) {
+        console.log(`counting entries matching: `, match);
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/database_count",
+                data: {
+                    id: this.id,
+                    match: match
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data.count)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            });
+        })
+    }
+
+    // counts all entries
+    countAll() {
+        return this.count({})
     }
 }

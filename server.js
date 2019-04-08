@@ -72,19 +72,6 @@ app.post("/database_findOne", function (req, res) {
     });
 })
 
-app.post("/database_findAll", function (req, res) {
-    let data = req.body
-    console.log("/database_findAll: ", data)
-
-    let db = ServerDB.databases[data.id].db
-
-    db.find({}, function (err, entries) {
-        console.log("entries found")
-        console.log(entries)
-        res.send({ msg: "OK", entries: entries });
-    });
-})
-
 app.post("/database_find", function (req, res) {
     let data = req.body
     console.log("/database_find: ", data)
@@ -95,6 +82,18 @@ app.post("/database_find", function (req, res) {
         console.log("entries found")
         console.log(entries)
         res.send({ msg: "OK", entries: entries });
+    });
+})
+
+app.post("/database_count", function (req, res) {
+    let data = req.body
+    console.log("/database_count: ", data)
+
+    let db = ServerDB.databases[data.id].db
+
+    db.count(data.match, function (err, count) {
+        console.log(`${count} entries found`)
+        res.send({ msg: "OK", count: count });
     });
 })
 // #endregion ajax

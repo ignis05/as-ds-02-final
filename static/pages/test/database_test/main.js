@@ -19,7 +19,7 @@ $(document).ready(async () => {
     res = await testDB1.insert(testentry1)
     console.log(res);
 
-    let testentry2 = {xd:"aaa"}
+    let testentry2 = { xd: "aaa" }
     await testDB1.insert(testentry2)
 
     // >>> requesting whole database <<<
@@ -35,5 +35,13 @@ $(document).ready(async () => {
 
     // >>>  finding all matching entries <<<
     res = await testDB1.find({ xd: "aaa" })
+    console.log(res);
+
+    // >>>  counting all matching entries <<<
+    res = await testDB1.count({ xd: "aaa" })
+    console.log(res);
+
+    // >>>  counting all entries <<<
+    res = await testDB1.countAll()
     console.log(res);
 })
