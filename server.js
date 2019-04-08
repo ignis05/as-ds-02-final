@@ -45,6 +45,17 @@ app.post("/database_create", function (req, res) { // create database in array a
         res.send({ msg: "OK", id: index });
     }
 })
+
+app.post("/database_insert", function (req, res) {
+    let data = req.body
+    console.log("/database_insert: ", data)
+    let db = ServerDB.databases[data.id].db
+    db.insert(data.entry, function (err, newEntry) {
+        console.log("entry added")
+        console.log(newEntry)
+        res.send({ msg: "OK" });
+    });
+})
 // #endregion ajax
 
 //nasłuch na określonym porcie
