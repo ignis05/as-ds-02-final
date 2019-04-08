@@ -4,7 +4,9 @@ class Database {
         this.filename = filename
         this.id
     }
-    create() { // saves database id required for other operations
+
+    // gets database id from server required for other operations
+    create() {
         console.log("initialazing database on server");
         return new Promise((resolve, reject) => {
             $.ajax({
@@ -15,7 +17,7 @@ class Database {
                 type: "POST",
                 success: data => {
                     this.id = data.id
-                    resolve(data)
+                    resolve(data.msg)
                 },
                 error: (xhr, status, error) => {
                     console.log(xhr);
@@ -24,8 +26,10 @@ class Database {
             });
         })
     }
+
+    // inserts object as database entry
     insert(entry) {
-        console.log(`inserting to db:`, entry);
+        console.log(`inserting to db: `, entry);
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: "/database_insert",
@@ -35,7 +39,80 @@ class Database {
                 },
                 type: "POST",
                 success: data => {
-                    resolve(data)
+                    resolve(data.msg)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            });
+        })
+    }
+
+    // returns whole database
+    findAll() {
+        console.log(`requesting whole database`);
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/database_findAll",
+                data: {
+                    id: this.id,
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data.entries)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            });
+        })
+    }
+
+    //aliases
+    requestAll(){
+        return this.findAll()
+    }
+    getAll(){
+        return this.findAll()
+    }
+
+    // returns first matching entry (returns null if no entry found)
+    findOne(match) {
+        console.log(`finding entry matching: `, match);
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/database_findOne",
+                data: {
+                    id: this.id,
+                    match: match
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data.entry)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            });
+        })
+    }
+
+    // returns all matching entries (returns null if no entries found)
+    find(match) {
+        console.log(`finding entries matching: `, match);
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/database_find",
+                data: {
+                    id: this.id,
+                    match: match
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data.entries)
                 },
                 error: (xhr, status, error) => {
                     console.log(xhr);

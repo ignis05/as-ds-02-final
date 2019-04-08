@@ -49,11 +49,52 @@ app.post("/database_create", function (req, res) { // create database in array a
 app.post("/database_insert", function (req, res) {
     let data = req.body
     console.log("/database_insert: ", data)
+
     let db = ServerDB.databases[data.id].db
-    db.insert(data.entry, function (err, newEntry) {
+
+    db.insert(data.entry, function (err, entry) {
         console.log("entry added")
-        console.log(newEntry)
+        console.log(entry)
         res.send({ msg: "OK" });
+    });
+})
+
+app.post("/database_findOne", function (req, res) {
+    let data = req.body
+    console.log("/database_findOne: ", data)
+
+    let db = ServerDB.databases[data.id].db
+
+    db.findOne(data.match, function (err, entry) {
+        console.log("entry found")
+        console.log(entry)
+        res.send({ msg: "OK", entry: entry });
+    });
+})
+
+app.post("/database_findAll", function (req, res) {
+    let data = req.body
+    console.log("/database_findAll: ", data)
+
+    let db = ServerDB.databases[data.id].db
+
+    db.find({}, function (err, entries) {
+        console.log("entries found")
+        console.log(entries)
+        res.send({ msg: "OK", entries: entries });
+    });
+})
+
+app.post("/database_find", function (req, res) {
+    let data = req.body
+    console.log("/database_find: ", data)
+
+    let db = ServerDB.databases[data.id].db
+
+    db.find(data.match, function (err, entries) {
+        console.log("entries found")
+        console.log(entries)
+        res.send({ msg: "OK", entries: entries });
     });
 })
 // #endregion ajax
