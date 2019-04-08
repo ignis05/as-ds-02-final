@@ -38,10 +38,10 @@ $(document).ready(async function () {
     scene.add(light)
 
     //      !!! model ----------------
-
-    var testmodel = new ModelGLTF("/static/models/raptoid/scene.gltf", "robot")
-    // var testmodel = new ModelFBX("/static/models/laser_gun/Laser_Gun_Tower-(FBX 7.4 binary mit Animation).fbx")
+    let path = window.prompt("specify path to file (in /models/ directory)", Cookies.get("model_test-model_path"))
+    var testmodel = new Model(`/static/res/models/${path}`,"testmodel")
     await testmodel.load()
+    Cookies.set("model_test-model_path", path, 30)
     testmodel.addTo(scene)
 
     testmodel.createButtons()
