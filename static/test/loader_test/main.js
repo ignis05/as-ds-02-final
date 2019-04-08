@@ -8,16 +8,19 @@ $(document).ready(async function () {
     })
 
     var scene = new THREE.Scene();
-    var renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setClearColor(0xffffff);
+    var renderer = new THREE.WebGLRenderer({
+        antialias: true
+    });
+    //wg THREE.js dla GLTF potrzeba physicallyCorrectLights: true, gammaOutput = true, gammaFactor = 2.2 w rendererze 
+    renderer.setClearColor(0xffcccc);
     renderer.setSize($(window).width(), $(window).height());
     $("#root").append(renderer.domElement);
 
     var camera = new THREE.PerspectiveCamera(
-        45,    // kąt patrzenia kamery (FOV - field of view)
-        $(window).width() / $(window).height(),   // proporcje widoku, powinny odpowiadać proporjom naszego ekranu przeglądarki
-        0.1,    // minimalna renderowana odległość
-        10000000    // maxymalna renderowana odległość od kamery 
+        45, // kąt patrzenia kamery (FOV - field of view)
+        $(window).width() / $(window).height(), // proporcje widoku, powinny odpowiadać proporjom naszego ekranu przeglądarki
+        0.1, // minimalna renderowana odległość
+        10000000 // maxymalna renderowana odległość od kamery 
     );
     camera.position.set(50, 50, 50)
     camera.lookAt(scene.position)
@@ -31,7 +34,7 @@ $(document).ready(async function () {
         renderer.render(scene, camera)
     });
 
-    var light = new THREE.AmbientLight(0xffffff, 1, 1000); // ambient light bc gltf textures always require light
+    var light = new THREE.AmbientLight(0xffffff, 2, 1000); // ambient light bc gltf textures always require light
     scene.add(light)
 
     //      !!! model ----------------
@@ -51,6 +54,7 @@ $(document).ready(async function () {
 
         renderer.render(scene, camera);
         requestAnimationFrame(render);
-    } render()
+    }
+    render()
 
 })
