@@ -97,13 +97,6 @@ class Database {
     findAll() {
         return this.find({})
     }
-    //aliases
-    requestAll() {
-        return this.find({})
-    }
-    getAll() {
-        return this.find({})
-    }
 
     // counts all matching entries
     count(match) {
@@ -130,5 +123,61 @@ class Database {
     // counts all entries
     countAll() {
         return this.count({})
+    }
+
+    // removes first matching entry, returns count of removed entries
+    removeOne(match) {
+        console.log(`removing entry matching: `, match);
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/database_remove",
+                data: {
+                    id: this.id,
+                    match: match,
+                    params: {},
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data.count)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            });
+        })
+    }
+
+    // removes all matching entries, returns count of removed entries
+    remove(match) {
+        console.log(`removing entries matching: `, match);
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/database_remove",
+                data: {
+                    id: this.id,
+                    match: match,
+                    params: { multi: true },
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data.count)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            });
+        })
+    }
+
+
+
+    //aliases
+    requestAll() {
+        return this.find({})
+    }
+    getAll() {
+        return this.find({})
     }
 }

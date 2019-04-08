@@ -44,4 +44,16 @@ $(document).ready(async () => {
     // >>>  counting all entries <<<
     res = await testDB1.countAll()
     console.log(res);
+
+    // >>>  removing single matching entry <<<
+    res = await testDB1.removeOne({ xd: "xdddd" })
+    console.log(`removed ${res} entry`);
+
+    // >>>  removing all matching entries <<<
+    res = await testDB1.remove({ xd: "aaa" })
+    console.log(`removed ${res} entries`);
+
+    // display db after remove
+    res = await testDB1.getAll()
+    console.log(res);
 })

@@ -22,7 +22,7 @@ app.get("/", function (req, res) {
 //routing automatyczny
 app.use(express.static("."))
 
-// #region ajax
+// #region ajax - database
 app.post("/database_create", function (req, res) { // create database in array and return index
     let data = req.body
     console.log("/database_create: ", data)
@@ -96,7 +96,20 @@ app.post("/database_count", function (req, res) {
         res.send({ msg: "OK", count: count });
     });
 })
-// #endregion ajax
+
+app.post("/database_remove", function (req, res) {
+    let data = req.body
+    console.log("/database_remove: ", data)
+    if (!data.params) data.params = {}
+
+    let db = ServerDB.databases[data.id].db
+
+    db.remove(data.match, data.params, function (err, count) {
+        console.log(`removed ${count} entries`)
+        res.send({ msg: "OK", count: count });
+    });
+})
+// #endregion ajax - database
 
 //nasłuch na określonym porcie
 app.listen(PORT, function () {
