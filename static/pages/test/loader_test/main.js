@@ -12,7 +12,7 @@ $(document).ready(async function () {
         antialias: true
     });
     //wg THREE.js dla GLTF potrzeba physicallyCorrectLights: true, gammaOutput = true, gammaFactor = 2.2 w rendererze 
-    renderer.setClearColor(0xffcccc);
+    renderer.setClearColor(0xffffff);
     renderer.setSize($(window).width(), $(window).height());
     $("#root").append(renderer.domElement);
 
@@ -39,7 +39,7 @@ $(document).ready(async function () {
 
     //      !!! model ----------------
     let path = window.prompt("specify path to file (in /models/ directory)", Cookies.get("model_test-model_path"))
-    var testmodel = new Model(`/static/res/models/${path}`,"testmodel")
+    var testmodel = new Model(`/static/res/models/${path}`, "testmodel")
     await testmodel.load()
     Cookies.set("model_test-model_path", path, 30)
     testmodel.addTo(scene)
