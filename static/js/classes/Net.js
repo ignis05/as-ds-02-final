@@ -7,7 +7,7 @@ class Net {
                 data: {},
                 type: "POST",
                 success: data => {
-                    resolve(data)
+                    resolve(data.testPages)
                 },
                 error: (xhr, status, error) => {
                     console.log(xhr);
