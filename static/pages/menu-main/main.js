@@ -4,61 +4,48 @@ $(document).ready(() => {
     //#region menu listeners
     $('#bMain0').click(e => {
         if (!e.target.className.includes('disabled')) {
-            window.location = '/static/pages/menu-main/main.html'
+            window.location = '/'
         }
     })
 
     $('#bMain1').click(e => {
         if (!e.target.className.includes('disabled')) {
-            window.location = '/static/pages/menu-main/main.html'
+            // window.location = '/'
         }
     })
 
-    $('#bMain2').click(e => {
+    $('#bMain2').click(async e => {
         if (!e.target.className.includes('disabled')) {
-            // window.location = '/static/pages/menu-main/main.html'
+            let testList = await Net.getTestPages()
             DisplayTests(testList)
         }
     })
 
-    $('#bMain3').click(e => {
+    $('#bMain3').click(async e => {
         if (!e.target.className.includes('disabled')) {
-            window.location = '/static/pages/menu-main/main.html'
+            // let testList = await Net.getTestPages()
+            let testList = [
+                {name: 'temp_option0'},
+                {name: 'temp_option1'},
+                {name: 'temp_option2'},
+                {name: 'temp_option3'},
+                {name: 'temp_option4'},
+                {name: 'temp_option5'},
+                {name: 'temp_option6'},
+            ]
+            DisplayOptions(testList)
         }
     })
 
     $('#bMain4').click(e => {
         if (!e.target.className.includes('disabled')) {
-            window.location = '/static/pages/menu-main/main.html'
+            window.location = '/static/pages/editor/main.html'
         }
     })
     //#endregion
 
-    let testList = [
-        {
-            name: 'test0',
-            path: '/static/pages/menu-main/main.html'
-        },
-        {
-            name: 'test1',
-            path: '/static/pages/menu-main/main.html'
-        },
-        {
-            name: 'test2',
-            path: '/static/pages/menu-main/main.html'
-        },
-        {
-            name: 'test3',
-            path: '/static/pages/menu-main/main.html'
-        },
-        {
-            name: 'test4',
-            path: '/static/pages/menu-main/main.html'
-        },
-    ]
-
     function DisplayTests(list) {
-        if (list.length > 6) console.warn('DisplayTests might not display all options properly (amount > 6)')
+        if (list.length > 8) console.warn('DisplayTests might not display all options properly (amount > 8)')
 
         let overlay = $('#overlay')
         if (overlay.css('display') == 'none') {
@@ -66,6 +53,7 @@ $(document).ready(() => {
 
             let winContainer = $('#container')
             winContainer.html('')
+            winContainer.css('height', '' + (70 * list.length) + 'px' )
 
             $('#header').html('Tests')
 
@@ -84,6 +72,37 @@ $(document).ready(() => {
             })
         } else {
             throw 'DisplayTests was called incorrectly'
+        }
+    }
+
+    function DisplayOptions(list) {
+        if (list.length > 8) console.warn('DisplayOptions might not display all options properly (amount > 8)')
+
+        let overlay = $('#overlay')
+        if (overlay.css('display') == 'none') {
+            overlay.removeAttr('style')
+
+            let winContainer = $('#container')
+            winContainer.html('')
+            winContainer.css('height', '400px')
+
+            $('#header').html('Options')
+
+            for (let i = 0; i < list.length; i++) {
+                let bOption = $('<div>')
+                bOption.addClass('window-button')
+                bOption.html(list[i].name)
+                winContainer.append(bOption)
+                bOption.click(() => {
+                    // window.location = list[i].path
+                })
+            }
+
+            $('#win-bBack').click(() => {
+                overlay.css('display', 'none')
+            })
+        } else {
+            throw 'DisplayOptions was called incorrectly'
         }
     }
 })

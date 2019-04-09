@@ -28,8 +28,8 @@
     z-index: 5;
 }
 #window {
-    height: 600px;
-    width: 400px;
+    max-height: 800px;
+    width: 600px;
     border: 2px solid black;
     display: flex;
     flex-direction: column;
@@ -38,18 +38,21 @@
     z-index: 6;
 }
 #window #header {
+    --objHeight: 100px;
+    --bdrWidth: 2px;
+
     color: #fff;
     width: 100%;
-    height: 100px;
+    height: var(--objHeight);
+    line-height: calc(var(--objHeight) - 2 * var(--bdrWidth));
     text-align: center;
     font-family: serif;
     font-size: 5em;
     background-color: #883333CF;
-    border: 2px solid #DDDDDD;
+    border: var(--bdrWidth) solid #DDDDDD;
 }
 #window #container {
     width: 100%;
-    height: calc(100% - 200px);
     text-align: left;
     background-color: #333333CF;
     display: flex;

@@ -10,12 +10,13 @@
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/pages/menu-main/main.css">
     <script src="/libs/jquery-3.3.1.js"></script>
+    <script src="/static/js/classes/Net.js"></script>
     <script src="/static/pages/menu-main/main.js"></script>
 </head>
 
 <body>
     <div id="background"></div>
-    <div id="main" style="/*display: none*/">
+    <div id="main">
         <div id="menu-buttons">
             <div id="bMain0" class="main-button">Play</div>
             <div id="bMain1" class="main-button disabled">DISABLED</div>
@@ -25,8 +26,8 @@
         </div>
     </div>
     <div id="overlay" style="display: none">
-        <div id="backdrop" style="/*display: none*/"></div>
-        <div id="window" style="/*display: none*/">
+        <div id="backdrop"></div>
+        <div id="window">
             <div id="header">Header</div>
             <div id="container">
 
