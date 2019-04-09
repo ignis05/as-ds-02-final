@@ -143,6 +143,31 @@ function getToken(req, res) {
 }
 // #endregion ajax - token
 
+// #region ajax - Net.js requests
+app.post("/getTestPages", function (req, res) {
+    let dirs = fs.readdirSync(path.join(__dirname + "/static/pages/test/")).map(name => path.join(__dirname + "/static/pages/test/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
+    console.log(dirs);
+    let testPages = []
+    dirs.forEach(dir => {
+        let file = fs.readdirSync(path.join(__dirname + "/static/pages/test/" + dir)).find(filename => filename.endsWith(".html"))
+        let dirpath = `/static/pages/test/${dir}/${file}`
+        let temp = dir.split("_").map(x => x.charAt(0).toUpperCase() + x.slice(1))
+        let name = temp.pop() + " " + temp.join(" ")
+        let obj = {
+            name: name,
+            path: dirpath
+        }
+        testPages.push(obj)
+    })
+    res.send(
+        {
+            msg: "OK",
+            testPages: testPages
+        }
+    )
+})
+// #endregion ajax - Net.js requests
+
 //nasłuch na określonym porcie
 app.listen(PORT, function () {
     console.log(`server started on port: ${PORT}`)
