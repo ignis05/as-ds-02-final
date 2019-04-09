@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>[Coconut] Level Editor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" media="screen" href="/static/pages/editor/main.css" />
+    <script src="/libs/jquery-3.3.1.js"></script>
+    <script src="/static/pages/editor/main.js"></script>
+    <script src="/static/pages/editor/cell.js"></script>
+    <script src="/static/pages/editor/loader.js"></script>
+</head>
+
+<body>
+    <div id="cont">
+        <div id="map">
+
+        </div>
+    </div>
+    <div id="overlay">
+        <div id="ctrls">
+            <div id="ctrl-create">
+                <select id="ctrl-select">
+                    <option value="2">2</option>
+                    <option value="4">4</option>
+                    <option value="8">8</option>
+                    <option value="16">16</option>
+                </select>
+                <button id="ctrl-genlvl">generate</button>
+            </div>
+            <div id="ctrl-srv" class="ctrl-block">
+                <button id="ctrl-send">save on server</button>
+                <button id="ctrl-load">load from server</button>
+            </div>
+            <div class="ctrl-block">
+                <button id="ctrl-rungame">run game</button>
+            </div>
+            <div id="ctrl-types" class="ctrl-block">
+                <button id="ctrl-type0" class="active">wall</button>
+                <button id="ctrl-type1">enemy</button>
+                <button id="ctrl-type2">treasure</button>
+                <button id="ctrl-type3">light</button>
+            </div>
+        </div>
+        <div id="data">
+        </div>
+    </div>
+</body>
+
+</html>

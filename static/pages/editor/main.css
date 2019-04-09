@@ -1,0 +1,101 @@
+* {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    -moz-user-select: none;
+    user-select: none;
+    box-sizing: border-box;
+}
+
+button, select {
+    background-color: #333333;
+    color: #dddddd;
+    border: 2px solid #dddddd;
+    margin-bottom: 2px;
+    padding: 5px;
+    text-transform: uppercase;
+}
+button:hover {
+    color: #dd8833;
+    border-color: #dd8833;
+}
+button:active {
+    color: #88dd33;
+    border-color: #88dd33;
+}
+
+#overlay {
+    /* display: none; */
+    z-index: 69;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+#overlay * {
+    pointer-events: all;
+}
+
+#ctrls {
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 20%;
+    height: 100%;
+    padding: 5px;
+    background-color: #33333388;
+}
+#ctrl-create * {
+    width: 45%;
+}
+.ctrl-block {
+    margin-top: 5%;
+}
+.ctrl-block * {
+    width: 100%;
+}
+
+#data {
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    right: 20%;
+    width: 20%;
+    height: 100%;
+    padding: 5px;
+    background-color: #11111188;
+    overflow: hidden auto;
+    color: #ffffff;
+    white-space: pre;
+}
+
+#cont {
+    box-sizing: border-box;
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+}
+
+
+.cell {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bolder;
+    cursor: pointer;
+    overflow: visible;
+    z-index: 2;
+    background-color: #888888;
+    pointer-events: all;
+    border: 2px solid #333333;
+}
+
+.active, .active:hover {
+    border-color: #88dd33;
+    color: #88dd33;
+}
