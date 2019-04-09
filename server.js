@@ -127,6 +127,22 @@ app.post("/database_update", function (req, res) {
 })
 // #endregion ajax - database
 
+// #region ajax - token
+app.post("/token", function (req, res) {
+    getToken(req, res)
+    res.send({ msg: "OK" })
+})
+function getToken(req, res) {
+    let cookies = req.cookies
+    // console.log(cookies);
+    let token = (cookies["token"] ? cookies["token"] : Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10))
+    let time = 1000 * 60 * 60 * 8      // 8h
+    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: true })
+    console.log("token:", token);
+    return token
+}
+// #endregion ajax - token
+
 //nasłuch na określonym porcie
 app.listen(PORT, function () {
     console.log(`server started on port: ${PORT}`)
