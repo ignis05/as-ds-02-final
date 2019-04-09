@@ -66,7 +66,7 @@ class Model {
             button.css(`display`, `flex`)
             button.css(`align-items`, `center`)
             button.css(`justify-content`, `center`)
-            button.css(`border-radius`, `20px`)
+            // button.css(`border-radius`, `20px`)
             button.css(`margin`, `2px`)
             button.click(e => {
                 var i = index

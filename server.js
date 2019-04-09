@@ -8,6 +8,8 @@ var path = require("path")
 var bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({ extended: true }))
 var Datastore = require('nedb')
+var cookieParser = require("cookie-parser")
+app.use(cookieParser())
 // #endregion initial
 
 var ServerDB = {
@@ -124,6 +126,47 @@ app.post("/database_update", function (req, res) {
     });
 })
 // #endregion ajax - database
+
+// #region ajax - token
+app.post("/token", function (req, res) {
+    getToken(req, res)
+    res.send({ msg: "OK" })
+})
+function getToken(req, res) {
+    let cookies = req.cookies
+    // console.log(cookies);
+    let token = (cookies["token"] ? cookies["token"] : Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10))
+    let time = 1000 * 60 * 60 * 8      // 8h
+    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: true })
+    console.log("token:", token);
+    return token
+}
+// #endregion ajax - token
+
+// #region ajax - Net.js requests
+app.post("/getTestPages", function (req, res) {
+    let dirs = fs.readdirSync(path.join(__dirname + "/static/pages/test/")).map(name => path.join(__dirname + "/static/pages/test/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
+    console.log(dirs);
+    let testPages = []
+    dirs.forEach(dir => {
+        let file = fs.readdirSync(path.join(__dirname + "/static/pages/test/" + dir)).find(filename => filename.endsWith(".html"))
+        let dirpath = `/static/pages/test/${dir}/${file}`
+        let temp = dir.split("_").map(x => x.charAt(0).toUpperCase() + x.slice(1))
+        let name = temp.pop() + " " + temp.join(" ")
+        let obj = {
+            name: name,
+            path: dirpath
+        }
+        testPages.push(obj)
+    })
+    res.send(
+        {
+            msg: "OK",
+            testPages: testPages
+        }
+    )
+})
+// #endregion ajax - Net.js requests
 
 //nasłuch na określonym porcie
 app.listen(PORT, function () {
