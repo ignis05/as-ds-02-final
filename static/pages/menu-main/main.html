@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>[Cinnamon] Main Menu</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="shortcut icon" href="/static/res/img/flavicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/reset.css">
+    <link rel="stylesheet" href="/static/pages/menu-main/main.css">
+    <script src="/libs/jquery-3.3.1.js"></script>
+    <script src="/static/pages/menu-main/main.js"></script>
+</head>
+
+<body>
+    <div id="background"></div>
+    <div id="main" style="/*display: none*/">
+        <div id="menu-buttons">
+            <div id="bMain0" class="main-button">Play</div>
+            <div id="bMain1" class="main-button disabled">DISABLED</div>
+            <div id="bMain2" class="main-button">Tests</div>
+            <div id="bMain3" class="main-button">Options</div>
+            <div id="bMain4" class="main-button">Map Editor</div>
+        </div>
+    </div>
+    <div id="overlay" style="display: none">
+        <div id="backdrop" style="/*display: none*/"></div>
+        <div id="window" style="/*display: none*/">
+            <div id="header">Header</div>
+            <div id="container">
+                <div class="window-button">TEST</div>
+                <div class="window-button">TEST</div>
+                <div class="window-button">TEST</div>
+                <div class="window-button">TEST</div>
+                <div class="window-button">TEST</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>
