@@ -18,8 +18,8 @@ var ServerDB = {
 
 //routing dla "/"
 app.get("/", function (req, res) {
-    res.sendFile(path.join(__dirname + `/static/pages/main_page/main.html`))
-});
+    res.sendFile(path.join(__dirname + `/static/pages/menu-main/main.html`))
+})
 
 //routing automatyczny
 app.use(express.static("."))
