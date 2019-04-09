@@ -8,6 +8,8 @@ var path = require("path")
 var bodyParser = require("body-parser")
 app.use(bodyParser.urlencoded({ extended: true }))
 var Datastore = require('nedb')
+var cookieParser = require("cookie-parser")
+app.use(cookieParser())
 // #endregion initial
 
 var ServerDB = {
