@@ -1,20 +1,20 @@
 class Net {
-    constructor() { }
 
-    // saveLevel(mapObject) {
-    //     console.log("saving level on server");
-    //     return new Promise(promise => {
+    // static placeholder(a, b) {
+    //     return new Promise((resolve, reject) => {
     //         $.ajax({
-    //             url: "/saveLevel",
-    //             data: JSON.stringify(mapObject) ,
+    //             url: "/post_url",
+    //             data: {
+    //                 x: a,
+    //                 y: z
+    //             },
     //             type: "POST",
     //             success: data => {
-    //                 var obj = JSON.parse(data)
-    //                 promise(obj)
+    //                 resolve(data)
     //             },
     //             error: (xhr, status, error) => {
     //                 console.log(xhr);
-    //                 throw "error"
+    //                 reject(new Error("promise rejected"))
     //             },
     //         });
     //     })
