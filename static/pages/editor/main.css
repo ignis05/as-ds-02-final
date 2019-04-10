@@ -64,7 +64,7 @@ button:active {
     line-height: calc(var(--objHeight) - 2 * var(--bdrWidth));
     text-align: center;
     font-family: serif;
-    font-size: 5em;
+    font-size: 3em;
     background-color: #883333CF;
     border: var(--bdrWidth) solid #DDDDDD;
 }
