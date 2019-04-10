@@ -6,7 +6,11 @@ class MapDB extends Database {
         return this.findOne({ mapName: mapName })
     }
     exportMap(mapName, mapData) {
-        return this.insert({ mapName: mapName, mapData: mapData })
+        return new Promise(async resolve => {
+            await this.remove({ mapName: mapName })
+            let resp = await this.insert({ mapName: mapName, mapData: mapData })
+            resolve(resp)
+        })
     }
     getMaps() {
         return new Promise(async (resolve, reject) => {
