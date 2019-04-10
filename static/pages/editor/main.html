@@ -6,11 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>[Cinnamon] Level Editor</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" media="screen" href="/static/pages/editor/main.css" />
     <script src="/libs/jquery-3.3.1.js"></script>
     <script src="/static/pages/editor/main.js"></script>
-    <script src="/static/pages/editor/cell.js"></script>
-    <script src="/static/pages/editor/loader.js"></script>
+    <link rel="shortcut icon" href="/static/res/img/flavicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/reset.css">
+    <link rel="stylesheet" href="/static/pages/editor/main.css">
+    <script src="/libs/jquery-3.3.1.js"></script>
 </head>
 
 <body>
@@ -28,20 +29,18 @@
                     <option value="8">8</option>
                     <option value="16">16</option>
                 </select>
-                <button id="ctrl-genlvl">generate</button>
+                <button id="ctrl-genlvl">Generate</button>
             </div>
-            <div id="ctrl-srv" class="ctrl-block">
-                <button id="ctrl-send">save on server</button>
-                <button id="ctrl-load">load from server</button>
+            <div id="ctrl-types" class="ctrl-block" style="display: none">
+                <button id="ctrl-type0" class="active">Wall</button>
+                <button id="ctrl-type1">Enemy</button>
+                <button id="ctrl-type2">Treasure</button>
+                <button id="ctrl-type3">Light</button>
+            </div>
+            <div id="ctrl-settings" class="ctrl-block">
             </div>
             <div class="ctrl-block">
-                <button id="ctrl-rungame">run game</button>
-            </div>
-            <div id="ctrl-types" class="ctrl-block">
-                <button id="ctrl-type0" class="active">wall</button>
-                <button id="ctrl-type1">enemy</button>
-                <button id="ctrl-type2">treasure</button>
-                <button id="ctrl-type3">light</button>
+                <button id="ctrl-backtomain">Back to Main Menu</button>
             </div>
         </div>
         <div id="data">

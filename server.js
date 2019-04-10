@@ -16,10 +16,14 @@ var ServerDB = {
     databases: [],
 }
 
-//routing dla "/"
+// #region static routing
 app.get("/", function (req, res) {
     res.sendFile(path.join(__dirname + `/static/pages/menu-main/main.html`))
 })
+app.get("/editor", function (req, res) {
+    res.sendFile(path.join(__dirname + `/static/pages/editor/main.html`))
+})
+// #endregion
 
 //routing automatyczny
 app.use(express.static("."))

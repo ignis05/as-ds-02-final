@@ -1,137 +1,201 @@
-class Main {
-    constructor() {
-        console.log('main.js initialized')
-        this.pack = {}
-        this.pack.size = $('#ctrl-select').val()
-        this.pack.level = []
-        this.type  = 'wall'
-        this.hexes = []
-        this.nextIn = -1
-        this.init()
+
+let pack
+let type
+let cells
+let nextIn
+let cellSettings
+
+// ==========================
+// Editor completely sucks as of now, but is usable...
+//  ...in theory
+// ==========================
+
+$(document).ready(() => {
+    pack = {}
+    pack.size = $('#ctrl-select').val()
+    pack.level = []
+    cells = []
+    cellSettings = {
+        height: 5,
+        type: 'dirt',
     }
+    init()
+})
 
-    init() {
-        this.ctrlsInit()
-    }
-    
-    ctrlsInit() {
-        $('#ctrl-genlvl').on('click', function () {
-            main.pack.size = $('#ctrl-select').val()
-            main.createTiles()
-            main.nextIn = -1
-        })
-        this.createTiles()
 
-        $('#ctrl-send').on('click', function() {
-            main.sendLevel()
-        })
+function init() {
+    ctrlsInit()
 
-        $('#ctrl-load').on('click', function() {
-            net.loadLvl()
-        })
-
-        $('#ctrl-types').children().on('click', function() {
-            main.type  = this.innerHTML
-            main.clearTypes()
-            this.className = 'active'
-        })
-
-        $('#ctrl-rungame').on('click', function() {
-            window.location = '/game'
-        })
-    }
-
-    clearTypes() {
-        let buts = Array.from($('#ctrl-types')[0].children)
-        for (let i in buts) {
-            buts[i].className = ''
-        }
-    }
-
-    createTiles() {
-        this.pack.level = []
-        this.hexes = []
-        $('#cont').html('')
-        for (let i = 0; i < this.pack.size; i++) {
-            for (let j = 0; j < this.pack.size; j++) {
-                let hex = new Cell(this.hexes.length, i, j)
-                this.hexes.push(hex)
-                hex.object.on('click', this.hexClick)
-                $('#cont').append(hex.object)
-            }
-        }
-        $('#data').html(JSON.stringify(this.pack, null, 4))
-    }
-
-    hexClick() {
-        if (this.hex.dirOut == -1) {
-            this.hex.dirIn = main.nextIn
-            let dataPack = {}
-            dataPack.id = this.hex.id
-            dataPack.x = this.hex.x
-            dataPack.z = this.hex.z
-            dataPack.dirOut = this.hex.dirOut
-            dataPack.dirIn = this.hex.dirIn
-            dataPack.type = this.hex.type
-            main.pack.level.push(dataPack)
-        }
-        this.hex.type = main.type
-
-        this.hex.dirOut += 1
-        if (this.hex.dirOut > 5) {
-            this.hex.dirOut = 0
-        }
-        switch (main.type) {
-            case 'wall':
-                $(this).children('.testHex').css('backgroundColor', '#3388dd')
-            break
-            case 'enemy':
-                $(this).children('.testHex').css('backgroundColor', '#dd3333')
-            break
-            case 'treasure':
-                $(this).children('.testHex').css('backgroundColor', '#88dd33')
-            break
-            case 'light':
-                $(this).children('.testHex').css('backgroundColor', '#dddd33')
-            break
-        }
-        main.nextIn = (this.hex.dirOut + 3) % 6
-        for (let i in main.pack.level) {
-            let dataPack = main.pack.level[i]
-            if (dataPack.id == this.hex.id) {
-                dataPack.dirOut = this.hex.dirOut
-                dataPack.type = this.hex.type
-                break
-            }
-        }
-        $('#data').html(JSON.stringify(main.pack, null, 4))
-        
-    }
-
-    /* sendLevel() {
-        
-    }
-
-    loadLevel(data) {
-        if (data != null) {
-            main.pack.size = data.size
-            main.createTiles()
-            main.pack.level = data.level
-            for (let i in data.level) {
-                let dataPack = data.level[i]
-                main.hexes[dataPack.id].x = parseInt(dataPack.x)
-                main.hexes[dataPack.id].z = parseInt(dataPack.z)
-                main.hexes[dataPack.id].dirOut = parseInt(dataPack.dirOut)
-                main.hexes[dataPack.id].dirIn = parseInt(dataPack.dirIn)
-                main.hexes[dataPack.id].type = dataPack.type
-                main.hexes[dataPack.id].setup()
-            }
-            $('#data').html(JSON.stringify(main.pack, null, 2))
-        } else {
-            main.pack.size = 2
-            main.createTiles()
-            $('#data').html(JSON.stringify(main.pack, null, 2))
-        }
-    } */
+    // Define additional setting sliders go here:
+    new OptionSlider('height', 'Height', 0, 20, 1, 5)
 }
 
+function ctrlsInit() {
+    $('#ctrl-genlvl').on('click', function () {
+        pack.size = $('#ctrl-select').val()
+        createTiles()
+    })
+    createTiles()
+
+    $('#ctrl-types').children().on('click', function () {
+        type = this.innerHTML
+        clearTypes()
+        this.className = 'active'
+    })
+
+    $('#ctrl-backtomain').on('click', function () {
+        window.location = '/'
+    })
+}
+
+function clearTypes() {
+    let buts = Array.from($('#ctrl-types')[0].children)
+    for (let i in buts) {
+        buts[i].className = ''
+    }
+}
+
+function createTiles() {
+    pack.level = []
+    cells = []
+    $('#map').html('')
+    for (let i = 0; i < pack.size; i++) {
+        for (let j = 0; j < pack.size; j++) {
+            let cell = new Cell(cells.length, i, j)
+            cells.push(cell)
+            cell.object.on('click', cellClick)
+            $('#map').append(cell.object)
+        }
+    }
+    $('#data').html(JSON.stringify(pack, null, 4))
+}
+
+function cellClick() {
+    console.log(this)
+    cell = this
+    /* if (cell.dirOut == -1) {
+        cell.dirIn = main.nextIn
+        let datapack = {}
+        datapack.id = cell.id
+        datapack.x = cell.x
+        datapack.z = cell.z
+        datapack.dirOut = cell.dirOut
+        datapack.dirIn = cell.dirIn
+        datapack.type = cell.type
+        pack.level.push(datapack)
+    }
+     */
+    cell.type = cellSettings.type
+    cell.height = cellSettings.height
+    cell.innerHTML = cell.height
+
+    /* switch (this.type) {
+        case 'dirt':
+            $(this).css('backgroundColor', '#888833')
+            break
+    } */
+
+    for (let i in pack.level) {
+        let datapack = pack.level[i]
+        if (datapack.id === cell.cell.id) {
+            datapack.height = cell.height
+            datapack.type = cell.type
+            break
+        }
+    }
+    $('#data').html(JSON.stringify(pack, null, 4))
+}
+
+//#region class declarations
+class Cell {
+    constructor(id, x, z) {
+        this.id = id
+        this.x = x
+        this.z = z
+        this.height = 5
+        this.type = 'dirt'
+        //this.dirIn
+        //this.dirOut
+
+        this.create()
+        this.object
+    }
+
+    create() {
+        let cont = $('<div>')
+        cont.addClass('cell')
+        cont.css('left', this.z * 50)
+        cont.css('top', this.x * 50)
+
+        // cont.css('transform', 'translate(-50%, -50%) rotate(45deg) ')
+        // cont.css('left', this.z * (50 * Math.sqrt(2) - 25 * Math.sqrt(2)) + 25 * Math.sqrt(2))
+        // if (this.z % 2 == 0) {
+        //     cont.css('top', this.x * (50 * Math.sqrt(2)) + 25 * Math.sqrt(2))
+        // } else {
+        //     cont.css('top', this.x * (50 * Math.sqrt(2)) + 50 * Math.sqrt(2))
+        // }
+
+        cont[0].cell = this
+        cont.html(this.height)
+        //this.dirOut = -1
+        this.object = cont
+
+        let datacont = {}
+        datacont.id = this.id
+        datacont.x = this.x
+        datacont.z = this.z
+        datacont.type = this.type
+        datacont.height = this.height
+        pack.level.push(datacont)
+    }
+
+    setup() {
+        switch (this.type) {
+            case 'dirt':
+                this.object.css('backgroundColor', '#888833')
+                break
+        }
+    }
+}
+
+class OptionSlider {
+    constructor(settingName, rangeLabel, min, max, step, initVal) {
+        let cont = $('<div>')
+        cont.addClass('ctrl-slider')
+        $('#ctrl-settings').append(cont)
+
+        let lbl = $('<div>')
+        lbl.html(rangeLabel)
+        cont.append(lbl)
+
+        let rng = $('<input>')
+        rng.attr('type', 'range')
+        rng.attr('min', min)
+        rng.attr('max', max)
+        rng.attr('step', step)
+        rng.attr('value', initVal)
+        cont.append(rng)
+
+        let nud = $('<input>')
+        nud.attr('type', 'number')
+        nud.attr('min', min)
+        nud.attr('max', max)
+        nud.attr('step', step)
+        nud.attr('value', initVal)
+        cont.append(nud)
+
+        rng.on('input',()=> {
+            cellSettings[settingName] = rng.val()
+            nud.val(rng.val())
+        })
+        nud.change(()=> {
+            // Manual clamping to max and min -__-
+            if (nud.val() > parseInt(nud.attr('max'))) nud.val(parseInt(nud.attr('max')))
+            if (nud.val() < parseInt(nud.attr('min'))) nud.val(parseInt(nud.attr('min')))
+
+            cellSettings[settingName] = nud.val()
+            rng.val(nud.val())
+        })
+    }
+}
+//#endregion
