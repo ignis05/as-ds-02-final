@@ -5,12 +5,19 @@ let cells
 let nextIn
 let cellSettings
 
+let mapsDB
+let decision = null
+let mapname = ''
+
 // ==========================
 // Editor completely sucks as of now, but is usable...
 //  ...in theory
 // ==========================
 
-$(document).ready(() => {
+$(document).ready(async () => {
+    mapsDB = new MapDB()
+    await mapsDB.create()
+
     pack = {}
     pack.size = $('#ctrl-select').val()
     pack.level = []
@@ -30,6 +37,7 @@ function init() {
     new OptionSlider('height', 'Height', 0, 20, 1, 5)
 }
 
+// Clicks go here:
 function ctrlsInit() {
     $('#ctrl-genlvl').on('click', function () {
         pack.size = $('#ctrl-select').val()
@@ -44,7 +52,29 @@ function ctrlsInit() {
     })
 
     $('#ctrl-backtomain').on('click', function () {
-        window.location = '/'
+        DisplayDialog()
+
+        Backtomain()
+    })
+
+    $('#ctrl-types').children().on('click', function () {
+        cellSettings.type = (this.innerHTML).toLowerCase()
+        clearTypes()
+        this.className = 'active'
+    })
+
+    $('#editor-save').click(async e => {
+        if (!e.target.className.includes('disabled')) {
+            let testList = await Net.getTestPages()
+            DisplayTests(testList)
+        }
+    })
+
+    $('#editor-load').click(async e => {
+        if (!e.target.className.includes('disabled')) {
+            let mapList = await mapsDB.getMaps()
+            DisplayLoad(mapList)
+        }
     })
 }
 
@@ -89,11 +119,14 @@ function cellClick() {
     cell.height = cellSettings.height
     cell.innerHTML = cell.height
 
-    /* switch (this.type) {
+    switch (cellSettings.type) {
         case 'dirt':
-            $(this).css('backgroundColor', '#888833')
+            $(this).css('backgroundColor', '#338833')
             break
-    } */
+        case 'rock':
+            $(this).css('backgroundColor', '#888888')
+            break
+    }
 
     for (let i in pack.level) {
         let datapack = pack.level[i]
@@ -106,7 +139,7 @@ function cellClick() {
     $('#data').html(JSON.stringify(pack, null, 4))
 }
 
-//#region class declarations
+//#region classes
 class Cell {
     constructor(id, x, z) {
         this.id = id
@@ -139,6 +172,7 @@ class Cell {
         cont.html(this.height)
         //this.dirOut = -1
         this.object = cont
+        this.setup()
 
         let datacont = {}
         datacont.id = this.id
@@ -152,7 +186,10 @@ class Cell {
     setup() {
         switch (this.type) {
             case 'dirt':
-                this.object.css('backgroundColor', '#888833')
+                this.object.css('backgroundColor', '#338833')
+                break
+            case 'rock':
+                this.object.css('backgroundColor', '#888888')
                 break
         }
     }
@@ -184,11 +221,11 @@ class OptionSlider {
         nud.attr('value', initVal)
         cont.append(nud)
 
-        rng.on('input',()=> {
+        rng.on('input', () => {
             cellSettings[settingName] = rng.val()
             nud.val(rng.val())
         })
-        nud.change(()=> {
+        nud.change(() => {
             // Manual clamping to max and min -__-
             if (nud.val() > parseInt(nud.attr('max'))) nud.val(parseInt(nud.attr('max')))
             if (nud.val() < parseInt(nud.attr('min'))) nud.val(parseInt(nud.attr('min')))
@@ -196,6 +233,133 @@ class OptionSlider {
             cellSettings[settingName] = nud.val()
             rng.val(nud.val())
         })
+    }
+}
+//#endregion
+
+//#region window functions
+function DisplaySave(list) {
+    if (list.length > 8) console.warn('DisplaySave might not display all options properly (amount > 8)')
+
+    let overlay = $('#overlay')
+    if (overlay.css('display') == 'none') {
+        overlay.removeAttr('style')
+
+        let winContainer = $('#container')
+        winContainer.removeAttr('class')
+        winContainer.addClass('win-list')
+        winContainer.html('')
+        winContainer.css('height', '' + (70 * list.length) + 'px')
+
+        $('#header').html('Tests')
+
+        for (let i = 0; i < list.length; i++) {
+            let bOption = $('<div>')
+            bOption.addClass('window-button')
+            bOption.html(list[i].name)
+            winContainer.append(bOption)
+            bOption.click(() => {
+                window.location = list[i].path
+            })
+        }
+
+        $('#win-bBack').click(() => {
+            overlay.css('display', 'none')
+        })
+    } else {
+        throw 'DisplaySave was called incorrectly'
+    }
+}
+
+function DisplayLoad(list) {
+    if (list.length > 8) console.warn('DisplayLoad might not display all options properly (amount > 8)')
+
+    let overlay = $('#overlay')
+    if (overlay.css('display') == 'none') {
+        overlay.removeAttr('style')
+
+        let winContainer = $('#container')
+        winContainer.removeAttr('class')
+        winContainer.addClass('win-list')
+        if (list.length == 0) {
+            winContainer.css('height', '70px')
+            winContainer.html('No maps to load')
+        } else {
+            winContainer.html('')
+            winContainer.css('height', '' + (70 * list.length) + 'px')
+        }
+
+        $('#header').html('Load Map')
+
+        console.log(list.length)
+
+        
+
+        for (let i = 0; i < list.length; i++) {
+            let bOption = $('<div>')
+            bOption.addClass('window-button')
+            bOption.html(list[i])
+            winContainer.append(bOption)
+            bOption.click(async () => {
+                console.log(await mapsDB.importMap(list[i]))
+            })
+        }
+
+        $('#win-bBack').removeAttr('style')
+        $('#win-bBack').click(() => {
+            overlay.css('display', 'none')
+        })
+    } else {
+        throw 'DisplayLoad was called incorrectly'
+    }
+}
+
+function DisplayDialog() {
+    decision = null
+
+    let overlay = $('#overlay')
+    if (overlay.css('display') == 'none') {
+        overlay.removeAttr('style')
+
+        let winContainer = $('#container')
+        winContainer.removeAttr('class')
+        winContainer.addClass('win-dialog')
+        winContainer.html('')
+        winContainer.css('height', '100px')
+
+        $('#header').html('Are you sure?')
+
+        let bYes = $('<div>')
+        bYes.addClass('window-button')
+        bYes.html('Yes')
+        winContainer.append(bYes)
+        bYes.click(() => {
+            overlay.css('display', 'none')
+            decision = true
+        })
+
+        let bNo = $('<div>')
+        bNo.addClass('window-button')
+        bNo.html('No')
+        winContainer.append(bNo)
+        bNo.click(() => {
+            overlay.css('display', 'none')
+            decision = false
+        })
+
+        $('#win-footer').css('display', 'none')
+    } else {
+        throw 'DisplayDialog was called incorrectly'
+    }
+}
+//#endregion
+
+//#region misc functions
+function Backtomain() {
+    if (decision == null) {
+        setTimeout(Backtomain, 500)
+    } else if (decision) {
+        window.location = '/'
     }
 }
 //#endregion

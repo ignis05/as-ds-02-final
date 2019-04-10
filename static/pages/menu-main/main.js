@@ -52,6 +52,8 @@ $(document).ready(() => {
             overlay.removeAttr('style')
 
             let winContainer = $('#container')
+            winContainer.removeAttr('class')
+            winContainer.addClass('win-list')
             winContainer.html('')
             winContainer.css('height', '' + (70 * list.length) + 'px' )
 
@@ -83,6 +85,8 @@ $(document).ready(() => {
             overlay.removeAttr('style')
 
             let winContainer = $('#container')
+            winContainer.removeAttr('class')
+            winContainer.addClass('win-list')
             winContainer.html('')
             winContainer.css('height', '400px')
 

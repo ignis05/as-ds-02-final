@@ -12,6 +12,8 @@
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/pages/editor/main.css">
     <script src="/libs/jquery-3.3.1.js"></script>
+    <script src="/static/js/classes/Database.js"></script>
+    <script src="/static/js/classes/MapDB.js"></script>
 </head>
 
 <body>
@@ -20,31 +22,52 @@
 
         </div>
     </div>
-    <div id="overlay">
+
+    <div id="ui">
         <div id="ctrls">
             <div id="ctrl-create">
                 <select id="ctrl-select">
                     <option value="2">2</option>
                     <option value="4">4</option>
-                    <option value="8">8</option>
+                    <option value="8" selected>8</option>
                     <option value="16">16</option>
+                    <option value="32">32</option>
                 </select>
                 <button id="ctrl-genlvl">Generate</button>
             </div>
-            <div id="ctrl-types" class="ctrl-block" style="display: none">
-                <button id="ctrl-type0" class="active">Wall</button>
-                <button id="ctrl-type1">Enemy</button>
-                <button id="ctrl-type2">Treasure</button>
-                <button id="ctrl-type3">Light</button>
+
+            <div id="ctrl-dbops" class="ctrl-block">
+                <button id="editor-save">Save Map</button>
+                <button id="editor-load">Load Map</button>
             </div>
-            <div id="ctrl-settings" class="ctrl-block">
+
+            <div id="ctrl-settings" class="ctrl-block"></div>
+
+            <div id="ctrl-types" class="ctrl-block">
+                <button id="ctrl-type0" class="active">Dirt</button>
+                <button id="ctrl-type1">Rock</button>
             </div>
+
             <div class="ctrl-block">
                 <button id="ctrl-backtomain">Back to Main Menu</button>
             </div>
         </div>
         <div id="data">
         </div>
+    </div>
+
+    <div id="overlay" style="display: none">
+        <div id="backdrop"></div>
+        <div id="window">
+            <div id="header">Header</div>
+            <div id="container">
+
+            </div>
+            <div id="win-footer">
+                <div id="win-bBack" class="window-button">Back</div>
+            </div>
+        </div>
+
     </div>
 </body>
 
