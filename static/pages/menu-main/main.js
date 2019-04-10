@@ -1,6 +1,5 @@
 $(document).ready(() => {
     console.log('document ready');
-
     //#region menu listeners
     $('#bMain0').click(e => {
         if (!e.target.className.includes('disabled')) {
@@ -39,11 +38,12 @@ $(document).ready(() => {
 
     $('#bMain4').click(e => {
         if (!e.target.className.includes('disabled')) {
-            window.location = '/static/pages/editor/main.html'
+            window.location = '/editor'
         }
     })
     //#endregion
 
+    //#region window functions
     function DisplayTests(list) {
         if (list.length > 8) console.warn('DisplayTests might not display all options properly (amount > 8)')
 
@@ -52,6 +52,8 @@ $(document).ready(() => {
             overlay.removeAttr('style')
 
             let winContainer = $('#container')
+            winContainer.removeAttr('class')
+            winContainer.addClass('win-list')
             winContainer.html('')
             winContainer.css('height', '' + (70 * list.length) + 'px' )
 
@@ -83,6 +85,8 @@ $(document).ready(() => {
             overlay.removeAttr('style')
 
             let winContainer = $('#container')
+            winContainer.removeAttr('class')
+            winContainer.addClass('win-list')
             winContainer.html('')
             winContainer.css('height', '400px')
 
@@ -105,4 +109,5 @@ $(document).ready(() => {
             throw 'DisplayOptions was called incorrectly'
         }
     }
+    //#endregion
 })
