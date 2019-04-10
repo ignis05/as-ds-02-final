@@ -111,8 +111,7 @@ function cellClick() {
         datapack.dirIn = cell.dirIn
         datapack.type = cell.type
         pack.level.push(datapack)
-    }
-     */
+    } */
     cell.type = cellSettings.type
     cell.height = cellSettings.height
     cell.innerHTML = cell.height
@@ -214,6 +213,7 @@ class Cell {
                 this.object.css('backgroundColor', '#888888')
                 break
         }
+        this.object.html(this.height)
     }
 }
 
