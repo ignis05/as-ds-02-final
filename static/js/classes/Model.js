@@ -49,6 +49,7 @@ class Model {
 
     // generate animations buttons on page
     createButtons() {
+        $("#animationDisplayButtonsContainer").remove()
         let container = document.createElement("div")
         container.id = "animationDisplayButtonsContainer"
         container.style.position = "absolute"
@@ -93,7 +94,7 @@ class Model {
         return new Promise(resolve => {
             const loader = new THREE.GLTFLoader();
             loader.load(this.path, gltf => {
-                console.log(gltf);
+                // console.log(gltf);
                 this.gltf = gltf
                 this.mesh = gltf.scene
                 this.mesh.name = this.name
@@ -117,7 +118,7 @@ class Model {
         return new Promise(resolve => {
             const loader = new THREE.FBXLoader();
             loader.load(this.path, mesh => {
-                console.log(mesh);
+                // console.log(mesh);
                 this.mesh = mesh
                 this.mesh.name = this.name
 
