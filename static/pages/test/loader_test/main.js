@@ -68,6 +68,7 @@ $(document).ready(async function () {
                 currentModel = e.target.innerText
 
                 if (testmodel) scene.remove(testmodel.mesh)
+                // adding model
                 testmodel = new Model(`/static/res/models/${model.path}`, model.name)
                 await testmodel.load()
                 testmodel.addTo(scene)
@@ -76,22 +77,14 @@ $(document).ready(async function () {
             else {
                 $(".modelSelectButton").css("color", "white")
                 currentModel = null
+                // removing model
+                $("#animationDisplayButtonsContainer").remove()
                 if (testmodel) scene.remove(testmodel.mesh)
                 testmodel = null
             }
         })
         $(container).append(button)
     })
-    //      !!! model select
-
-    //      !!! model ----------------
-    // var testmodel = new Model(`/static/res/models/${path}`, "testmodel")
-    // await testmodel.load()
-    // Cookies.set("model_test-model_path", path, 30)
-    // testmodel.addTo(scene)
-    // testmodel.createButtons()
-
-    //      !!! model ----------------
 
     function render() {
 
