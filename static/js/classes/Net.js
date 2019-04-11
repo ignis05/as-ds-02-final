@@ -1,22 +1,39 @@
 class Net {
-    constructor() { }
 
-    // saveLevel(mapObject) {
-    //     console.log("saving level on server");
-    //     return new Promise(promise => {
-    //         $.ajax({
-    //             url: "/saveLevel",
-    //             data: JSON.stringify(mapObject) ,
-    //             type: "POST",
-    //             success: data => {
-    //                 var obj = JSON.parse(data)
-    //                 promise(obj)
-    //             },
-    //             error: (xhr, status, error) => {
-    //                 console.log(xhr);
-    //                 throw "error"
-    //             },
-    //         });
-    //     })
-    // }
+    static getTestPages() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/getTestPages",
+                data: {},
+                type: "POST",
+                success: data => {
+                    resolve(data.testPages)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            });
+        })
+    }
+
+    static sendClickedPoint(clickPosition, unitPosition) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/sendClickedPoint",
+                data: {
+                    click: clickPosition,
+                    unit: unitPosition
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data.path)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            })
+        })
+    }
 }
