@@ -8,14 +8,16 @@ class MapDB extends Database {
     exportMap(mapName, mapData) {
         return new Promise(async resolve => {
             await this.remove({ mapName: mapName })
-            let resp = await this.insert({ mapName: mapName, mapData: mapData })
+            let resp = await this.insert({ mapName: mapName, mapData: mapData, modDate: new Date() })
             resolve(resp)
         })
     }
     getMaps() {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async resolve => {
             let maps = await this.getAll()
-            let mapNames = maps.map(entry => entry.mapName)
+            let mapNames = maps.map(entry => {
+                return { mapName: entry.mapName, modDate: new Date(entry.modDate) }
+            })
             resolve(mapNames)
         })
     }
