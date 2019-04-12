@@ -123,23 +123,23 @@ var test_LoadedMap = {
 
 function test_GridMatrixCreate(size, map) {
     let gridMatrix = []
-    let y = -1
     for (var cell in map) {
         if (cell % size == 0) {
             gridMatrix.push([])
-            y++
         }
         switch (map[cell].type) {
             case "dirt":
-            gridMatrix[y].push(0)
+            gridMatrix[gridMatrix.length-1].push(0)
                 break
 
             case "rock":
-            gridMatrix[y].push(1)
+            gridMatrix[gridMatrix.length-1].push(1)
                 break
         }
         
     }
+    console.log(gridMatrix);
+    
     return new pathfinder.Grid(gridMatrix)
 }
 
@@ -332,7 +332,7 @@ app.post("/getTestPages", function (req, res) {
 app.post("/sendClickedPoint", function (req, res) {
     let data = req.body
     let temp_grid = grid.clone() //after finding path pathfinder modifies grid, so backup bois    
-    let path = finder.findPath(data.click.x, data.click.z, data.unit.x, data.unit.z, temp_grid)
+    let path = finder.findPath(data.unit.x, data.unit.z, data.click.x, data.click.z, temp_grid)
     console.log(path);
     
     res.send({

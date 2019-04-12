@@ -144,13 +144,32 @@ $(document).ready(async function () {
         var intersects = raycaster.intersectObjects(objects, true);
         if (intersects.length > 0) {
             let clickedPosition = intersects[0].object
+            console.log(clickedPosition.userData);
+
             if (clickedPosition.userData.name == "floor" && clickedPosition.userData.type != "rock") {
                 finishPoint = {
                     x: clickedPosition.userData.x,
                     z: clickedPosition.userData.z
                 }
+                //clickedPosition.material.color.set(0xff0000)
                 Net.sendClickedPoint(finishPoint, selectedUnitPoint).then(function (result) {
                     movePath = result
+                    let move = 0
+                    let moveInterval = setInterval(() => {
+                        gridMatrix[movePath[move][1]][movePath[move][0]].material.color.set(0xff0000)
+                        move++
+                        if (move > movePath.length - 1) {
+                            window.clearInterval(moveInterval)
+                            selectedUnitPoint.z = movePath[movePath.length - 1][1]
+                            selectedUnitPoint.x = movePath[movePath.length - 1][0]
+                            setTimeout(() => {
+                                for (let move in movePath) {
+                                    gridMatrix[movePath[move][1]][movePath[move][0]].material.color.set(Settings.dirtTileColor)
+                                }
+                            }, 1000)
+                        }
+                    }, 500)
+
                     console.log("Your units path is: " + movePath)
                 })
             }
@@ -163,6 +182,7 @@ $(document).ready(async function () {
     let grid = new Grid(test_LoadedMap.size, test_LoadedMap.level, true)
     grid.addTo(scene)
 
+    let gridMatrix = grid.matrix
 
     var orbitControl = new THREE.OrbitControls(camera, renderer.domElement);
     orbitControl.addEventListener('change', function () {
