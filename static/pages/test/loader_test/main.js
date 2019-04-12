@@ -37,20 +37,58 @@ $(document).ready(async function () {
     var light = new THREE.AmbientLight(0xffffff, 2, 1000); // ambient light bc gltf textures always require light
     scene.add(light)
 
-    //      !!! model ----------------
-    let path = window.prompt("specify path to file (in /models/ directory)", Cookies.get("model_test-model_path"))
-    var testmodel = new Model(`/static/res/models/${path}`, "testmodel")
-    await testmodel.load()
-    Cookies.set("model_test-model_path", path, 30)
-    testmodel.addTo(scene)
+    var testmodel = null;
 
-    testmodel.createButtons()
+    //      !!! model select
+    var currentModel = null
+    let models = await Net.getModels()
+    console.log(models);
+    let container = document.createElement("div")
+    container.id = "modelSelector"
+    container.style.position = "absolute"
+    container.style.top = "0"
+    container.style.right = "0"
+    document.body.appendChild(container)
+    models.forEach(model => {
+        var button = $("<div>")
+        button.text(model.name)
+        button.addClass(`modelSelectButton`)
+        button.css(`background`, `#000000cc`)
+        button.css(`padding`, `3px`)
+        button.css(`color`, `white`)
+        button.css(`width`, `auto`)
+        button.css(`display`, `flex`)
+        button.css(`align-items`, `center`)
+        button.css(`justify-content`, `center`)
+        button.css(`margin`, `2px`)
+        button.click(async e => {
+            if (currentModel != e.target.innerText) {
+                $(".modelSelectButton").css("color", "white")
+                e.target.style.color = "blue"
+                currentModel = e.target.innerText
 
-    //      !!! model ----------------
+                if (testmodel) scene.remove(testmodel.mesh)
+                // adding model
+                testmodel = new Model(`/static/res/models/${model.path}`, model.name)
+                await testmodel.load()
+                testmodel.addTo(scene)
+                testmodel.createButtons()
+            }
+            else {
+                $(".modelSelectButton").css("color", "white")
+                currentModel = null
+                // removing model
+                $("#animationDisplayButtonsContainer").remove()
+                if (testmodel) scene.remove(testmodel.mesh)
+                testmodel = null
+            }
+        })
+        $(container).append(button)
+    })
 
     function render() {
 
-        testmodel.animate()
+        if (testmodel) testmodel.animate()
 
         renderer.render(scene, camera);
         requestAnimationFrame(render);

@@ -3,6 +3,8 @@ var http = require("http")
 var express = require("express")
 var fs = require("fs")
 var app = express()
+var server = http.Server(app);
+var io = require("socket.io")(server)
 const PORT = 3000
 var path = require("path")
 var bodyParser = require("body-parser")
@@ -170,9 +172,88 @@ app.post("/getTestPages", function (req, res) {
         }
     )
 })
+app.post("/getModels", function (req, res) {
+    let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
+    console.log(dirs);
+    let models = []
+    dirs.forEach(dir => {
+        let file = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).find(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf"))
+        let dirpath = `${dir}/${file}`
+        // let temp = dir.split("_").map(x => x.charAt(0).toUpperCase() + x.slice(1))
+        let name = dir //temp.pop() + " " + temp.join(" ")
+        let obj = {
+            name: name,
+            path: dirpath
+        }
+        models.push(obj)
+    })
+    res.send(
+        {
+            msg: "OK",
+            models: models
+        }
+    )
+})
 // #endregion ajax - Net.js requests
 
+// #region socket.io - test
+const io_test = io.of("/socket.io_test") // create separate socket instance
+
+io_test.on('connect', socket => { // listen for connection on '/socket.io_test' instance, and bind events to connected client
+
+    console.log(`user ${socket.id} connected`); // logs client's unique id, can be used for direct communication
+    io_test.emit('msg', `user ${socket.id} connected to socket`); // emit event 'msg' to all clients in '/socket.io_test' instance
+
+    // listen for disconnect
+    socket.on('disconnect', socket => {
+        io_test.emit('msg', `user ${socket.id} disconnected from socket`); // emit event 'msg' to all clients in '/socket.io_test' instance
+    })
+
+
+    // ----- listen for custom events emitted by client -----
+
+    // on event 'msg' log data
+    socket.on('msg', msg => {
+        console.log(`${socket.id} ---> ${msg}`);
+    })
+
+    // forward msg to clients in room
+    socket.on('toRoom', (room, msg) => {
+        socket.to(room).emit('msg', msg) // broadscast to all clients in room *except self*
+        // --- or ---
+        // io_test.to(room).emit('msg', msg) // broadscast to all clients in room
+    })
+
+    // forward msg to specific client using his id
+    socket.on('priv', (id, msg) => {
+        socket.to(id).emit('msg', msg) // send to specific client useing his id
+    })
+
+    // if clients emits event 'join', add socket to specified room
+    socket.on("join", room => {
+        socket.join(room) // add client to room
+        io_test.to(room).emit('msg', `user ${socket.id} has joined the room`) // broadcast event to all clients in room
+        socket.emit("msg", `joined ${room}`) // emit event msg to client that emitted event join
+    })
+
+    // if clients emits event 'leave', remove socket from specified room
+    socket.on("leave", room => {
+        socket.leave(room) // remove client from room
+        io_test.to(room).emit('msg', `user ${socket.id} has left the room`) // broadcast event to all clients in room
+        socket.emit("msg", `left ${room}`) // emit event msg to client that emitted event leave
+    })
+});
+
+// other emiting options:
+// socket.volatile.emit('msg', 'do you really need it?'); -- emits event that might be ignored if client is unable to receive events at the moment
+// socket.broadcast.emit('msg', 'to all others'); -- emits event toll all clients in all instances *except self*
+// io.emit('msg','to all') -- emits event to all clients in all instances
+
+// ---> all emits : https://socket.io/docs/emit-cheatsheet/
+
+// #endregion socket.io - test
+
 //nasłuch na określonym porcie
-app.listen(PORT, function () {
+server.listen(PORT, function () {
     console.log(`server started on port: ${PORT}`)
 })
