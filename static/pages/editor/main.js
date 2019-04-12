@@ -9,6 +9,14 @@ let mapsDB
 let decision = null
 let mapname = ''
 
+const dtOptions = {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+}
+
 // ==========================
 // Editor completely sucks as of now, but is usable...
 //  ...in theory
@@ -246,7 +254,7 @@ function DisplaySave(list) {
 
     let nor = list.length
     if (nor < 9) nor = 9
-    
+
     let rowlist = []
 
     for (let i = 0; i < nor; i++) {
@@ -255,12 +263,12 @@ function DisplaySave(list) {
 
         let cell0 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell0.html(list[i])
+            cell0.html(list[i].mapName)
         row.append(cell0)
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html('ignis pls fix')
+            cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
         row.append(cell1)
 
         saveTable.append(row)
@@ -339,12 +347,12 @@ function DisplayLoad(list) {
 
         let cell0 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell0.html(list[i])
+            cell0.html(list[i].mapName)
         row.append(cell0)
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html('ignis pls fix')
+            cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
         row.append(cell1)
 
         saveTable.append(row)
