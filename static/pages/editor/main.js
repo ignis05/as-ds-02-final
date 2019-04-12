@@ -33,7 +33,7 @@ $(document).ready(async () => {
 function init() {
     ctrlsInit()
 
-    // Define additional setting sliders go here:
+    // Define additional setting sliders here:
     new OptionSlider('height', 'Height', 0, 20, 1, 5)
 }
 
@@ -246,9 +246,12 @@ function DisplaySave(list) {
 
     let nor = list.length
     if (nor < 9) nor = 9
+    
+    let rowlist = []
 
     for (let i = 0; i < nor; i++) {
         let row = $('<tr>').addClass('saves-row')
+        rowlist.push(row)
 
         let cell0 = $('<td>').html('')
         if (list[i] !== undefined)
@@ -262,8 +265,13 @@ function DisplaySave(list) {
 
         saveTable.append(row)
         row.click(() => {
-            if (cell0.html() != '')
+            if (cell0.html() != '') {
                 name.val(cell0.html())
+                rowlist.forEach(elem => {
+                    elem.removeClass('saves-active')
+                })
+                row.addClass('saves-active')
+            }
         })
     }
 
@@ -323,8 +331,11 @@ function DisplayLoad(list) {
     let nor = list.length
     if (nor < 9) nor = 9
 
+    let rowlist = []
+
     for (let i = 0; i < nor; i++) {
         let row = $('<tr>').addClass('saves-row')
+        rowlist.push(row)
 
         let cell0 = $('<td>').html('')
         if (list[i] !== undefined)
@@ -338,8 +349,13 @@ function DisplayLoad(list) {
 
         saveTable.append(row)
         row.click(() => {
-            if (cell0.html() != '')
+            if (cell0.html() != '') {
                 name.val(cell0.html())
+                rowlist.forEach(elem => {
+                    elem.removeClass('saves-active')
+                })
+                row.addClass('saves-active')
+            }
             $('#bLoad').attr('disabled', false).removeClass('disabled')
 
         })
@@ -355,7 +371,7 @@ function DisplayLoad(list) {
         resizable: false,
         dialogClass: 'no-close',
         width: 600,
-        height: 600,
+        height: 540,
         title: 'Load',
         buttons: [
             {
