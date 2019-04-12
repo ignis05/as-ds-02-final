@@ -197,26 +197,57 @@ app.post("/getModels", function (req, res) {
 // #endregion ajax - Net.js requests
 
 // #region socket.io - test
-const socket_test = io.of("/socket.io_test") // create separate socket instance
+const io_test = io.of("/socket.io_test") // create separate socket instance
 
-socket_test.on('connect', socket => { // listen for connection on '/socket.io_test' instance
+io_test.on('connect', socket => { // listen for connection on '/socket.io_test' instance, and bind events to connected client
 
-    socket_test.emit('user connected'); // emit event 'user connected' to all clients in '/socket.io_test' instance
+    console.log(`user ${socket.id} connected`); // logs client's unique id, can be used for direct communication
+    io_test.emit('msg', `user ${socket.id} connected to socket`); // emit event 'msg' to all clients in '/socket.io_test' instance
 
-    socket.emit('news', { hello: 'world' }); // emit event 'news' to client who triggered event, and send data to that event
 
-    socket.join('room1'); // asign socket to destignated 'room'
+    // ----- listen for events emitted by client -----
 
-    io.to('room1').emit('some event'); // emit event to clients assigned to 'room1'
+    // on event 'msg' log data
+    socket.on('msg', msg => {
+        console.log(`${socket.id} ---> ${msg}`);
+    })
 
-    // socket.leave('room1') // - leave 'room1'
+    // forward msg to clients in room
+    socket.on('toRoom', (room, msg) => {
+        socket.to(room).emit('msg', msg) // broadscast to all clients in room except self
+        // --- or ---
+        // io_test.to(room).emit('msg', msg) // broadscast to all clients in room including self
+    })
 
-    socket.on('client->server', data => { // listener for event 'client->server' emited by client
-        console.log(data);
-    });
+    // forward msg to specific client using his id
+    socket.on('priv', (id, msg) => {
+        socket.to(id).emit('msg', msg) // send to specific client useing his id
+    })
 
-    // socket.volatile.emit('volatile_event') // if client fails to receive this event due to network problems, it won't be reemited 
+    // if clients emits event 'join', add socket to specified room
+    socket.on("join", room => {
+        socket.join(room) // add client to room
+        io_test.to(room).emit('msg', `user ${socket.id} has joined the room`) // broadcast event to all clients in room
+        socket.emit("msg", `joined ${room}`) // emit event msg to client that emited event join
+    })
+
+    // if clients emits event 'leave', remove socket from specified room
+    socket.on("leave", room => {
+        socket.leave(room) // remove client from room
+        io_test.to(room).emit('msg', `user ${socket.id} has left the room`) // broadcast event to all clients in room
+        socket.emit("msg", `left ${room}`) // emit event msg to client that emited event leave
+    })
+
+    // listen for disconnect
+    socket.on('disconnect', socket => {
+        io_test.emit('msg', `user ${socket.id} disconnected from socket`); // emit event 'msg' to all clients in '/socket.io_test' instance
+    })
 });
+
+// other options:
+// socket.volatile.emit('maybe', 'do you really need it?'); -- emits event that might be ignored if client is unable to receive events at the moment
+// io.emit('msg','to all') -- emits event to all clients in all instances
+
 // #endregion socket.io - test
 
 //nasłuch na określonym porcie
