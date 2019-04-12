@@ -3,6 +3,8 @@ var http = require("http")
 var express = require("express")
 var fs = require("fs")
 var app = express()
+var server = require("http").Server(app);
+var io = require("socket.io")(server)
 const PORT = 3000
 var path = require("path")
 var bodyParser = require("body-parser")
@@ -194,7 +196,30 @@ app.post("/getModels", function (req, res) {
 })
 // #endregion ajax - Net.js requests
 
+// #region socket.io - test
+const socket_test = io.of("/socket.io_test") // create separate socket instance
+
+socket_test.on('connect', socket => { // listen for connection on '/socket.io_test' instance
+
+    socket_test.emit('user connected'); // emit event 'user connected' to all clients in '/socket.io_test' instance
+
+    socket.emit('news', { hello: 'world' }); // emit event 'news' to client who triggered event, and send data to that event
+
+    socket.join('room1'); // asign socket to destignated 'room'
+
+    io.to('room1').emit('some event'); // emit event to clients assigned to 'room1'
+
+    // socket.leave('room1') // - leave 'room1'
+
+    socket.on('client->server', data => { // listener for event 'client->server' emited by client
+        console.log(data);
+    });
+
+    // socket.volatile.emit('volatile_event') // if client fails to receive this event due to network problems, it won't be reemited 
+});
+// #endregion socket.io - test
+
 //nasłuch na określonym porcie
-app.listen(PORT, function () {
+server.listen(PORT, function () {
     console.log(`server started on port: ${PORT}`)
 })
