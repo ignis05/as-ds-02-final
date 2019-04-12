@@ -6,10 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>[Cinnamon] Main Menu</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
     <link rel="shortcut icon" href="/static/res/img/flavicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/static/css/reset.css">
     <link rel="stylesheet" href="/static/pages/menu-main/main.css">
+
     <script src="/libs/jquery-3.3.1.js"></script>
+    <script src="/libs/jquery-ui.js"></script>
     <script src="/static/js/classes/Net.js"></script>
     <script src="/static/pages/menu-main/main.js"></script>
 </head>
@@ -27,15 +30,7 @@
     </div>
     <div id="overlay" style="display: none">
         <div id="backdrop"></div>
-        <div id="window">
-            <div id="header">Header</div>
-            <div id="container">
-
-            </div>
-            <div id="footer">
-                <div id="win-bBack" class="window-button">Back</div>
-            </div>
-        </div>
+        <div id="dialog"></div>
     </div>
 
 </body>

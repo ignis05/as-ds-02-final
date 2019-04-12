@@ -5,7 +5,9 @@
     box-sizing: border-box;
 }
 
-button, select {
+/*#region Legacy UI*/
+
+.ctrl-block button, #ctrl-create * {
     background-color: #333333;
     color: #dddddd;
     border: 2px solid #dddddd;
@@ -14,16 +16,26 @@ button, select {
     text-transform: uppercase;
     cursor: pointer;
 }
-button:hover {
+
+.ctrl-block button:hover, #ctrl-create button:hover {
     color: #dd8833;
     border-color: #dd8833;
 }
-button:active {
+
+.ctrl-block button:active, #ctrl-create button:active {
     color: #88dd33;
     border-color: #88dd33;
 }
 
-/*#region OVERLAY*/
+.ctrl-block .active, #ctrl-create .active, .ctrl-block .active:hover, #ctrl-create .active:hover {
+    border-color: #88dd33;
+    color: #88dd33;
+}
+
+/*#endregion*/
+
+/*#region OVERLAY POPUPS*/
+
 #overlay {
     position: absolute;
     top: 0;
@@ -35,29 +47,33 @@ button:active {
     align-items: center;
     justify-content: center;
 }
+
 #backdrop {
     position: absolute;
     top: 0;
     left: 0;
     height: 100vh;
     width: 100vw;
-    background-color: #0000007F;
+    background-color: #000000AF;
     z-index: 5;
 }
-#window {
+
+.no-close .ui-dialog-titlebar-close {
+    display: none;
+}
+
+.ui-dialog {
     max-height: 800px;
-    width: 600px;
-    border: 2px solid black;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
-    z-index: 6;
+    z-index: 100;
 }
-#window #header {
+
+.ui-dialog-titlebar {
     --objHeight: 100px;
     --bdrWidth: 2px;
-
     color: #fff;
     width: 100%;
     height: var(--objHeight);
@@ -68,62 +84,173 @@ button:active {
     background-color: #883333CF;
     border: var(--bdrWidth) solid #DDDDDD;
 }
-.win-list {
+
+.ui-dialog-content {
     width: 100%;
+    text-align: left;
     background-color: #333333CF;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-around;
-    overflow: hidden auto;
-    font-weight: bold;
-    color: #fff;
-    font-size: 2em;
+    overflow: hidden;
+    border-left: 2px outset #333333CF;
+    border-right: 2px outset #333333CF;
 }
-.win-dialog {
+
+.ui-dialog-buttonpane {
     width: 100%;
+    height: 120px;
     background-color: #333333CF;
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-around;
-    overflow: hidden auto;
-}
-#win-footer {
-    width: 100%;
-    height: 100px;
-    background-color: #333333CF;
-    display: flex;
-    flex-direction: column;
     align-items: center;
     justify-content: center;
     overflow: hidden auto;
+    border-left: 2px outset #333333CF;
+    border-bottom: 2px outset #333333CF;
+    border-right: 2px outset #333333CF;
 }
-.window-button {
-    font-weight: bold;
-    color: #fff;
-    width: 80%;
+
+.ui-dialog-buttonset {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+.ui-dialog-confirm .ui-dialog-buttonpane {
+    height: initial;
+}
+
+.ui-dialog-confirm .ui-dialog-buttonset {
+    width: 100%;
     height: 50px;
-    line-height: 50px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 15px 0;
+}
+
+.ui-dialog-confirm .ui-dialog-button {
+    min-width: initial;
+    max-width: initial;
+    width: 40%;
+}
+
+.ui-dialog-button {
+    font-weight: bold;
+    color: #FFFFFF;
+    min-width: 200px;
+    max-width: 400px;
+    width: 80%;
+    height: 40px;
+    line-height: 36px;
     border: 2px outset #444444CF;
     background-color: #444444CF;
     text-align: center;
-    font-size: initial;
 }
-.win-dialog .window-button {
-    width: 200px;
-}
-.window-button:hover {
+
+.ui-dialog-button:hover {
     font-weight: bolder;
     box-shadow: -1px -1px 5px #fff, 1px -1px 5px #fff, -1px 1px 5px #fff, 1px 1px 5px #fff;
     text-shadow: 1px 1px 1px #000;
 }
-.window-button:active {
+
+.ui-dialog-button:active {
     color: red;
+}
+
+.ui-dialog-button.disabled {
+    border: 2px outset #444444CF;
+    background-color: #444444CF;
+    color: #BBBBBB;
+    box-shadow: none;
+    font-weight: bold;
+    text-shadow: none;
+}
+
+.ui-dialog-content .saves-wrap {
+    height: 300px;
+    width: 500px;
+}
+
+.ui-dialog-content table {
+    width: 100%;
+    overflow: hidden auto;
+}
+
+.saves-wrap>table tr {
+    width: 100%;
+    height: 30px;
+    background-color: #550000;
+    border: 2px solid #FFFFFF;
+    color: #FFFFFF;
+    text-align: left;
+}
+
+.saves-wrap th:hover {
+    background-color: #FFFFFF7F;
+}
+
+.ui-dialog-content tr *:first-child {
+    width: 300px;
+}
+
+.saves-row {
+    padding: 2px;
+    background-color: #772222;
+    height: 30px;
+}
+
+.saves-row:nth-child(2n) {
+    background-color: #550000;
+}
+
+.saves-row:hover, .saves-row:nth-child(2n):hover {
+    background-color: #994444;
+}
+.saves-row.saves-active, .saves-row:nth-child(2n).saves-active {
+    background-color: #AF5A5A;
+}
+
+.ui-dialog-content td {
+    line-height: 30px;
+    color: #FFFFFF;
+    padding-left: 5px;
+}
+
+.ui-dialog-content th {
+    line-height: 30px;
+    padding-left: 5px;
+}
+
+.saves-cont {
+    height: 266px;
+    overflow: hidden scroll;
+    border: 2px solid #FFFFFF;
+    border-top: none;
+}
+
+.ui-dialog-content input[type=text] {
+    width: 400px;
+    height: 50px;
+    padding: 12px 20px;
+    font-size: 1.2em;
+    box-sizing: border-box;
+    caret-color: #338833;
+    background-color: #1111117F;
+    color: #DDDDDD;
+    font-weight: bolder;
+    border: none;
+    border-radius: 15px;
 }
 /*#endregion*/
 
-/*#region UI*/
+/*#region More Legacy UI*/
+
 #ctrls {
     position: absolute;
     top: 0;
@@ -133,12 +260,15 @@ button:active {
     padding: 5px;
     background-color: #33333388;
 }
+
 #ctrl-create * {
     width: 45%;
 }
+
 .ctrl-block {
     margin-top: 5%;
 }
+
 .ctrl-block * {
     width: 100%;
 }
@@ -147,16 +277,19 @@ button:active {
     border: 2px solid black;
     padding: 5px;
 }
+
 .ctrl-slider input[type="range"] {
     display: inline-block;
     width: 70%;
 }
+
 .ctrl-slider input[type="number"] {
     display: inline-block;
     width: 30%;
     background: #dddddd7F;
     border: none;
 }
+
 #data {
     box-sizing: border-box;
     position: absolute;
@@ -170,7 +303,10 @@ button:active {
     color: #ffffff;
     white-space: pre;
 }
+
 /*#endregion*/
+
+/*#region Editor Window*/
 
 #cont {
     box-sizing: border-box;
@@ -197,12 +333,10 @@ button:active {
     pointer-events: all;
     border: 2px solid #333333;
 }
+
 .cell:hover {
     background-color: #88dd33 !important;
     border-color: #55aa00 !important;
 }
 
-.active, .active:hover {
-    border-color: #88dd33;
-    color: #88dd33;
-}
+/*#endregion*/

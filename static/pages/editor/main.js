@@ -33,7 +33,7 @@ $(document).ready(async () => {
 function init() {
     ctrlsInit()
 
-    // Define additional setting sliders go here:
+    // Define additional setting sliders here:
     new OptionSlider('height', 'Height', 0, 20, 1, 5)
 }
 
@@ -52,8 +52,7 @@ function ctrlsInit() {
     })
 
     $('#ctrl-backtomain').on('click', function () {
-        DisplayDialog('Exit to Main Menu?')
-        Backtomain()
+        DisplayMainMenu()
     })
 
     $('#ctrl-types').children().on('click', function () {
@@ -87,10 +86,10 @@ function clearTypes() {
 function createTiles() {
     pack.level = []
     cells = []
-    $('#map').html('')
+    $('#map').html('').css('width', pack.size * 50 + 50 + 'px').css('height', pack.size * 50 + 50 + 'px').css('position', 'relative')
     for (let i = 0; i < pack.size; i++) {
         for (let j = 0; j < pack.size; j++) {
-            let cell = new Cell(cells.length, i, j)
+            let cell = new Cell(cells.length, j, i)
             cells.push(cell)
             cell.object.on('click', cellClick)
             $('#map').append(cell.object)
@@ -101,17 +100,6 @@ function createTiles() {
 
 function cellClick() {
     cell = this
-    /* if (cell.dirOut == -1) {
-        cell.dirIn = main.nextIn
-        let datapack = {}
-        datapack.id = cell.id
-        datapack.x = cell.x
-        datapack.z = cell.z
-        datapack.dirOut = cell.dirOut
-        datapack.dirIn = cell.dirIn
-        datapack.type = cell.type
-        pack.level.push(datapack)
-    } */
     cell.type = cellSettings.type
     cell.height = cellSettings.height
     cell.innerHTML = cell.height
@@ -140,7 +128,6 @@ function loadMap(dataPack) {
     let data = dataPack.mapData
     if (data != null) {
         pack.size = data.size
-        console.log(pack.size)
         createTiles()
         pack.level = data.level
         for (let i in data.level) {
@@ -152,11 +139,6 @@ function loadMap(dataPack) {
             cells[dataPack.id].setup()
         }
         $('#data').html(JSON.stringify(pack, null, 4))
-    } else {
-        console.error('No such map!')
-        /* pack.size = 2
-        createTiles()
-        $('#data').html(JSON.stringify(pack, null, 4)) */
     }
 }
 
@@ -168,8 +150,6 @@ class Cell {
         this.z = z
         this.height = 5
         this.type = 'dirt'
-        //this.dirIn
-        //this.dirOut
 
         this.create()
         this.object
@@ -178,20 +158,11 @@ class Cell {
     create() {
         let cont = $('<div>')
         cont.addClass('cell')
-        cont.css('left', this.z * 50)
-        cont.css('top', this.x * 50)
-
-        // cont.css('transform', 'translate(-50%, -50%) rotate(45deg) ')
-        // cont.css('left', this.z * (50 * Math.sqrt(2) - 25 * Math.sqrt(2)) + 25 * Math.sqrt(2))
-        // if (this.z % 2 == 0) {
-        //     cont.css('top', this.x * (50 * Math.sqrt(2)) + 25 * Math.sqrt(2))
-        // } else {
-        //     cont.css('top', this.x * (50 * Math.sqrt(2)) + 50 * Math.sqrt(2))
-        // }
+            .css('left', this.x * 50)
+            .css('top', this.z * 50)
+            .html(this.height)
 
         cont[0].cell = this
-        cont.html(this.height)
-        //this.dirOut = -1
         this.object = cont
         this.setup()
 
@@ -228,19 +199,19 @@ class OptionSlider {
         cont.append(lbl)
 
         let rng = $('<input>')
-        rng.attr('type', 'range')
-        rng.attr('min', min)
-        rng.attr('max', max)
-        rng.attr('step', step)
-        rng.attr('value', initVal)
+            .attr('type', 'range')
+            .attr('min', min)
+            .attr('max', max)
+            .attr('step', step)
+            .attr('value', initVal)
         cont.append(rng)
 
         let nud = $('<input>')
-        nud.attr('type', 'number')
-        nud.attr('min', min)
-        nud.attr('max', max)
-        nud.attr('step', step)
-        nud.attr('value', initVal)
+            .attr('type', 'number')
+            .attr('min', min)
+            .attr('max', max)
+            .attr('step', step)
+            .attr('value', initVal)
         cont.append(nud)
 
         rng.on('input', () => {
@@ -259,153 +230,244 @@ class OptionSlider {
 }
 //#endregion
 
-//#region window functions
+//#region popups
 function DisplaySave(list) {
-    if (list.length > 8) console.warn('DisplayLoad might not display all options properly (amount > 8)')
-
     let overlay = $('#overlay')
-    if (overlay.css('display') == 'none') {
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-        let winContainer = $('#container')
-        winContainer.removeAttr('class')
-        winContainer.addClass('win-list')
-        if (list.length == 0) {
-            winContainer.css('height', '150px')
-            winContainer.html('No maps saved')
-        } else {
-            winContainer.html('')
-            winContainer.css('height', '' + (80 + 70 * list.length) + 'px')
-        }
 
-        $('#header').html('Save Map')
+    let saveTable = $('<table>')
+    let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th>Name</th><th>Date</th></tr></table>').append(svtScroll)
+    popup.append(svtCont)
 
-        let name = $('<input>')
-        name.attr('type', 'text')
+    let nor = list.length
+    if (nor < 9) nor = 9
+    
+    let rowlist = []
 
-        for (let i = 0; i < list.length; i++) {
-            let bOption = $('<div>')
-            bOption.addClass('window-button')
-            bOption.html(list[i])
-            winContainer.append(bOption)
-            bOption.click(async () => {
-                name.val(list[i])
-            })
-        }
-        winContainer.append(name)
+    for (let i = 0; i < nor; i++) {
+        let row = $('<tr>').addClass('saves-row')
+        rowlist.push(row)
 
-        let bSave = $('<div>')
-        bSave.addClass('window-button')
-        bSave.html('Save')
-        winContainer.append(bSave)
-        bSave.click(async () => {
-            let saveName = name.val()
-            if (list.includes(saveName)) {
-                DisplayDialog('Overwrite?')
-                OverwriteExport(saveName)
-            } else {
-                mapsDB.exportMap(saveName, pack)
+        let cell0 = $('<td>').html('')
+        if (list[i] !== undefined)
+            cell0.html(list[i])
+        row.append(cell0)
+
+        let cell1 = $('<td>').html('')
+        if (list[i] !== undefined)
+            cell1.html('ignis pls fix')
+        row.append(cell1)
+
+        saveTable.append(row)
+        row.click(() => {
+            if (cell0.html() != '') {
+                name.val(cell0.html())
+                rowlist.forEach(elem => {
+                    elem.removeClass('saves-active')
+                })
+                row.addClass('saves-active')
             }
         })
-
-        $('#win-footer').removeAttr('style')
-        $('#win-bBack').click(() => {
-            overlay.css('display', 'none')
-        })
-    } else {
-        throw 'DisplayLoad was called incorrectly'
     }
+
+    let name = $('<input>').attr('type', 'text')
+    popup.append(name)
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: "no-close",
+        width: 600,
+        height: 600,
+        title: 'Save',
+        buttons: [
+            {
+                text: "Save",
+                'class': 'ui-dialog-button',
+                click: function () {
+                    let saveName = name.val()
+                    if (list.includes(saveName)) {
+                        $(this).dialog("close")
+                        DisplayOverwrite(saveName)
+                    } else {
+                        mapsDB.exportMap(saveName, pack)
+                        $(this).dialog("close")
+                        overlay.css('display', 'none')
+                    }
+                }
+            },
+            {
+                text: "Back",
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog("close")
+                    overlay.css('display', 'none')
+                }
+            }
+        ]
+    })
 }
 
 function DisplayLoad(list) {
-    if (list.length > 8) console.warn('DisplayLoad might not display all options properly (amount > 8)')
-
     let overlay = $('#overlay')
-    if (overlay.css('display') == 'none') {
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-        let winContainer = $('#container')
-        winContainer.removeAttr('class')
-        winContainer.addClass('win-list')
-        if (list.length == 0) {
-            winContainer.css('height', '70px')
-            winContainer.html('No maps to load')
-        } else {
-            winContainer.html('')
-            winContainer.css('height', '' + (70 * list.length) + 'px')
-        }
 
-        $('#header').html('Load Map')
+    let saveTable = $('<table>')
+    let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th>Name</th><th>Date</th></tr></table>').append(svtScroll)
+    popup.append(svtCont)
 
-        for (let i = 0; i < list.length; i++) {
-            let bOption = $('<div>')
-            bOption.addClass('window-button')
-            bOption.html(list[i])
-            winContainer.append(bOption)
-            bOption.click(async () => {
-                loadMap(await mapsDB.importMap(list[i]))
-            })
-        }
+    let nor = list.length
+    if (nor < 9) nor = 9
 
-        $('#win-footer').removeAttr('style')
-        $('#win-bBack').click(() => {
-            overlay.css('display', 'none')
+    let rowlist = []
+
+    for (let i = 0; i < nor; i++) {
+        let row = $('<tr>').addClass('saves-row')
+        rowlist.push(row)
+
+        let cell0 = $('<td>').html('')
+        if (list[i] !== undefined)
+            cell0.html(list[i])
+        row.append(cell0)
+
+        let cell1 = $('<td>').html('')
+        if (list[i] !== undefined)
+            cell1.html('ignis pls fix')
+        row.append(cell1)
+
+        saveTable.append(row)
+        row.click(() => {
+            if (cell0.html() != '') {
+                name.val(cell0.html())
+                rowlist.forEach(elem => {
+                    elem.removeClass('saves-active')
+                })
+                row.addClass('saves-active')
+            }
+            $('#bLoad').attr('disabled', false).removeClass('disabled')
+
         })
-    } else {
-        throw 'DisplayLoad was called incorrectly'
     }
+
+    let name = $('<input>').attr('type', 'hidden')
+    popup.append(name)
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close',
+        width: 600,
+        height: 540,
+        title: 'Load',
+        buttons: [
+            {
+                id: 'bLoad',
+                disabled: true,
+                text: 'Load',
+                'class': 'ui-dialog-button disabled',
+                click: async function () {
+                    loadMap(await mapsDB.importMap(name.val()))
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            },
+            {
+                text: 'Back',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            }
+        ]
+    })
 }
 
-function DisplayDialog(headerText) {
-    decision = null
-
+function DisplayMainMenu() {
     let overlay = $('#overlay')
-    overlay.removeAttr('style')
+    let popup = $('#dialog').html('')
 
-    let winContainer = $('#container')
-    winContainer.removeAttr('class')
-    winContainer.addClass('win-dialog')
-    winContainer.html('')
-    winContainer.css('height', '100px')
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
 
-    $('#header').html(headerText)
-
-    let bYes = $('<div>')
-    bYes.addClass('window-button')
-    bYes.html('Yes')
-    winContainer.append(bYes)
-    bYes.click(() => {
-        overlay.css('display', 'none')
-        decision = true
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 500,
+        height: 150,
+        title: 'Exit to Main Menu?',
+        buttons: [
+            {
+                text: 'Yes',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    window.location = '/'
+                }
+            },
+            {
+                text: 'No',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            }
+        ]
     })
-
-    let bNo = $('<div>')
-    bNo.addClass('window-button')
-    bNo.html('No')
-    winContainer.append(bNo)
-    bNo.click(() => {
-        overlay.css('display', 'none')
-        decision = false
-    })
-
-    $('#win-footer').css('display', 'none')
-}
-//#endregion
-
-//#region misc functions
-function Backtomain() {
-    if (decision == null) {
-        setTimeout(Backtomain, 500)
-    } else if (decision) {
-        window.location = '/'
-    }
 }
 
-function OverwriteExport(savedName) {
-    if (decision == null) {
-        setTimeout(() => {OverwriteExport(savedName)}, 500)
-    } else if (decision) {
-        mapsDB.exportMap(savedName, pack)
-    }
+function DisplayOverwrite(savedName) {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 500,
+        height: 150,
+        title: 'Overwrite?',
+        buttons: [
+            {
+                text: 'Yes',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    mapsDB.exportMap(savedName, pack)
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            },
+            {
+                text: 'No',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            }
+        ]
+    })
 }
 //#endregion
