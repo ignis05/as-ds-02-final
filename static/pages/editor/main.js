@@ -100,17 +100,6 @@ function createTiles() {
 
 function cellClick() {
     cell = this
-    /* if (cell.dirOut == -1) {
-        cell.dirIn = main.nextIn
-        let datapack = {}
-        datapack.id = cell.id
-        datapack.x = cell.x
-        datapack.z = cell.z
-        datapack.dirOut = cell.dirOut
-        datapack.dirIn = cell.dirIn
-        datapack.type = cell.type
-        pack.level.push(datapack)
-    } */
     cell.type = cellSettings.type
     cell.height = cellSettings.height
     cell.innerHTML = cell.height
@@ -139,7 +128,6 @@ function loadMap(dataPack) {
     let data = dataPack.mapData
     if (data != null) {
         pack.size = data.size
-        console.log(pack.size)
         createTiles()
         pack.level = data.level
         for (let i in data.level) {
@@ -151,11 +139,6 @@ function loadMap(dataPack) {
             cells[dataPack.id].setup()
         }
         $('#data').html(JSON.stringify(pack, null, 4))
-    } else {
-        console.error('No such map!')
-        /* pack.size = 2
-        createTiles()
-        $('#data').html(JSON.stringify(pack, null, 4)) */
     }
 }
 
@@ -167,8 +150,6 @@ class Cell {
         this.z = z
         this.height = 5
         this.type = 'dirt'
-        //this.dirIn
-        //this.dirOut
 
         this.create()
         this.object
@@ -177,20 +158,11 @@ class Cell {
     create() {
         let cont = $('<div>')
         cont.addClass('cell')
-        cont.css('left', this.x * 50)
-        cont.css('top', this.z * 50)
-
-        // cont.css('transform', 'translate(-50%, -50%) rotate(45deg) ')
-        // cont.css('left', this.z * (50 * Math.sqrt(2) - 25 * Math.sqrt(2)) + 25 * Math.sqrt(2))
-        // if (this.z % 2 == 0) {
-        //     cont.css('top', this.x * (50 * Math.sqrt(2)) + 25 * Math.sqrt(2))
-        // } else {
-        //     cont.css('top', this.x * (50 * Math.sqrt(2)) + 50 * Math.sqrt(2))
-        // }
+            .css('left', this.x * 50)
+            .css('top', this.z * 50)
+            .html(this.height)
 
         cont[0].cell = this
-        cont.html(this.height)
-        //this.dirOut = -1
         this.object = cont
         this.setup()
 
@@ -227,19 +199,19 @@ class OptionSlider {
         cont.append(lbl)
 
         let rng = $('<input>')
-        rng.attr('type', 'range')
-        rng.attr('min', min)
-        rng.attr('max', max)
-        rng.attr('step', step)
-        rng.attr('value', initVal)
+            .attr('type', 'range')
+            .attr('min', min)
+            .attr('max', max)
+            .attr('step', step)
+            .attr('value', initVal)
         cont.append(rng)
 
         let nud = $('<input>')
-        nud.attr('type', 'number')
-        nud.attr('min', min)
-        nud.attr('max', max)
-        nud.attr('step', step)
-        nud.attr('value', initVal)
+            .attr('type', 'number')
+            .attr('min', min)
+            .attr('max', max)
+            .attr('step', step)
+            .attr('value', initVal)
         cont.append(nud)
 
         rng.on('input', () => {
@@ -258,49 +230,7 @@ class OptionSlider {
 }
 //#endregion
 
-//#region window functions
-function DisplayOptions(list) {
-    let overlay = $('#overlay')
-    let popup = $('#dialog')
-
-    if (overlay.css('display') == 'none')
-        overlay.removeAttr('style')
-
-    popup.html('')
-    for (let i = 0; i < list.length; i++) {
-        let bOption = $('<div>')
-        bOption.addClass('ui-dialog-button')
-        bOption.html(list[i].name)
-        popup.append(bOption)
-        bOption.click(() => {
-            // window.location = list[i].path
-        })
-    }
-
-    popup.dialog({
-        modal: true,
-        draggable: false,
-        resizable: false,
-        dialogClass: "no-close",
-        width: 600,
-        height: list.length * 50 + 200,
-        maxHeight: 300,
-        title: 'Game Options',
-        buttons: [
-            {
-                text: "Back",
-                'class': 'ui-dialog-button',
-                click: function () {
-                    $(this).dialog("close")
-                    overlay.css('display', 'none')
-                }
-            }
-        ]
-    })
-}
-
-
-
+//#region popups
 function DisplaySave(list) {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
@@ -472,7 +402,6 @@ function DisplayMainMenu() {
                 text: 'Yes',
                 'class': 'ui-dialog-button',
                 click: function () {
-                    console.log('lmao')
                     window.location = '/'
                 }
             },

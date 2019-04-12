@@ -27,9 +27,14 @@
     border-color: #88dd33;
 }
 
+.ctrl-block .active, #ctrl-create .active, .ctrl-block .active:hover, #ctrl-create .active:hover {
+    border-color: #88dd33;
+    color: #88dd33;
+}
+
 /*#endregion*/
 
-/*#region OVERLAY*/
+/*#region OVERLAY POPUPS*/
 
 #overlay {
     position: absolute;
@@ -127,7 +132,6 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
-
     margin-top: 5px;
     margin-bottom: 15px;
 }
@@ -228,7 +232,18 @@
     border-top: none;
 }
 
-
+.ui-dialog-content input[type=text] {
+    width: 400px;
+    padding: 12px 20px;
+    font-size: 1.2em;
+    box-sizing: border-box;
+    caret-color: #338833;
+    background-color: #1111117F;
+    color: #DDDDDD;
+    font-weight: bolder;
+    border: none;
+    border-radius: 15px;
+}
 
 
 
@@ -407,11 +422,6 @@
 .cell:hover {
     background-color: #88dd33 !important;
     border-color: #55aa00 !important;
-}
-
-.active, .active:hover {
-    border-color: #88dd33;
-    color: #88dd33;
 }
 
 /*#endregion*/
