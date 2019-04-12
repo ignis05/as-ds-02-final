@@ -204,8 +204,13 @@ io_test.on('connect', socket => { // listen for connection on '/socket.io_test' 
     console.log(`user ${socket.id} connected`); // logs client's unique id, can be used for direct communication
     io_test.emit('msg', `user ${socket.id} connected to socket`); // emit event 'msg' to all clients in '/socket.io_test' instance
 
+    // listen for disconnect
+    socket.on('disconnect', socket => {
+        io_test.emit('msg', `user ${socket.id} disconnected from socket`); // emit event 'msg' to all clients in '/socket.io_test' instance
+    })
 
-    // ----- listen for events emitted by client -----
+
+    // ----- listen for custom events emitted by client -----
 
     // on event 'msg' log data
     socket.on('msg', msg => {
@@ -214,9 +219,9 @@ io_test.on('connect', socket => { // listen for connection on '/socket.io_test' 
 
     // forward msg to clients in room
     socket.on('toRoom', (room, msg) => {
-        socket.to(room).emit('msg', msg) // broadscast to all clients in room except self
+        socket.to(room).emit('msg', msg) // broadscast to all clients in room *except self*
         // --- or ---
-        // io_test.to(room).emit('msg', msg) // broadscast to all clients in room including self
+        // io_test.to(room).emit('msg', msg) // broadscast to all clients in room
     })
 
     // forward msg to specific client using his id
@@ -228,25 +233,23 @@ io_test.on('connect', socket => { // listen for connection on '/socket.io_test' 
     socket.on("join", room => {
         socket.join(room) // add client to room
         io_test.to(room).emit('msg', `user ${socket.id} has joined the room`) // broadcast event to all clients in room
-        socket.emit("msg", `joined ${room}`) // emit event msg to client that emited event join
+        socket.emit("msg", `joined ${room}`) // emit event msg to client that emitted event join
     })
 
     // if clients emits event 'leave', remove socket from specified room
     socket.on("leave", room => {
         socket.leave(room) // remove client from room
         io_test.to(room).emit('msg', `user ${socket.id} has left the room`) // broadcast event to all clients in room
-        socket.emit("msg", `left ${room}`) // emit event msg to client that emited event leave
-    })
-
-    // listen for disconnect
-    socket.on('disconnect', socket => {
-        io_test.emit('msg', `user ${socket.id} disconnected from socket`); // emit event 'msg' to all clients in '/socket.io_test' instance
+        socket.emit("msg", `left ${room}`) // emit event msg to client that emitted event leave
     })
 });
 
-// other options:
-// socket.volatile.emit('maybe', 'do you really need it?'); -- emits event that might be ignored if client is unable to receive events at the moment
+// other emiting options:
+// socket.volatile.emit('msg', 'do you really need it?'); -- emits event that might be ignored if client is unable to receive events at the moment
+// socket.broadcast.emit('msg', 'to all others'); -- emits event toll all clients in all instances *except self*
 // io.emit('msg','to all') -- emits event to all clients in all instances
+
+// ---> all emits : https://socket.io/docs/emit-cheatsheet/
 
 // #endregion socket.io - test
 
