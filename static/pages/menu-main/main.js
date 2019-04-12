@@ -64,6 +64,7 @@ $(document).ready(() => {
         }
 
         popup.dialog({
+            closeOnEscape: false,
             modal: true,
             draggable: false,
             resizable: false,
@@ -104,6 +105,7 @@ $(document).ready(() => {
         }
 
         popup.dialog({
+            closeOnEscape: false,
             modal: true,
             draggable: false,
             resizable: false,
