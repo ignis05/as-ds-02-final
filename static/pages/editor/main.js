@@ -1,13 +1,9 @@
 
 let pack
-let type
 let cells
-let nextIn
 let cellSettings
 
 let mapsDB
-let decision = null
-let mapname = ''
 
 const dtOptions = {
     year: '2-digit',
