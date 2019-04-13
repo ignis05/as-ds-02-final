@@ -8,7 +8,7 @@ var io = require("socket.io")(server)
 const PORT = 3000
 var path = require("path")
 var bodyParser = require("body-parser")
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 1000000 }))
 var Datastore = require('nedb')
 var cookieParser = require("cookie-parser")
 app.use(cookieParser())
