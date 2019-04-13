@@ -301,7 +301,7 @@ function DisplaySave(list) {
                 'class': 'ui-dialog-button',
                 click: function () {
                     let saveName = name.val()
-                    if (list.includes(saveName)) {
+                    if (list.some(e => e.mapName == saveName)) {
                         $(this).dialog("close")
                         DisplayOverwrite(saveName)
                     } else {
