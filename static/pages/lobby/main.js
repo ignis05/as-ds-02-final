@@ -1,21 +1,34 @@
 // test file with basic implementation of lobby chat
 
-// WARNING: chat requires client-sided checking if:
-// - user is trying to create room that alredy exists (will throw error)
-// - user is trying to join room that doesn't exist (user will join room, but this will cause unwanted behaviour if that room is created later)
+// WARNING: chat requires client-sided checks to prevent:
+// - users trying to create room that alredy exists (will throw error)
+// - users trying to join room that doesn't exist (user will partially join room and this will cause unwanted behaviour if that room is created later)
 
 // Notes:
 // - rooms are deleted automaticly if they are empty
-// - rooms have no size limit (for now)
+// - rooms have no size limit (yet)
 // - admin of room is specified but kicking / muting / whatever is not (yet) implemented
 
 // ------------------------------------------------------------------------------------------------------------------------------------------------------
-// - !!! >>>>> server recognizes clients using cookie tokens, so connecting from multiple windows will cause errors (unless using icognito mode) <<<<< !!!
-
-// - (I will probably create exceptions in future to prevent server crashes)
+// - !!! >>>>> server recognizes clients using cookie tokens, so connecting from multiple windows will be blocked (unless using icognito mode / multiple browsers) <<<<< !!!
 // ------------------------------------------------------------------------------------------------------------------------------------------------------
 
-var socket = io(`/lobby`); // connect to socket instance `/lobby`
+// let's make this work with normal ui, then we will add more options
+
+
+// ACTUAL CODE :
+
+// initialization:
+var socket = io(`/lobby`); // connect to socket instance `/lobby` (fyi actual path used by socket is http://host:port/socket.io/lobby - so this won't cause any errors)
+
+
+// bunch of triggers that are fired remotely by server or other clients:
+
+// triggers when someone tries to connect using token that is alredy in use - client should be immediately redirected to main page
+socket.on('error_token', () => {
+    window.alert('You are already connected from this browser. If you want do connect another client try incognito mode or other browsers')
+    window.location = '/'
+})
 
 // triggers when someone sends message to room
 socket.on('chat', msg => {
@@ -36,7 +49,7 @@ socket.on('username_change', id => {
 })
 
 
-// #region socket functions
+// #region socket functions (they are described below)
 function socket_createRoom(roomName) {
     socket.emit('room_create', roomName)
 }
@@ -46,15 +59,12 @@ function socket_joinRoom(roomName) {
 function socket_leaveRoom() {
     socket.emit('room_leave')
 }
-
 function socket_send(msg) {
     socket.emit('send', msg)
 }
-
 function socket_setName(nickname) {
     socket.emit('setName', nickname)
 }
-
 function socket_getRooms() {
     return new Promise(resolve => {
         socket.emit('getRooms', res => {
@@ -74,15 +84,17 @@ function socket_getClients() {
 
 // #region >>> functions to use : <<<
 
-// socket_createRoom(roomName) // - creates new room -  REQUIRES CLIENT-SIDED CHECK IF ROOM DOESN'T EXIST
+// socket_setName(nickname) // - changes client nickname (empty nickname won't cause error - though you might want to prevent that for obvious reasons) 
+// ^- (nicknames will be recognized on disconnect and reconect, as long as server is running)
+// ^-- (in future it might be a good idea to add limit of remembered clients to prevent memory leaks on longer server runs)
+
+// socket_createRoom(roomName) // - creates new room and joins it -  REQUIRES CLIENT-SIDED CHECK IF ROOM DOESN'T EXIST YET
 // socket_joinRoom(roomName) // - joins room matching given name (automatically leaves previous room) - REQUIRES CLIENT-SIDED CHECK IF ROOM EXIST
-// socket_leaveRoom() // - leaves current room
+// socket_leaveRoom() // - leaves current room (if client isn't currently in any room nothing happens)
 
-// socket_send(msg) // - emits 'chat' event to all clients in current room
+// socket_send(msg) // - triggers 'chat' event for all clients in current room (>including self< - if you want that changed, ask)
 
-// socket_setName(nickname) // - changes client nickname (nicknames should be remembered as long as server is running)
-
-// await socket_getClients() - returns client list (clients assigned with names and tokens)
+// await socket_getClients() - returns client list (all clients (even ones not assigned to any room) with their names and tokens)
 // await socket_getRooms() - returns room list (room name, room admin , clients inside room)
 
 // #endregion >>> functions to use : <<<

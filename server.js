@@ -271,14 +271,22 @@ io_lobby.on('connect', socket => {
     // identify client by token
     var client = lobby_clients.find(client => client.token == token)
     // console.log(client);
-    if (client) {
+
+    if (client) { // server remembers client profile
+        if (client.connected) {
+            // someone is already connected using this token
+            socket.emit('error_token')
+            return
+        }
         client.id = socket.id // update socket id
+        client.connected = true // update status
     }
     else {
         client = {
             token: token,
             id: socket.id,
-            name: "user#" + Math.random().toString().slice(-4)
+            name: "user#" + Math.random().toString().slice(-4),
+            connected: true,
         }
         lobby_clients.push(client)
     }
@@ -314,10 +322,12 @@ io_lobby.on('connect', socket => {
     // notify room on user disconnect
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
+        var client = lobby_clients.find(client => client.id == socket.id)
         var room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
         if (room) { // if client in room remove him from room and notify room that he left
             lobby_leaveRoom()
         }
+        client.connected = false
     })
 
     // create room
@@ -347,7 +357,10 @@ io_lobby.on('connect', socket => {
     // leave room
     socket.on('room_leave', () => {
         console.log(`${socket.id} leaves room`);
-        lobby_leaveRoom()
+        let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
+        if (room) { // if client was in room
+            lobby_leaveRoom()
+        }
     })
 
     // join room
