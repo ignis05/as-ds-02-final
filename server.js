@@ -332,26 +332,28 @@ io_lobby.on('connect', socket => {
 
     // create room
     socket.on('room_create', roomName => {
-        console.log(`${socket.id} creates room ${roomName}`);
-        if (lobby_rooms.find(room => room.name == roomName)) throw new Error("room name taken") // throw error if creating room that already exists
-
-
-        let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-        if (room) { // if client was in room
-            lobby_leaveRoom()
+        console.log(`${socket.id} is creating room ${roomName}`);
+        if (lobby_rooms.find(room => room.name == roomName)) {
+            console.error(`ERROR: room ${roomName} already exists`)
         }
+        else {
+            let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
+            if (room) { // if client was in room
+                lobby_leaveRoom()
+            }
 
-        let client = lobby_clients.find(client => client.id == socket.id)
-        let new_room = {
-            name: roomName,
-            clients: [
-                client
-            ],
-            admin: client
+            let client = lobby_clients.find(client => client.id == socket.id)
+            let new_room = {
+                name: roomName,
+                clients: [
+                    client
+                ],
+                admin: client
+            }
+            lobby_rooms.push(new_room)
+
+            socket.join(roomName)
         }
-        lobby_rooms.push(new_room)
-
-        socket.join(roomName)
     })
 
     // leave room
@@ -365,15 +367,21 @@ io_lobby.on('connect', socket => {
 
     // join room
     socket.on('room_join', roomName => {
-        let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-        if (room) { // if client was in room
-            lobby_leaveRoom()
+        console.log(`${socket.id} is joining room ${roomName}`);
+
+        if (!lobby_rooms.find(room => room.name == roomName)) { // if room doesn't exist
+            console.error(`ERROR: trying to join room that doesn't exist`)
         }
-        console.log(`${socket.id} joins room ${roomName}`);
-        room = lobby_rooms.find(room => room.name == roomName)
-        let client = lobby_clients.find(client => client.id == socket.id)
-        room.clients.push(client)
-        socket.join(roomName)
+        else {
+            let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
+            if (room) { // if client was in room
+                lobby_leaveRoom()
+            }
+            room = lobby_rooms.find(room => room.name == roomName)
+            let client = lobby_clients.find(client => client.id == socket.id)
+            room.clients.push(client)
+            socket.join(roomName)
+        }
     })
 
     // send to room
