@@ -246,8 +246,15 @@ function DisplaySave(list) {
 
     let saveTable = $('<table id="save-table">')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(0)">Name</th><th onclick="sortTable(1)">Date</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'save-table\', 0)">Name</th><th onclick="sortTable(\'save-table\', 1)">Date</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
+
+    let name = $('<input>').attr('type', 'text').on('input', e => {
+        if (e.target.value != '')
+            $('#bSave').attr('disabled', false).removeClass('disabled')
+        else
+            $('#bSave').attr('disabled', true).addClass('disabled')
+    })
 
     let nor = list.length
     if (nor < 9) nor = 9
@@ -271,7 +278,7 @@ function DisplaySave(list) {
         saveTable.append(row)
         row.click(() => {
             if (cell0.html() != '') {
-                name.val(cell0.html())
+                name.val(cell0.html()).trigger('input')
                 rowlist.forEach(elem => {
                     elem.removeClass('saves-active')
                 })
@@ -280,7 +287,6 @@ function DisplaySave(list) {
         })
     }
 
-    let name = $('<input>').attr('type', 'text')
     popup.append(name)
 
     popup.dialog({
@@ -294,8 +300,10 @@ function DisplaySave(list) {
         title: 'Save',
         buttons: [
             {
+                id: 'bSave',
+                disabled: true,
                 text: "Save",
-                'class': 'ui-dialog-button',
+                'class': 'ui-dialog-button disabled',
                 click: function () {
                     let saveName = name.val()
                     if (list.some(e => e.mapName == saveName)) {
@@ -330,7 +338,7 @@ function DisplayLoad(list) {
 
     let saveTable = $('<table id="save-table">')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(0)">Name</th><th onclick="sortTable(1)">Date</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'save-table\', 0)">Name</th><th onclick="sortTable(\'save-table\', 1)">Date</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
 
     let nor = list.length
@@ -478,9 +486,9 @@ function DisplayOverwrite(savedName) {
 //#endregion
 
 //#region Helper Functions
-function sortTable(n) {
+function sortTable(tableId, cellId) {
     let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0
-    table = document.getElementById('save-table')
+    table = document.getElementById(tableId)
     switching = true
     dir = 'asc'
     while (switching) {
@@ -488,8 +496,8 @@ function sortTable(n) {
         rows = table.rows
         for (i = 0; i < (rows.length - 1); i++) {
             shouldSwitch = false
-            x = rows[i].getElementsByTagName('TD')[n]
-            y = rows[i + 1].getElementsByTagName('TD')[n]
+            x = rows[i].getElementsByTagName('TD')[cellId]
+            y = rows[i + 1].getElementsByTagName('TD')[cellId]
             if (dir == 'asc') {
                 if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() && y.innerHTML != '') {
                     shouldSwitch = true
