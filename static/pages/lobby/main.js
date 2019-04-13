@@ -1,8 +1,8 @@
 // test file with basic implementation of lobby chat
 
 // WARNING: chat requires client-sided checks to prevent:
-// - users trying to create room that alredy exists (will throw error)
-// - users trying to join room that doesn't exist (user will partially join room and this will cause unwanted behaviour if that room is created later)
+// - users trying to create room that alredy exists (nothing will happen - user won't be notified)
+// - users trying to join room that doesn't exist (nothing will happen - user won't be notified)
 
 // Notes:
 // - rooms are deleted automaticly if they are empty
@@ -88,14 +88,14 @@ function socket_getClients() {
 // ^- (nicknames will be recognized on disconnect and reconect, as long as server is running)
 // ^-- (in future it might be a good idea to add limit of remembered clients to prevent memory leaks on longer server runs)
 
-// socket_createRoom(roomName) // - creates new room and joins it -  REQUIRES CLIENT-SIDED CHECK IF ROOM DOESN'T EXIST YET
-// socket_joinRoom(roomName) // - joins room matching given name (automatically leaves previous room) - REQUIRES CLIENT-SIDED CHECK IF ROOM EXIST
+// socket_createRoom(roomName) // - creates new room and joins it - REQUIRES CHECK IF ROOM DOESN'T EXIST YET
+// socket_joinRoom(roomName) // - joins room matching given name (automatically leaves previous room) - REQUIRES CHECK IF ROOM EXIST
 // socket_leaveRoom() // - leaves current room (if client isn't currently in any room nothing happens)
 
-// socket_send(msg) // - triggers 'chat' event for all clients in current room (>including self< - if you want that changed, ask)
+// socket_send(msg) // - triggers 'chat' event for all clients in current room (>including self< - if you want that changed, ask) (if not in any room nothing will happen)
 
-// await socket_getClients() - returns client list (all clients (even ones not assigned to any room) with their names and tokens)
-// await socket_getRooms() - returns room list (room name, room admin , clients inside room)
+// await socket_getClients() - returns client array (all clients (even ones not assigned to any room) with their names and tokens)
+// await socket_getRooms() - returns room array (room name, room admin , clients inside room)
 
 // #endregion >>> functions to use : <<<
 
