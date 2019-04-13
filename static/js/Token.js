@@ -1,5 +1,5 @@
 // script requesting token from server
-console.log("generating token");
+// console.log("generating token");
 
 $.ajax({
     url: "/token",
