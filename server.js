@@ -357,7 +357,7 @@ io_lobby.on('connect', socket => {
             lobby_leaveRoom()
         }
         console.log(`${socket.id} joins room ${roomName}`);
-        let room = lobby_rooms.find(room => room.name == roomName)
+        room = lobby_rooms.find(room => room.name == roomName)
         let client = lobby_clients.find(client => client.id == socket.id)
         room.clients.push(client)
         socket.join(roomName)
@@ -367,7 +367,7 @@ io_lobby.on('connect', socket => {
     socket.on('send', msg => {
         console.log(`${socket.id} sent: ${msg}`)
         let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-        io_lobby.to(room.name).emit('chat', msg)
+        if (room) io_lobby.to(room.name).emit('chat', msg)
     })
 
     // respond with rooms list
@@ -384,6 +384,9 @@ io_lobby.on('connect', socket => {
     socket.on('setName', name => {
         let client = lobby_clients.find(client => client.id == socket.id)
         client.name = name
+        let room = lobby_rooms.find(room => room.clients.indexOf(client) != -1)
+        // if in room, notify room
+        if (room) io_lobby.to(room.name).emit('username_change', socket.id)
     })
 
 })
