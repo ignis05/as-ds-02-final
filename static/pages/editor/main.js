@@ -174,12 +174,13 @@ class Cell {
         this.object = cont
         this.setup()
 
-        let datacont = {}
-        datacont.id = this.id
-        datacont.x = this.x
-        datacont.z = this.z
-        datacont.type = this.type
-        datacont.height = this.height
+        let datacont = {
+            id: this.id,
+            x: this.x,
+            z: this.z,
+            type: this.type,
+            height: this.height
+        }
         pack.level.push(datacont)
     }
 
