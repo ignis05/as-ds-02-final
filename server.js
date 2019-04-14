@@ -280,13 +280,49 @@ io_lobby.on('connect', socket => {
         }
         client.id = socket.id // update socket id
         client.connected = true // update status
+
+        if (client.carryRoomName) { // if redirected from / to /lobby
+            if (!lobby_rooms.find(room => room.name == client.carryRoomName)) { // if room doesn't exist
+                let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
+                if (room) { // if client was in room
+                    lobby_leaveRoom()
+                }
+                let new_room = {
+                    name: client.carryRoomName,
+                    clients: [
+                        client
+                    ],
+                    admin: client
+                }
+                lobby_rooms.push(new_room)
+
+                socket.join(client.carryRoomName)
+
+                // notify all
+                io_lobby.emit('rooms_updated')
+            }
+            else {
+                let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
+                if (room) { // if client was in room
+                    lobby_leaveRoom()
+                }
+                room = lobby_rooms.find(room => room.name == client.carryRoomName)
+                room.clients.push(client)
+                socket.join(client.carryRoomName)
+
+                // notify all
+                io_lobby.emit('rooms_updated')
+            }
+            client.carryRoomName = false
+        }
     }
     else {
         client = {
             token: token,
             id: socket.id,
-            name: "user#" + Math.random().toString().slice(-4),
+            name: (cookies["username"] ? cookies["username"] : "user#" + Math.random().toString().slice(-4)),
             connected: true,
+            carryRoomName: false
         }
         lobby_clients.push(client)
     }
@@ -302,9 +338,6 @@ io_lobby.on('connect', socket => {
 
         socket.leave(room.name)
 
-        // notify room
-        io_lobby.to(room.name).emit('user_disconnected', socket.id)
-
         // if room empty, delete it
         if (room.clients.length == 0) {
             let i = lobby_rooms.indexOf(room)
@@ -316,6 +349,12 @@ io_lobby.on('connect', socket => {
                 room.admin = room.clients[0]
             }
         }
+
+        // notify room
+        io_lobby.to(room.name).emit('user_disconnected', socket.id)
+
+        // notify all
+        io_lobby.emit('rooms_updated')
     }
     // #endregion functions
 
@@ -328,6 +367,12 @@ io_lobby.on('connect', socket => {
             lobby_leaveRoom()
         }
         client.connected = false
+    })
+
+    // carry roomname - used to carry roomname from / to /lobby
+    socket.on('carryRoomName', roomName => {
+        var client = lobby_clients.find(client => client.id == socket.id)
+        client.carryRoomName = roomName
     })
 
     // create room
@@ -353,6 +398,9 @@ io_lobby.on('connect', socket => {
             lobby_rooms.push(new_room)
 
             socket.join(roomName)
+
+            // notify all
+            io_lobby.emit('rooms_updated')
         }
     })
 
@@ -381,6 +429,9 @@ io_lobby.on('connect', socket => {
             let client = lobby_clients.find(client => client.id == socket.id)
             room.clients.push(client)
             socket.join(roomName)
+
+            // notify all
+            io_lobby.emit('rooms_updated')
         }
     })
 

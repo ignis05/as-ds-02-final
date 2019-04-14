@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="/libs/jquery-3.3.1.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/static/js/Token.js"></script>
+    <script src="/static/pages/lobby/main.js"></script>
+</head>
+
+<body>
+    <button id="socket_setName">Set username</button><input id="socket_setNameInp" placeholder="username"><br>
+    <button id="socket_createRoom">Create room</button><input id="socket_createRoomInp" placeholder="room name"><br>
+    <button id="socket_joinRoom">Join room</button><input id="socket_joinRoomInp" placeholder="room name"><br>
+    <button id="socket_leaveRoom">Leave room</button><br>
+    <button id="socket_send">Send message</button><input id="socket_sendInp" placeholder="message"><br>
+    <br>
+    <button id="socket_getRooms">Display rooms</button><br>
+    <button id="socket_getClients">Display clients</button><br>
+    <div id='display'></div>
+</body>
+
+</html>
