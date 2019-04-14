@@ -375,6 +375,11 @@ io_lobby.on('connect', socket => {
         client.carryRoomName = roomName
     })
 
+    // return active rooms to which socket is connected
+    socket.on('get_my_rooms', res => {
+        res(socket.rooms)
+    })
+
     // create room
     socket.on('room_create', roomName => {
         console.log(`${socket.id} is creating room ${roomName}`);

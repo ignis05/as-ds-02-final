@@ -33,7 +33,7 @@ socket.on('error_token', () => {
 // triggers when someone sends message to room
 socket.on('chat', msg => {
     console.log(msg);
-    // >here< function that will add message to chatbox
+    updateChat(msg)
 })
 
 // triggers when someone disconnects from room
@@ -50,7 +50,7 @@ socket.on('username_change', id => {
 
 // triggers when someone joins / leaves / creates a room - conveinient to update room list or sth
 socket.on('rooms_updated', () => {
-    // >here< 
+    updateRoomMembers()
 })
 
 // #region socket functions (they are described below)
@@ -83,6 +83,13 @@ function socket_getClients() {
         })
     })
 }
+function socket_get_my_rooms() {
+    return new Promise(resolve => {
+        socket.emit('get_my_rooms', res => {
+            resolve(res)
+        })
+    })
+}
 // #endregion socket functions
 
 
@@ -103,31 +110,45 @@ function socket_getClients() {
 
 // #endregion >>> functions to use : <<<
 
-$(document).ready(async () => {
+// function that updates room members list
 
-    // #region test
-    $('#socket_setName').click(() => { socket_setName($('#socket_setNameInp').val()) })
-    $('#socket_createRoom').click(() => { socket_createRoom($('#socket_createRoomInp').val()) })
-    $('#socket_joinRoom').click(() => { socket_joinRoom($('#socket_joinRoomInp').val()) })
-    $('#socket_leaveRoom').click(() => { socket_leaveRoom() })
-    $('#socket_send').click(() => { socket_send($('#socket_sendInp').val()) })
-    $('#socket_getRooms').click(async () => {
-        let res = await socket_getRooms()
-        let display = ""
-        for (let obj of res) {
-            display += JSON.stringify(obj, null, 4) + '<br>'
+var roomMembers = []
+
+async function updateRoomMembers() {
+    let rooms = await socket_getRooms()
+    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+    let display = ""
+    roomMembers = room.clients
+    for (let client of room.clients.map(client => client.name)) {
+        display += JSON.stringify(client, null, 4) + '<br>'
+    }
+    if (display == "") display = '[]'
+    $('#display').html(display)
+}
+
+async function updateChat(msg) {
+    let author = roomMembers.find(client => client.id == msg.author)
+
+    let chat = $('#chat').html()
+    chat += `${author.name} : ${msg.content} <br>`
+    $('#chat').html(chat)
+}
+
+$(document).ready(async () => {
+    let myRooms = await socket_get_my_rooms()
+    if (Object.values(myRooms).length < 2) { // if not automatically asigned to room (ex on refresh)
+        window.location = '/'
+    }
+
+    $('#roomName').html(Object.values(myRooms)[1])
+
+    updateRoomMembers()
+
+    $('#chatButton').click(() => {
+        let msg = {
+            author: socket.id,
+            content: $('#chatInp').val()
         }
-        if (display == "") display = '[]'
-        $('#display').html(display)
+        socket_send(msg)
     })
-    $('#socket_getClients').click(async () => {
-        let res = await socket_getClients()
-        let display = ""
-        for (let obj of res) {
-            display += JSON.stringify(obj, null, 4) + '<br>'
-        }
-        if (display == "") display = '[]'
-        $('#display').html(display)
-    })
-    // #endregion test
 })
