@@ -1,3 +1,7 @@
+// this file is oblosete, but I still use it for refrences - will delete it once we have stable lobby
+
+
+
 // test file with basic implementation of lobby chat
 
 // WARNING: chat requires client-sided checks to prevent:
@@ -83,6 +87,13 @@ function socket_getClients() {
         })
     })
 }
+function socket_get_my_rooms() {
+    return new Promise(resolve => {
+        socket.emit('get_my_rooms', res => {
+            resolve(res)
+        })
+    })
+}
 // #endregion socket functions
 
 
@@ -100,6 +111,9 @@ function socket_getClients() {
 
 // await socket_getClients() - returns client array (all clients (even ones not assigned to any room) with their names and tokens)
 // await socket_getRooms() - returns room array (room name, room admin , clients inside room)
+// await get_my_rooms() - returns room object with all rooms socket is in
+
+//socket.emit('carryRoomName', roomName) - joins room on next connect - used to carry name from '/' to '/lobby'
 
 // #endregion >>> functions to use : <<<
 

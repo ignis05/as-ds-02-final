@@ -10,8 +10,7 @@ socket.on('error_token', () => {
 
 // triggers when someone joins / leaves / creates a room - conveinient to update room list
 socket.on('rooms_updated', () => {
-    // >>here sth that will update room list<<
-    if (popupIsOpen) popup_chooseRoom()
+    if (popupIsOpen) popup_chooseRoom() // if rooms popup is open - open it again with new data
 })
 
 function socket_setName(nickname) {
@@ -34,7 +33,7 @@ function socket_getClients() {
 
 // primitive placeholder popup to specify name
 function popup_setName() {
-    if (Cookies.get('username') == '') {
+    if (Cookies.get('username') == '') { // if no name in cookies
         let name = ''
         while (true) {
             name = window.prompt('Plz set UR username')
@@ -46,15 +45,20 @@ function popup_setName() {
     }
 }
 
-var popupIsOpen = false
+var popupIsOpen = false // variable that checks if room popup is open
 
-async function popup_chooseRoom() {
+async function popup_chooseRoom() { // display rooms popup
     let rooms = await socket_getRooms()
     DisplayRooms(rooms)
     popupIsOpen = true
 }
 
-
+// I copied one of your select popups and modified it to work on rooms
+// how it works:
+// - through socket data is transfered between main and /lobby - that data being single string 'roomName'
+// - on /lobby client tries to join room 'roomName', if room doen't exist client creates it
+//
+// no checking whether  client is trying to create room with name that already was taken - client will jist join this room, so that should be prevented here
 function DisplayRooms(list) {
     let overlay = $('#overlay')
     let popup = $('#dialog')
@@ -69,9 +73,9 @@ function DisplayRooms(list) {
         bOption.html(list[i].name)
         popup.append(bOption)
         bOption.click(() => {
-            socket.emit('carryRoomName', list[i].name)
+            socket.emit('carryRoomName', list[i].name) // assign room that will be join on next socket connection
             popupIsOpen = false
-            window.location = '/lobby'
+            window.location = '/lobby' // redirect to /lobby
         })
     }
 
@@ -86,10 +90,10 @@ function DisplayRooms(list) {
             if (roomName != '') break
             else window.alert(`room name can't be empty`)
         }
-        if (roomName == null) return
-        socket.emit('carryRoomName', roomName)
+        if (roomName == null) return // null will be assigned if someone presses cancel - it just closes prompt
+        socket.emit('carryRoomName', roomName) // assign room that will be join on next socket connection
         popupIsOpen = false
-        window.location = '/lobby'
+        window.location = '/lobby' // redirect to /lobby
     })
 
     popup.dialog({
@@ -119,7 +123,7 @@ function DisplayRooms(list) {
 
 $(document).ready(() => {
     console.log('document ready');
-    popup_setName()
+    popup_setName() // trigger popup asking for name (if won't fire if name is already set though)
 
     //#region menu listeners
     $('#bMain0').click(e => {
