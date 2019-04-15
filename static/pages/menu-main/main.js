@@ -1,62 +1,90 @@
-// #region socket.io triggers and stuff
-// initialization:
-var socket = io(`/lobby`); // connect to socket instance `/lobby` (fyi actual path used by socket is http://host:port/socket.io/lobby - so this won't cause any errors)
+//#region Global Variables
+let socket = io('/lobby') // connect to socket instance
+    //#region Socket Setup
+    socket.on('error_token', () => {
+        window.alert('You are already connected from this browser. If you want do connect another client try incognito mode or other browsers')
+    })
 
-// triggers when someone tries to connect using token that is alredy in use - buttons should be blocked, etc
-socket.on('error_token', () => {
-    window.alert('You are already connected from this browser. If you want do connect another client try incognito mode or other browsers')
-    // window.location = '/'
+    socket.on('rooms_updated', async () => {
+        let rooms = await Socket_GetRooms()
+        if ($('#room-table').filter(":visible").length) DisplayRooms(rooms)
+    })
+    //#endregion
+
+let testList
+
+let optionList = [
+    { name: 'Video Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsVideo()' },
+    { name: 'Sound Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsSound()' },
+    { name: 'Setup Identity', action: '$(\'#dialog\').dialog(\'close\'); OptionsIdentity()' },
+]
+//#endregion
+
+$(document).ready(async () => {
+    // Check if cookies exist and set them or prompt the user to set them
+    InitName()
+    InitCookies()
+
+    InitClicks()
 })
 
-// triggers when someone joins / leaves / creates a room - conveinient to update room list
-socket.on('rooms_updated', () => {
-    if ($('#room-table').filter(":visible").length) popup_chooseRoom()
-})
+//#region Init functions
+function InitCookies() {
+    if (Cookies.get('settings-sndOn') === '')
+        Cookies.set('settings-sndOn', true, 7)
 
-function socket_setName(nickname) {
-    socket.emit('setName', nickname)
-}
-function socket_getRooms() {
-    return new Promise(resolve => {
-        socket.emit('getRooms', res => {
-            resolve(res)
-        })
-    })
-}
-function socket_getClients() {
-    return new Promise(resolve => {
-        socket.emit('getClients', res => {
-            resolve(res)
-        })
-    })
+    if (Cookies.get('settings-musVol') === '')
+        Cookies.set('settings-musVol', 75, 7)
+
+    if (Cookies.get('settings-sfxVol') === '')
+        Cookies.set('settings-sfxVol', 75, 7)
+
+    if (Cookies.get('settings-spcVol') === '')
+        Cookies.set('settings-spcVol', 75, 7)
 }
 
-// primitive placeholder popup to specify name
-function popup_setName() {
+function InitName() {
     if (Cookies.get('username') == '') { // if no name in cookies
-        /* let name = ''
-        while (true) {
-            name = window.prompt('Plz set UR username')
-            if (name != '' && name != null) break
-            else window.alert(`name can't be empty`)
-        }
-        Cookies.set('username', name, 7)
-        socket_setName(name) */
         OptionsIdentity()
     }
 }
 
-async function popup_chooseRoom() { // display rooms popup
-    let rooms = await socket_getRooms()
-    DisplayRooms(rooms)
-}
+function InitClicks() {
+    $('#bMain0').click(async e => {
+        if (!e.target.className.includes('disabled')) {
+            let rooms = await Socket_GetRooms()
+            DisplayRooms(rooms)
+        }
+    })
 
-// I copied one of your select popups and modified it to work on rooms
-// how it works:
-// - through socket data is transfered between main and /lobby - that data being single string 'roomName'
-// - on /lobby client tries to join room 'roomName', if room doen't exist client creates it
-//
-// no checking whether  client is trying to create room with name that already was taken - client will jist join this room, so that should be prevented here
+    $('#bMain1').click(async e => {
+        if (!e.target.className.includes('disabled')) {
+            // window.location = '/'
+        }
+    })
+
+    $('#bMain2').click(async e => {
+        if (!e.target.className.includes('disabled')) {
+            let testList = await Net.getTestPages()
+            DisplayTests(testList)
+        }
+    })
+
+    $('#bMain3').click(async e => {
+        if (!e.target.className.includes('disabled')) {
+            DisplayOptions(optionList)
+        }
+    })
+
+    $('#bMain4').click(async e => {
+        if (!e.target.className.includes('disabled')) {
+            window.location = '/editor'
+        }
+    })
+}
+//#endregion
+
+//#region Dialog functions
 function DisplayRooms(list) {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
@@ -85,7 +113,7 @@ function DisplayRooms(list) {
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html('connected / maxAmount')
+            cell1.html(list[i].clients.length + ' / maxAmount')
         row.append(cell1)
 
         saveTable.append(row)
@@ -123,7 +151,7 @@ function DisplayRooms(list) {
                 'class': 'ui-dialog-button disabled',
                 click: async function () {
                     socket.emit('carryRoomName', name.val()) // assign room that will be join on next socket connection
-                    window.location = '/lobby' // redirect to /lobby
+                    window.location = '/lobby'
 
                     /* $(this).dialog('close')
                     overlay.css('display', 'none') */
@@ -157,77 +185,7 @@ function DisplayRooms(list) {
         ]
     })
 }
-// #endregion socket.io triggers and stuff
 
-let testList
-
-let optionList = [
-    { name: 'Video Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsVideo()' },
-    { name: 'Sound Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsSound()' },
-    { name: 'Setup Identity', action: '$(\'#dialog\').dialog(\'close\'); OptionsIdentity()' },
-]
-
-$(document).ready(async () => {
-    console.log('document ready')
-
-    popup_setName() // trigger popup asking for name (if won't fire if name is already set though)
-
-    testList = await Net.getTestPages()
-
-    InitCookies()
-
-    InitClicks()
-})
-
-function InitCookies() {
-    if (Cookies.get('settings-sndOn') === '')
-        Cookies.set('settings-sndOn', true, 7)
-
-    if (Cookies.get('settings-musVol') === '')
-        Cookies.set('settings-musVol', 75, 7)
-
-    if (Cookies.get('settings-sfxVol') === '')
-        Cookies.set('settings-sfxVol', 75, 7)
-
-    if (Cookies.get('settings-spcVol') === '')
-        Cookies.set('settings-spcVol', 75, 7)
-}
-
-//#region menu listeners
-function InitClicks() {
-    $('#bMain0').click(e => {
-        if (!e.target.className.includes('disabled')) {
-            popup_chooseRoom()
-        }
-    })
-
-    $('#bMain1').click(e => {
-        if (!e.target.className.includes('disabled')) {
-            // window.location = '/'
-        }
-    })
-
-    $('#bMain2').click(async e => {
-        if (!e.target.className.includes('disabled')) {
-            DisplayTests(testList)
-        }
-    })
-
-    $('#bMain3').click(async e => {
-        if (!e.target.className.includes('disabled')) {
-            DisplayOptions(optionList)
-        }
-    })
-
-    $('#bMain4').click(e => {
-        if (!e.target.className.includes('disabled')) {
-            window.location = '/editor'
-        }
-    })
-}
-//#endregion
-
-//#region window functions
 function DisplayTests(list) {
     let overlay = $('#overlay')
     let popup = $('#dialog')
@@ -536,7 +494,7 @@ function ApplyVideo() {
 
 function ApplyIdentity() {
     console.warn('ApplyIdentity not final!')
-    socket_setName(Cookies.get('username'))
+    Socket_SetName(Cookies.get('username'))
 }
 //#endregion
 
@@ -576,5 +534,27 @@ function sortTable(tableId, cellId) {
             }
         }
     }
+}
+//#endregion
+
+//#region Socket Functions
+function Socket_SetName(nickname) {
+    socket.emit('setName', nickname)
+}
+
+function Socket_GetRooms() {
+    return new Promise(resolve => {
+        socket.emit('getRooms', res => {
+            resolve(res)
+        })
+    })
+}
+
+function Socket_GetClients() {
+    return new Promise(resolve => {
+        socket.emit('getClients', res => {
+            resolve(res)
+        })
+    })
 }
 //#endregion
