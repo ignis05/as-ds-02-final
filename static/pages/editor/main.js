@@ -370,8 +370,9 @@ function DisplayLoad(list) {
                     elem.removeClass('saves-active')
                 })
                 row.addClass('saves-active')
+                
+                $('#bLoad').attr('disabled', false).removeClass('disabled')
             }
-            $('#bLoad').attr('disabled', false).removeClass('disabled')
 
         })
     }

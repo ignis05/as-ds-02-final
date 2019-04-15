@@ -101,8 +101,9 @@ function DisplayRooms(list) {
                     elem.removeClass('saves-active')
                 })
                 row.addClass('saves-active')
+
+                $('#bJoin').attr('disabled', false).removeClass('disabled')
             }
-            $('#bJoin').attr('disabled', false).removeClass('disabled')
 
         })
     }
