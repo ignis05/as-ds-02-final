@@ -1,13 +1,17 @@
 
 let pack
-let type
 let cells
-let nextIn
 let cellSettings
 
 let mapsDB
-let decision = null
-let mapname = ''
+
+const dtOptions = {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+}
 
 // ==========================
 // Editor completely sucks as of now, but is usable...
@@ -166,12 +170,13 @@ class Cell {
         this.object = cont
         this.setup()
 
-        let datacont = {}
-        datacont.id = this.id
-        datacont.x = this.x
-        datacont.z = this.z
-        datacont.type = this.type
-        datacont.height = this.height
+        let datacont = {
+            id: this.id,
+            x: this.x,
+            z: this.z,
+            type: this.type,
+            height: this.height
+        }
         pack.level.push(datacont)
     }
 
@@ -239,14 +244,21 @@ function DisplaySave(list) {
         overlay.removeAttr('style')
 
 
-    let saveTable = $('<table>')
+    let saveTable = $('<table id="save-table">')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th>Name</th><th>Date</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'save-table\', 0)">Name</th><th onclick="sortTable(\'save-table\', 1)">Date</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
+
+    let name = $('<input>').attr('type', 'text').on('input', e => {
+        if (e.target.value != '')
+            $('#bSave').attr('disabled', false).removeClass('disabled')
+        else
+            $('#bSave').attr('disabled', true).addClass('disabled')
+    })
 
     let nor = list.length
     if (nor < 9) nor = 9
-    
+
     let rowlist = []
 
     for (let i = 0; i < nor; i++) {
@@ -255,18 +267,18 @@ function DisplaySave(list) {
 
         let cell0 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell0.html(list[i])
+            cell0.html(list[i].mapName)
         row.append(cell0)
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html('ignis pls fix')
+            cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
         row.append(cell1)
 
         saveTable.append(row)
         row.click(() => {
             if (cell0.html() != '') {
-                name.val(cell0.html())
+                name.val(cell0.html()).trigger('input')
                 rowlist.forEach(elem => {
                     elem.removeClass('saves-active')
                 })
@@ -275,7 +287,6 @@ function DisplaySave(list) {
         })
     }
 
-    let name = $('<input>').attr('type', 'text')
     popup.append(name)
 
     popup.dialog({
@@ -289,11 +300,13 @@ function DisplaySave(list) {
         title: 'Save',
         buttons: [
             {
+                id: 'bSave',
+                disabled: true,
                 text: "Save",
-                'class': 'ui-dialog-button',
+                'class': 'ui-dialog-button disabled',
                 click: function () {
                     let saveName = name.val()
-                    if (list.includes(saveName)) {
+                    if (list.some(e => e.mapName == saveName)) {
                         $(this).dialog("close")
                         DisplayOverwrite(saveName)
                     } else {
@@ -323,9 +336,9 @@ function DisplayLoad(list) {
         overlay.removeAttr('style')
 
 
-    let saveTable = $('<table>')
+    let saveTable = $('<table id="save-table">')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th>Name</th><th>Date</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'save-table\', 0)">Name</th><th onclick="sortTable(\'save-table\', 1)">Date</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
 
     let nor = list.length
@@ -339,12 +352,12 @@ function DisplayLoad(list) {
 
         let cell0 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell0.html(list[i])
+            cell0.html(list[i].mapName)
         row.append(cell0)
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html('ignis pls fix')
+            cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
         row.append(cell1)
 
         saveTable.append(row)
@@ -469,5 +482,44 @@ function DisplayOverwrite(savedName) {
             }
         ]
     })
+}
+//#endregion
+
+//#region Helper Functions
+function sortTable(tableId, cellId) {
+    let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0
+    table = document.getElementById(tableId)
+    switching = true
+    dir = 'asc'
+    while (switching) {
+        switching = false
+        rows = table.rows
+        for (i = 0; i < (rows.length - 1); i++) {
+            shouldSwitch = false
+            x = rows[i].getElementsByTagName('TD')[cellId]
+            y = rows[i + 1].getElementsByTagName('TD')[cellId]
+            if (dir == 'asc') {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() && y.innerHTML != '') {
+                    shouldSwitch = true
+                    break
+                }
+            } else if (dir == 'desc') {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase() && y.innerHTML != '') {
+                    shouldSwitch = true
+                    break
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i])
+            switching = true
+            switchcount++
+        } else {
+            if (switchcount == 0 && dir == 'asc') {
+                dir = 'desc'
+                switching = true
+            }
+        }
+    }
 }
 //#endregion
