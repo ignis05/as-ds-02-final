@@ -1,0 +1,41 @@
+#root {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #17c459;
+    font-family: Arial;
+}
+
+#menu {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    margin: 20px auto;
+}
+
+.btLink {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    width: 80%;
+    display: block;
+    background: #ebebeb;
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 5px;
+    padding: 5px;
+    box-sizing: border-box;
+    user-select: none;
+    -moz-user-select: none;
+    cursor: pointer;
+    border: 1px solid black;
+}
+
+.btTest {
+    background: #aaaaaa;
+}

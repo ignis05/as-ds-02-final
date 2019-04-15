@@ -33,4 +33,24 @@ class Net {
             });
         })
     }
+
+    static sendClickedPoint(clickPosition, unitPosition) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/sendClickedPoint",
+                data: {
+                    click: clickPosition,
+                    unit: unitPosition
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data.path)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            })
+        })
+    }
 }

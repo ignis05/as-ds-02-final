@@ -8,16 +8,151 @@ var io = require("socket.io")(server)
 const PORT = 3000
 var path = require("path")
 var bodyParser = require("body-parser")
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 1000000 }))
+app.use(bodyParser.urlencoded({
+    limit: '50mb',
+    extended: true,
+    parameterLimit: 1000000
+}))
 var Datastore = require('nedb')
 var cookieParser = require("cookie-parser")
 app.use(cookieParser())
-var cookie = require('cookie');
+var cookie = require('cookie')
+var PF = require('pathfinding')
 // #endregion initial
 
 var ServerDB = {
     databases: [],
 }
+
+var test_LoadedMap = {
+    "size": "4",
+    "level": [{
+        "id": 0,
+        "x": 0,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 1,
+        "x": 1,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 2,
+        "x": 2,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 3,
+        "x": 3,
+        "z": 0,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 4,
+        "x": 0,
+        "z": 1,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 5,
+        "x": 1,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 6,
+        "x": 2,
+        "z": 1,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 7,
+        "x": 3,
+        "z": 1,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 8,
+        "x": 0,
+        "z": 2,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 9,
+        "x": 1,
+        "z": 2,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 10,
+        "x": 2,
+        "z": 2,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 11,
+        "x": 3,
+        "z": 2,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 12,
+        "x": 0,
+        "z": 3,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 13,
+        "x": 1,
+        "z": 3,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 14,
+        "x": 2,
+        "z": 3,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 15,
+        "x": 3,
+        "z": 3,
+        "type": "dirt",
+        "height": 5
+    }]
+}
+
+// #region pathfinding
+function createMatrix(dbfile) {
+    let size = dbfile.size
+    let map = dbfile.level
+    let matrix = []
+    for (var cell in map) {
+        if (cell % size == 0) {
+            matrix.push([])
+        }
+        switch (map[cell].type) {
+            case "dirt":
+                matrix[matrix.length - 1].push(0)
+                break
+
+            case "rock":
+                matrix[matrix.length - 1].push(1)
+                break
+        }
+
+    }
+    console.log(matrix);
+
+    return matrix
+}
+
+var grid = new PF.Grid(createMatrix(test_LoadedMap))
+var finder = new PF.AStarFinder()
+// #endregion pathfinding
 
 // #region static routing
 app.get("/", function (req, res) {
@@ -41,9 +176,11 @@ app.post("/database_create", function (req, res) { // create database in array a
 
     let i = ServerDB.databases.findIndex(entry => entry.filename == data.filename)
     if (i != -1) { // already exists
-        res.send({ msg: "OK", id: i });
-    }
-    else {
+        res.send({
+            msg: "OK",
+            id: i
+        });
+    } else {
         let db = new Datastore({
             filename: path.join(__dirname + `/static/database/${data.filename}`),
             autoload: true
@@ -54,7 +191,10 @@ app.post("/database_create", function (req, res) { // create database in array a
             filename: data.filename
         })
         let index = ServerDB.databases.length - 1
-        res.send({ msg: "OK", id: index });
+        res.send({
+            msg: "OK",
+            id: index
+        });
     }
 })
 
@@ -67,7 +207,9 @@ app.post("/database_insert", function (req, res) {
     db.insert(data.entry, function (err, entry) {
         console.log("entry added")
         console.log(entry)
-        res.send({ msg: "OK" });
+        res.send({
+            msg: "OK"
+        });
     });
 })
 
@@ -80,7 +222,10 @@ app.post("/database_findOne", function (req, res) {
     db.findOne(data.match, function (err, entry) {
         console.log("entry found")
         console.log(entry)
-        res.send({ msg: "OK", entry: entry });
+        res.send({
+            msg: "OK",
+            entry: entry
+        });
     });
 })
 
@@ -93,7 +238,10 @@ app.post("/database_find", function (req, res) {
     db.find(data.match, function (err, entries) {
         console.log("entries found")
         console.log(entries)
-        res.send({ msg: "OK", entries: entries });
+        res.send({
+            msg: "OK",
+            entries: entries
+        });
     });
 })
 
@@ -105,7 +253,10 @@ app.post("/database_count", function (req, res) {
 
     db.count(data.match, function (err, count) {
         console.log(`${count} entries found`)
-        res.send({ msg: "OK", count: count });
+        res.send({
+            msg: "OK",
+            count: count
+        });
     });
 })
 
@@ -119,7 +270,10 @@ app.post("/database_remove", function (req, res) {
 
     db.remove(data.match, data.params, function (err, count) {
         console.log(`removed ${count} entries`)
-        res.send({ msg: "OK", count: count });
+        res.send({
+            msg: "OK",
+            count: count
+        });
     });
 })
 
@@ -130,9 +284,14 @@ app.post("/database_update", function (req, res) {
 
     let db = ServerDB.databases[data.id].db
 
-    db.update(data.match, { $set: data.entry }, {}, function (err, count) {
+    db.update(data.match, {
+        $set: data.entry
+    }, {}, function (err, count) {
         console.log("updated " + count)
-        res.send({ msg: "OK", count: count });
+        res.send({
+            msg: "OK",
+            count: count
+        });
     });
 })
 // #endregion ajax - database
@@ -140,14 +299,20 @@ app.post("/database_update", function (req, res) {
 // #region ajax - token
 app.post("/token", function (req, res) {
     getToken(req, res)
-    res.send({ msg: "OK" })
+    res.send({
+        msg: "OK"
+    })
 })
+
 function getToken(req, res) {
     let cookies = req.cookies
     // console.log(cookies);
     let token = (cookies["token"] ? cookies["token"] : Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10))
-    let time = 1000 * 60 * 60 * 8      // 8h
-    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: true })
+    let time = 1000 * 60 * 60 * 8 // 8h
+    res.cookie("token", token, {
+        expires: new Date(Date.now() + time),
+        httpOnly: true
+    })
     console.log("token:", token);
     return token
 }
@@ -169,12 +334,10 @@ app.post("/getTestPages", function (req, res) {
         }
         testPages.push(obj)
     })
-    res.send(
-        {
-            msg: "OK",
-            testPages: testPages
-        }
-    )
+    res.send({
+        msg: "OK",
+        testPages: testPages
+    })
 })
 app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
@@ -191,12 +354,22 @@ app.post("/getModels", function (req, res) {
         }
         models.push(obj)
     })
-    res.send(
-        {
-            msg: "OK",
-            models: models
-        }
-    )
+    res.send({
+        msg: "OK",
+        models: models
+    })
+})
+
+app.post("/sendClickedPoint", function (req, res) {
+    let data = req.body
+    let temp_grid = grid.clone() //after finding path pathfinder modifies grid, so backup bois    
+    let path = finder.findPath(data.unit.x, data.unit.z, data.click.x, data.click.z, temp_grid)
+    console.log(path);
+
+    res.send({
+        msg: "sendClickedPoint-Sent",
+        path: path
+    })
 })
 // #endregion ajax - Net.js requests
 
@@ -300,8 +473,7 @@ io_lobby.on('connect', socket => {
 
                 // notify all
                 io_lobby.emit('rooms_updated')
-            }
-            else {
+            } else {
                 let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
                 if (room) { // if client was in room
                     lobby_leaveRoom()
@@ -315,8 +487,7 @@ io_lobby.on('connect', socket => {
             }
             client.carryRoomName = false
         }
-    }
-    else {
+    } else {
         client = {
             token: token,
             id: socket.id,
@@ -342,8 +513,7 @@ io_lobby.on('connect', socket => {
         if (room.clients.length == 0) {
             let i = lobby_rooms.indexOf(room)
             lobby_rooms.splice(i, 1)
-        }
-        else {
+        } else {
             // if user was room admin, choose new admin
             if (room.admin == client) {
                 room.admin = room.clients[0]
@@ -385,8 +555,7 @@ io_lobby.on('connect', socket => {
         console.log(`${socket.id} is creating room ${roomName}`);
         if (lobby_rooms.find(room => room.name == roomName)) {
             console.error(`ERROR: room ${roomName} already exists`)
-        }
-        else {
+        } else {
             let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
             if (room) { // if client was in room
                 lobby_leaveRoom()
@@ -424,8 +593,7 @@ io_lobby.on('connect', socket => {
 
         if (!lobby_rooms.find(room => room.name == roomName)) { // if room doesn't exist
             console.error(`ERROR: trying to join room that doesn't exist`)
-        }
-        else {
+        } else {
             let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
             if (room) { // if client was in room
                 lobby_leaveRoom()
