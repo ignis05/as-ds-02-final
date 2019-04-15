@@ -80,6 +80,7 @@ function ctrlsInit() {
     })
 }
 
+//#region Editor Internals
 function clearTypes() {
     let buts = Array.from($('#ctrl-types')[0].children)
     for (let i in buts) {
@@ -145,6 +146,7 @@ function loadMap(dataPack) {
         $('#data').html(JSON.stringify(pack, null, 4))
     }
 }
+// #endregion
 
 //#region classes
 class Cell {
@@ -294,7 +296,7 @@ function DisplaySave(list) {
         modal: true,
         draggable: false,
         resizable: false,
-        dialogClass: "no-close",
+        dialogClass: 'no-close  buttonpane-double',
         width: 600,
         height: 600,
         title: 'Save',
@@ -302,25 +304,25 @@ function DisplaySave(list) {
             {
                 id: 'bSave',
                 disabled: true,
-                text: "Save",
+                text: 'Save',
                 'class': 'ui-dialog-button disabled',
                 click: function () {
                     let saveName = name.val()
                     if (list.some(e => e.mapName == saveName)) {
-                        $(this).dialog("close")
+                        $(this).dialog('close')
                         DisplayOverwrite(saveName)
                     } else {
                         mapsDB.exportMap(saveName, pack)
-                        $(this).dialog("close")
+                        $(this).dialog('close')
                         overlay.css('display', 'none')
                     }
                 }
             },
             {
-                text: "Back",
+                text: 'Back',
                 'class': 'ui-dialog-button',
                 click: function () {
-                    $(this).dialog("close")
+                    $(this).dialog('close')
                     overlay.css('display', 'none')
                 }
             }
@@ -382,7 +384,7 @@ function DisplayLoad(list) {
         modal: true,
         draggable: false,
         resizable: false,
-        dialogClass: 'no-close',
+        dialogClass: 'no-close  buttonpane-double',
         width: 600,
         height: 540,
         title: 'Load',
