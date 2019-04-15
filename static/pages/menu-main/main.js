@@ -10,7 +10,7 @@ socket.on('error_token', () => {
 
 // triggers when someone joins / leaves / creates a room - conveinient to update room list
 socket.on('rooms_updated', () => {
-    if (popupIsOpen) popup_chooseRoom() // if rooms popup is open - open it again with new data
+    if ($('#room-table').filter(":visible").length) popup_chooseRoom()
 })
 
 function socket_setName(nickname) {
@@ -46,12 +46,9 @@ function popup_setName() {
     }
 }
 
-var popupIsOpen = false // variable that checks if room popup is open
-
 async function popup_chooseRoom() { // display rooms popup
     let rooms = await socket_getRooms()
     DisplayRooms(rooms)
-    popupIsOpen = true
 }
 
 // I copied one of your select popups and modified it to work on rooms
@@ -67,10 +64,9 @@ function DisplayRooms(list) {
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-
-    let saveTable = $('<table id="save-table">')
+    let saveTable = $('<table id="room-table">')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'save-table\', 0)">Name</th><th onclick="sortTable(\'save-table\', 1)">Players</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'room-table\', 0)">Name</th><th onclick="sortTable(\'room-table\', 1)">Players</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
 
     let nor = list.length
@@ -90,7 +86,6 @@ function DisplayRooms(list) {
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
             cell1.html('connected / maxAmount')
-        //cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
         row.append(cell1)
 
         saveTable.append(row)
@@ -146,11 +141,9 @@ function DisplayRooms(list) {
                         else window.alert(`room name can't be empty`)
                     }
                     if (roomName == null) return // null will be assigned if someone presses cancel - it just closes prompt
-                    socket.emit('carryRoomName', roomName) // assign room that will be join on next socket connection
-                    window.location = '/lobby' // redirect to /lobby
-
-                    /* $(this).dialog('close')
-                    overlay.css('display', 'none') */
+                    socket.emit('carryRoomName', roomName) // assign room that will be joined on next socket connection
+                    window.location = '/lobby'
+                    $(this).dialog('close')
                 }
             },
             {
