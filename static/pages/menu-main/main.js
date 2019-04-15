@@ -70,7 +70,7 @@ function DisplayRooms(list) {
 
     let saveTable = $('<table id="save-table">')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'save-table\', 0)">Name</th><th onclick="sortTable(\'save-table\', 1)">Date</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'save-table\', 0)">Name</th><th onclick="sortTable(\'save-table\', 1)">Players</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
 
     let nor = list.length
@@ -89,7 +89,7 @@ function DisplayRooms(list) {
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html('')
+            cell1.html('connected / maxAmount')
         //cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
         row.append(cell1)
 
@@ -123,7 +123,7 @@ function DisplayRooms(list) {
             {
                 id: 'bJoin',
                 disabled: true,
-                text: 'Load',
+                text: 'Join',
                 'class': 'ui-dialog-button disabled',
                 click: async function () {
                     socket.emit('carryRoomName', name.val()) // assign room that will be join on next socket connection
@@ -162,65 +162,6 @@ function DisplayRooms(list) {
             }
         ]
     })
-
-    /* let overlay = $('#overlay')
-    let popup = $('#dialog')
-
-    if (overlay.css('display') == 'none')
-        overlay.removeAttr('style')
-
-    popup.html('')
-    for (let i = 0; i < list.length; i++) {
-        let bOption = $('<div>')
-        bOption.addClass('ui-dialog-button')
-        bOption.html(list[i].name)
-        popup.append(bOption)
-        bOption.click(() => {
-            socket.emit('carryRoomName', list[i].name) // assign room that will be join on next socket connection
-            popupIsOpen = false
-            window.location = '/lobby' // redirect to /lobby
-        })
-    }
-
-    let bOption = $('<div>')
-    bOption.addClass('ui-dialog-button')
-    bOption.html(`Create new room`)
-    popup.append(bOption)
-    bOption.click(() => {
-        let roomName = ''
-        while (true) {
-            roomName = window.prompt('Plz set room name')
-            if (roomName != '') break
-            else window.alert(`room name can't be empty`)
-        }
-        if (roomName == null) return // null will be assigned if someone presses cancel - it just closes prompt
-        socket.emit('carryRoomName', roomName) // assign room that will be join on next socket connection
-        popupIsOpen = false
-        window.location = '/lobby' // redirect to /lobby
-    })
-
-    popup.dialog({
-        closeOnEscape: false,
-        modal: true,
-        draggable: false,
-        resizable: false,
-        dialogClass: "no-close",
-        width: 600,
-        height: list.length * 50 + 200 + 50,
-        maxHeight: 300,
-        title: 'Tests',
-        buttons: [
-            {
-                text: "Back",
-                'class': 'ui-dialog-button',
-                click: function () {
-                    popupIsOpen = false
-                    $(this).dialog("close")
-                    overlay.css('display', 'none')
-                }
-            }
-        ]
-    }) */
 }
 // #endregion socket.io triggers and stuff
 
