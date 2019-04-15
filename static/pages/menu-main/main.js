@@ -10,13 +10,6 @@ let socket = io('/lobby') // connect to socket instance
     })
     //#endregion
 
-let testList
-
-let optionList = [
-    { name: 'Video Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsVideo()' },
-    { name: 'Sound Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsSound()' },
-    { name: 'Setup Identity', action: '$(\'#dialog\').dialog(\'close\'); OptionsIdentity()' },
-]
 //#endregion
 
 $(document).ready(async () => {
@@ -44,7 +37,7 @@ function InitCookies() {
 
 function InitName() {
     if (Cookies.get('username') == '') { // if no name in cookies
-        OptionsIdentity()
+        OptionsIdentity(true)
     }
 }
 
@@ -63,14 +56,13 @@ function InitClicks() {
 
     $('#bMain2').click(async e => {
         if (!e.target.className.includes('disabled')) {
-            let testList = await Net.getTestPages()
-            DisplayTests(testList)
+            DisplayTests()
         }
     })
 
     $('#bMain3').click(async e => {
         if (!e.target.className.includes('disabled')) {
-            DisplayOptions(optionList)
+            DisplayOptions()
         }
     })
 
@@ -178,7 +170,9 @@ async function DisplayRooms() {
     })
 }
 
-function DisplayTests(list) {
+async function DisplayTests() {
+    let list = await Net.getTestPages()
+
     let overlay = $('#overlay')
     let popup = $('#dialog')
 
@@ -219,7 +213,13 @@ function DisplayTests(list) {
     })
 }
 
-function DisplayOptions(list) {
+function DisplayOptions() {
+    let list = [
+        { name: 'Video Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsVideo()' },
+        { name: 'Sound Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsSound()' },
+        { name: 'Setup Identity', action: '$(\'#dialog\').dialog(\'close\'); OptionsIdentity()' },
+    ]
+
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
 
@@ -261,7 +261,9 @@ function DisplayOptions(list) {
     })
 }
 
-function OptionsIdentity() {
+function OptionsIdentity(firstCall) {
+    if (typeof firstCall === 'undefined') { firstCall = false }
+
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
 
@@ -298,7 +300,11 @@ function OptionsIdentity() {
                     Cookies.set('username', name.val(), 7)
                     ApplyIdentity()
                     $(this).dialog('close')
-                    overlay.css('display', 'none')
+                    if (firstCall) {
+                        overlay.css('display', 'none')
+                    } else {
+                        DisplayOptions()
+                    }
                 }
             }
         ]
@@ -354,7 +360,7 @@ function OptionsVideo() {
                 'class': 'ui-dialog-button',
                 click: function () {
                     $(this).dialog('close')
-                    overlay.css('display', 'none')
+                    DisplayOptions()
                 }
             }
         ]
@@ -424,7 +430,7 @@ function OptionsSound() {
                 'class': 'ui-dialog-button',
                 click: function () {
                     $(this).dialog('close')
-                    overlay.css('display', 'none')
+                    DisplayOptions()
                 }
             }
         ]
