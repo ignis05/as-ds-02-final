@@ -34,14 +34,15 @@ function socket_getClients() {
 // primitive placeholder popup to specify name
 function popup_setName() {
     if (Cookies.get('username') == '') { // if no name in cookies
-        let name = ''
+        /* let name = ''
         while (true) {
             name = window.prompt('Plz set UR username')
             if (name != '' && name != null) break
             else window.alert(`name can't be empty`)
         }
         Cookies.set('username', name, 7)
-        socket_setName(name)
+        socket_setName(name) */
+        OptionsIdentity()
     }
 }
 
@@ -61,6 +62,108 @@ async function popup_chooseRoom() { // display rooms popup
 // no checking whether  client is trying to create room with name that already was taken - client will jist join this room, so that should be prevented here
 function DisplayRooms(list) {
     let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+
+    let saveTable = $('<table id="save-table">')
+    let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'save-table\', 0)">Name</th><th onclick="sortTable(\'save-table\', 1)">Date</th></tr></table>').append(svtScroll)
+    popup.append(svtCont)
+
+    let nor = list.length
+    if (nor < 9) nor = 9
+
+    let rowlist = []
+
+    for (let i = 0; i < nor; i++) {
+        let row = $('<tr>').addClass('saves-row')
+        rowlist.push(row)
+
+        let cell0 = $('<td>').html('')
+        if (list[i] !== undefined)
+            cell0.html(list[i].name)
+        row.append(cell0)
+
+        let cell1 = $('<td>').html('')
+        if (list[i] !== undefined)
+            cell1.html('')
+        //cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
+        row.append(cell1)
+
+        saveTable.append(row)
+        row.click(() => {
+            if (cell0.html() != '') {
+                name.val(cell0.html())
+                rowlist.forEach(elem => {
+                    elem.removeClass('saves-active')
+                })
+                row.addClass('saves-active')
+            }
+            $('#bJoin').attr('disabled', false).removeClass('disabled')
+
+        })
+    }
+
+    let name = $('<input>').attr('type', 'hidden')
+    popup.append(name)
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close buttonpane-tripple',
+        width: 600,
+        height: 590,
+        title: 'Lobby Select',
+        buttons: [
+            {
+                id: 'bJoin',
+                disabled: true,
+                text: 'Load',
+                'class': 'ui-dialog-button disabled',
+                click: async function () {
+                    socket.emit('carryRoomName', name.val()) // assign room that will be join on next socket connection
+                    window.location = '/lobby' // redirect to /lobby
+
+                    /* $(this).dialog('close')
+                    overlay.css('display', 'none') */
+                }
+            },
+            {
+                id: 'bHost',
+                text: 'Host',
+                'class': 'ui-dialog-button',
+                click: async function () {
+                    let roomName = ''
+                    while (true) {
+                        roomName = window.prompt('Plz set room name')
+                        if (roomName != '') break
+                        else window.alert(`room name can't be empty`)
+                    }
+                    if (roomName == null) return // null will be assigned if someone presses cancel - it just closes prompt
+                    socket.emit('carryRoomName', roomName) // assign room that will be join on next socket connection
+                    window.location = '/lobby' // redirect to /lobby
+
+                    /* $(this).dialog('close')
+                    overlay.css('display', 'none') */
+                }
+            },
+            {
+                text: 'Back',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            }
+        ]
+    })
+
+    /* let overlay = $('#overlay')
     let popup = $('#dialog')
 
     if (overlay.css('display') == 'none')
@@ -117,7 +220,7 @@ function DisplayRooms(list) {
                 }
             }
         ]
-    })
+    }) */
 }
 // #endregion socket.io triggers and stuff
 
@@ -126,7 +229,7 @@ let testList
 let optionList = [
     { name: 'Video Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsVideo()' },
     { name: 'Sound Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsSound()' },
-    { name: 'Setup Identity', action: '$(\'#dialog\').dialog(\'close\'); OptionsNickname()' },
+    { name: 'Setup Identity', action: '$(\'#dialog\').dialog(\'close\'); OptionsIdentity()' },
 ]
 
 $(document).ready(async () => {
@@ -136,8 +239,24 @@ $(document).ready(async () => {
 
     testList = await Net.getTestPages()
 
+    InitCookies()
+
     InitClicks()
 })
+
+function InitCookies() {
+    if (Cookies.get('settings-sndOn') === '')
+        Cookies.set('settings-sndOn', true, 7)
+
+    if (Cookies.get('settings-musVol') === '')
+        Cookies.set('settings-musVol', 75, 7)
+
+    if (Cookies.get('settings-sfxVol') === '')
+        Cookies.set('settings-sfxVol', 75, 7)
+
+    if (Cookies.get('settings-spcVol') === '')
+        Cookies.set('settings-spcVol', 75, 7)
+}
 
 //#region menu listeners
 function InitClicks() {
@@ -257,7 +376,7 @@ function DisplayOptions(list) {
     })
 }
 
-function OptionsNickname() {
+function OptionsIdentity() {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
 
@@ -271,7 +390,7 @@ function OptionsNickname() {
             $('#bApply').attr('disabled', true).addClass('disabled')
     })
 
-    console.log('TODO: Set value of \'name\' textbox from cookie here')
+    name.val(Cookies.get('username'))
 
     popup.append(name)
 
@@ -291,22 +410,17 @@ function OptionsNickname() {
                 text: 'Apply',
                 'class': 'ui-dialog-button disabled',
                 click: function () {
-                    let saveName = name.val()
-                    console.log('TODO: Send nickname to server here - ' + saveName)
-                    $(this).dialog('close')
-                    overlay.css('display', 'none')
-                }
-            },
-            {
-                text: 'Back',
-                'class': 'ui-dialog-button',
-                click: function () {
+                    Cookies.set('username', name.val(), 7)
+                    ApplyIdentity()
                     $(this).dialog('close')
                     overlay.css('display', 'none')
                 }
             }
         ]
     })
+
+    if (name.val() != '')
+        $('#bApply').attr('disabled', false).removeClass('disabled')
 }
 
 function OptionsVideo() {
@@ -324,6 +438,8 @@ function OptionsVideo() {
     })
 
     console.log('TODO: Set value of \'name\' textbox from cookie here')
+    console.log(Cookies.get('username'))
+    name.val(Cookies.get('username'))
 
     popup.append(name)
 
@@ -343,8 +459,7 @@ function OptionsVideo() {
                 text: 'Apply',
                 'class': 'ui-dialog-button disabled',
                 click: function () {
-                    let saveName = name.val()
-                    console.log('TODO: Send nickname to server here - ' + saveName)
+                    ApplyVideo()
                     $(this).dialog('close')
                     overlay.css('display', 'none')
                 }
@@ -368,10 +483,10 @@ function OptionsSound() {
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-    console.log('Get volume settings from cookies here')
-    let musicCookie = 70
-    let sfxCookie = 70
-    let speechCookie = 70
+    let soundCookie = (Cookies.get('settings-sndOn') === 'true') // Convert from string to boolean ¯\_(ツ)_/¯
+    let musicCookie = Cookies.get('settings-musVol')
+    let sfxCookie = Cookies.get('settings-sfxVol')
+    let speechCookie = Cookies.get('settings-spcVol')
 
     //================
     //SoundOn Checkbox
@@ -386,7 +501,7 @@ function OptionsSound() {
     let chk = $('<input>')
         .attr('id', 'chk')
         .attr('type', 'checkbox')
-        .attr('checked', true)
+        .prop('checked', soundCookie)
     cont.append(chk)
     //SoundOn Checkbox
     //================
@@ -394,15 +509,6 @@ function OptionsSound() {
     new OptionSlider('musVol', 'Music Volume', 0, 100, 1, musicCookie)
     new OptionSlider('sfxVol', 'Effects Volume', 0, 100, 1, sfxCookie)
     new OptionSlider('spcVol', 'Speech Volume', 0, 100, 1, speechCookie)
-
-    /* let speechVol = $('<input>').attr('type', 'text').on('input', e => {
-        if (e.target.value != '')
-            $('#bApply').attr('disabled', false).removeClass('disabled')
-        else
-            $('#bApply').attr('disabled', true).addClass('disabled')
-    })
-    console.log('TODO: Set value of \'speechVol\' textbox from cookie here')
-    popup.append(speechVol) */
 
     popup.dialog({
         closeOnEscape: false,
@@ -419,11 +525,11 @@ function OptionsSound() {
                 text: 'Apply',
                 'class': 'ui-dialog-button',
                 click: function () {
-                    console.log('TODO: Send volume values to cookies here:')
-                    console.log('musVol = ' + $('#sndOn').find('#chk').prop('checked'))
-                    console.log('musVol = ' + $('#musVol').find('#rng').val())
-                    console.log('sfxVol = ' + $('#sfxVol').find('#rng').val())
-                    console.log('spcVol = ' + $('#spcVol').find('#rng').val())
+                    Cookies.set('settings-sndOn', $('#sndOn').find('#chk').prop('checked'), 7)
+                    Cookies.set('settings-musVol', $('#musVol').find('#rng').val(), 7)
+                    Cookies.set('settings-sfxVol', $('#sfxVol').find('#rng').val(), 7)
+                    Cookies.set('settings-spcVol', $('#spcVol').find('#rng').val(), 7)
+                    ApplySound()
                     $(this).dialog('close')
                     overlay.css('display', 'none')
                 }
@@ -480,6 +586,60 @@ class OptionSlider {
 
             rng.val(nud.val())
         })
+    }
+}
+//#endregion
+
+//#region Exec Setting Changes
+function ApplySound() {
+    console.warn('ApplySound not implemented!')
+}
+
+function ApplyVideo() {
+    console.warn('ApplyVideo not implemented!')
+}
+
+function ApplyIdentity() {
+    console.warn('ApplyIdentity not final!')
+    socket_setName(Cookies.get('username'))
+}
+//#endregion
+
+//#region Helper Functions
+function sortTable(tableId, cellId) {
+    let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0
+    table = document.getElementById(tableId)
+    switching = true
+    dir = 'asc'
+    while (switching) {
+        switching = false
+        rows = table.rows
+        for (i = 0; i < (rows.length - 1); i++) {
+            shouldSwitch = false
+            x = rows[i].getElementsByTagName('TD')[cellId]
+            y = rows[i + 1].getElementsByTagName('TD')[cellId]
+            if (dir == 'asc') {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() && y.innerHTML != '') {
+                    shouldSwitch = true
+                    break
+                }
+            } else if (dir == 'desc') {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase() && y.innerHTML != '') {
+                    shouldSwitch = true
+                    break
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i])
+            switching = true
+            switchcount++
+        } else {
+            if (switchcount == 0 && dir == 'asc') {
+                dir = 'desc'
+                switching = true
+            }
+        }
     }
 }
 //#endregion
