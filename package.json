@@ -1,7 +1,7 @@
 {
-  "name": "cinnamon-game",
-  "version": "2.1.37",
-  "description": "\"krótka dokumentacja instalacji przesłana wraz z projektem - warunek niezbędny\"<br>",
+  "name": "appservproject",
+  "version": "1.0.0",
+  "description": "",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -11,7 +11,7 @@
     "type": "git",
     "url": "git+https://github.com/ignis05/appservProject.git"
   },
-  "author": "kG",
+  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/ignis05/appservProject/issues"
@@ -19,11 +19,11 @@
   "homepage": "https://github.com/ignis05/appservProject#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
+    "cookie": "^0.3.1",
     "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
     "nedb": "^1.8.0",
-    "path": "^0.12.7",
-    "pathfinding": "^0.4.18"
-  },
-  "devDependencies": {}
+    "pathfinding": "^0.4.18",
+    "socket.io": "^2.2.0"
+  }
 }

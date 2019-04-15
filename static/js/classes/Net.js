@@ -17,6 +17,23 @@ class Net {
         })
     }
 
+    static getModels() {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/getModels",
+                data: {},
+                type: "POST",
+                success: data => {
+                    resolve(data.models)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            });
+        })
+    }
+
     static sendClickedPoint(clickPosition, unitPosition) {
         return new Promise((resolve, reject) => {
             $.ajax({

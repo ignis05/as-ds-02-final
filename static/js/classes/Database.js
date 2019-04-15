@@ -7,7 +7,7 @@ class Database {
 
     // gets database id from server required for other operations
     create() {
-        console.log("initialazing database on server");
+        // console.log("initialazing database on server");
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: "/database_create",
@@ -29,7 +29,7 @@ class Database {
 
     // inserts object as database entry
     insert(entry) {
-        console.log(`inserting to db: `, entry);
+        // console.log(`inserting to db: `, entry);
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: "/database_insert",
@@ -51,7 +51,7 @@ class Database {
 
     // returns first matching entry (returns null if no entry found)
     findOne(match) {
-        console.log(`finding entry matching: `, match);
+        // console.log(`finding entry matching: `, match);
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: "/database_findOne",
@@ -73,7 +73,7 @@ class Database {
 
     // returns all matching entries (returns null if no entries found)
     find(match) {
-        console.log(`finding entries matching: `, match);
+        // console.log(`finding entries matching: `, match);
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: "/database_find",
@@ -100,7 +100,7 @@ class Database {
 
     // counts all matching entries
     count(match) {
-        console.log(`counting entries matching: `, match);
+        // console.log(`counting entries matching: `, match);
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: "/database_count",
@@ -127,7 +127,7 @@ class Database {
 
     // removes first matching entry, returns count of removed entries
     removeOne(match) {
-        console.log(`removing entry matching: `, match);
+        // console.log(`removing entry matching: `, match);
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: "/database_remove",
@@ -150,7 +150,7 @@ class Database {
 
     // removes all matching entries, returns count of removed entries
     remove(match) {
-        console.log(`removing entries matching: `, match);
+        // console.log(`removing entries matching: `, match);
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: "/database_remove",
@@ -173,7 +173,7 @@ class Database {
 
     // updates matching entries with values given in entry obj, adds keys if needed. match by _id to update one
     update(match, entry) {
-        console.log(`replacing entries matching: `, match);
+        // console.log(`replacing entries matching: `, match);
         return new Promise((resolve, reject) => {
             $.ajax({
                 url: "/database_update",
