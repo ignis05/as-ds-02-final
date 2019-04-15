@@ -6,8 +6,7 @@ let socket = io('/lobby') // connect to socket instance
     })
 
     socket.on('rooms_updated', async () => {
-        let rooms = await Socket_GetRooms()
-        if ($('#room-table').filter(":visible").length) DisplayRooms(rooms)
+        if ($('#room-table').filter(":visible").length) DisplayRooms()
     })
     //#endregion
 
@@ -28,7 +27,7 @@ $(document).ready(async () => {
     InitClicks()
 })
 
-//#region Init functions
+//#region Init Functions
 function InitCookies() {
     if (Cookies.get('settings-sndOn') === '')
         Cookies.set('settings-sndOn', true, 7)
@@ -52,8 +51,7 @@ function InitName() {
 function InitClicks() {
     $('#bMain0').click(async e => {
         if (!e.target.className.includes('disabled')) {
-            let rooms = await Socket_GetRooms()
-            DisplayRooms(rooms)
+            DisplayRooms()
         }
     })
 
@@ -84,8 +82,10 @@ function InitClicks() {
 }
 //#endregion
 
-//#region Dialog functions
-function DisplayRooms(list) {
+//#region Dialog Functions
+async function DisplayRooms() {
+    let list = await Socket_GetRooms()
+
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
 
@@ -94,7 +94,7 @@ function DisplayRooms(list) {
 
     let saveTable = $('<table id="room-table">')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'room-table\', 0)">Name</th><th onclick="sortTable(\'room-table\', 1)">Players</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'room-table\', 0)">Room Name</th><th onclick="sortTable(\'room-table\', 1)">Players</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
 
     let nor = list.length
@@ -162,16 +162,8 @@ function DisplayRooms(list) {
                 text: 'Host',
                 'class': 'ui-dialog-button',
                 click: async function () {
-                    let roomName = ''
-                    while (true) {
-                        roomName = window.prompt('Plz set room name')
-                        if (roomName != '') break
-                        else window.alert(`room name can't be empty`)
-                    }
-                    if (roomName == null) return // null will be assigned if someone presses cancel - it just closes prompt
-                    socket.emit('carryRoomName', roomName) // assign room that will be joined on next socket connection
-                    window.location = '/lobby'
                     $(this).dialog('close')
+                    RoomIdentity(list)
                 }
             },
             {
@@ -433,6 +425,94 @@ function OptionsSound() {
                 click: function () {
                     $(this).dialog('close')
                     overlay.css('display', 'none')
+                }
+            }
+        ]
+    })
+}
+
+function RoomIdentity(list) {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    let name = $('<input>').css('margin-top', '20px').attr('type', 'text').on('input', e => {
+        if (e.target.value != '')
+            $('#bApply').attr('disabled', false).removeClass('disabled')
+        else
+            $('#bApply').attr('disabled', true).addClass('disabled')
+    })
+
+    name.val(Cookies.get('username') + '\'s Room')
+
+    popup.append(name)
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 600,
+        height: 260,
+        title: 'Room Setup', // This dialog will have basic options like password, eventually
+        buttons: [
+            {
+                id: 'bApply',
+                disabled: true,
+                text: 'Apply',
+                'class': 'ui-dialog-button disabled',
+                click: function () {
+                    let saveName = name.val()
+                    if (list.some(e => e.name == saveName)) {
+                        $(this).dialog('close')
+                        RoomTaken(list)
+                    } else {
+                        socket.emit('carryRoomName', saveName)
+                        window.location = '/lobby'
+                    }
+                },
+            },
+            {
+                text: 'Back',
+                'class': 'ui-dialog-button',
+                click: async function () {
+                    $(this).dialog('close')
+                    DisplayRooms()
+                },
+            },
+        ]
+    })
+
+    if (name.val() != '')
+        $('#bApply').attr('disabled', false).removeClass('disabled')
+}
+
+function RoomTaken(list) {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 500,
+        height: 150,
+        title: 'Name already taken',
+        buttons: [
+            {
+                text: 'Ok',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    RoomIdentity(list)
                 }
             }
         ]
