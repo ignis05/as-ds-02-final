@@ -1,18 +1,15 @@
-/* ========================== *
- *   TODO: Sort this or sth   *
- * ========================== */
-
-.no-close .ui-dialog-titlebar-close {
-    display: none;
-}
-
-.ui-dialog {
+/*#region General*/
+ .ui-dialog {
     max-height: 800px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
     z-index: 100;
+}
+
+.no-close .ui-dialog-titlebar-close {
+    display: none;
 }
 
 .ui-dialog-titlebar {
@@ -55,14 +52,6 @@
     border-right: 2px outset #333333CF;
 }
 
-.buttonpane-double .ui-dialog-buttonpane {
-    height: 120px;
-}
-
-.buttonpane-tripple .ui-dialog-buttonpane {
-    height: 160px;
-}
-
 .ui-dialog-buttonset {
     width: 100%;
     height: 100%;
@@ -71,6 +60,21 @@
     align-items: center;
     justify-content: space-evenly;
 }
+/*#endregion*/
+
+/*#region Multiple Buttons*/
+
+.buttonpane-double .ui-dialog-buttonpane {
+    height: 120px;
+}
+
+.buttonpane-tripple .ui-dialog-buttonpane {
+    height: 160px;
+}
+
+/*#endregion*/
+
+/*#region Dialogtype Confirm*/
 
 .ui-dialog-confirm .ui-dialog-buttonpane {
     height: 80px;
@@ -91,6 +95,10 @@
     max-width: initial;
     width: 40%;
 }
+
+/*#endregion*/
+
+/*#region Button*/
 
 .ui-dialog-button {
     font-weight: bold;
@@ -124,6 +132,10 @@
     text-shadow: none;
 }
 
+/*#endregion*/
+
+/*#region Content Table*/
+
 .ui-dialog-content .saves-wrap {
     height: 300px;
     width: 500px;
@@ -147,6 +159,13 @@
     background-color: #FFFFFF7F;
 }
 
+.saves-cont {
+    height: 266px;
+    overflow: hidden scroll;
+    border: 2px solid #FFFFFF;
+    border-top: none;
+}
+
 .ui-dialog-content tr *:first-child {
     width: 300px;
 }
@@ -164,6 +183,7 @@
 .saves-row:hover, .saves-row:nth-child(2n):hover {
     background-color: #994444;
 }
+
 .saves-row.saves-active, .saves-row:nth-child(2n).saves-active {
     background-color: #AF5A5A;
 }
@@ -178,14 +198,9 @@
     line-height: 30px;
     padding-left: 5px;
 }
+/*#endregion*/
 
-.saves-cont {
-    height: 266px;
-    overflow: hidden scroll;
-    border: 2px solid #FFFFFF;
-    border-top: none;
-}
-
+/*#region Inputs*/
 .ui-dialog-content input[type=text] {
     width: 400px;
     height: 50px;
@@ -199,3 +214,4 @@
     border: none;
     border-radius: 15px;
 }
+/*#endregion*/

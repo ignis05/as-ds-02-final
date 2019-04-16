@@ -1,4 +1,4 @@
-
+//#region Global Variables
 let pack
 let cells
 let cellSettings
@@ -12,6 +12,7 @@ const dtOptions = {
     hour: '2-digit',
     minute: '2-digit'
 }
+//#endregion 
 
 // ==========================
 // Editor completely sucks as of now, but is usable...
@@ -30,19 +31,15 @@ $(document).ready(async () => {
         height: 5,
         type: 'dirt',
     }
-    init()
-})
 
-
-function init() {
-    ctrlsInit()
+    CtrlsInit()
 
     // Define additional setting sliders here:
     new OptionSlider('height', 'Height', 0, 20, 1, 5)
-}
+})
 
-// Clicks go here:
-function ctrlsInit() {
+//#region Init Functions
+function CtrlsInit() {
     $('#ctrl-genlvl').on('click', function () {
         pack.size = $('#ctrl-select').val()
         createTiles()
@@ -79,6 +76,7 @@ function ctrlsInit() {
         }
     })
 }
+//#endregion
 
 //#region Editor Internals
 function clearTypes() {
@@ -148,7 +146,7 @@ function loadMap(dataPack) {
 }
 // #endregion
 
-//#region classes
+//#region Classes
 class Cell {
     constructor(id, x, z) {
         this.id = id
@@ -237,7 +235,7 @@ class OptionSlider {
 }
 //#endregion
 
-//#region popups
+//#region Dialog Functions
 function DisplaySave(list) {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
