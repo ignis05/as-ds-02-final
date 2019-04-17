@@ -321,18 +321,10 @@ function OptionsVideo() {
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-    let name = $('<input>').css('margin-top', '20px').attr('type', 'text').on('input', e => {
-        if (e.target.value != '')
-            $('#bApply').attr('disabled', false).removeClass('disabled')
-        else
-            $('#bApply').attr('disabled', true).addClass('disabled')
-    })
-
-    console.log('TODO: Set value of \'name\' textbox from cookie here')
-    console.log(Cookies.get('username'))
-    name.val(Cookies.get('username'))
-
-    popup.append(name)
+    popup.html('-- PLACEHOLDER --')
+        .css('color', '#00FF00')
+        .css('font-weight', 'bolder')
+        .css('font-size', '1.5em')
 
     popup.dialog({
         closeOnEscape: false,
@@ -359,6 +351,8 @@ function OptionsVideo() {
                 text: 'Back',
                 'class': 'ui-dialog-button',
                 click: function () {
+                    popup.removeAttr('style') // TEMPORARY OPTION
+
                     $(this).dialog('close')
                     DisplayOptions()
                 }
@@ -421,9 +415,9 @@ function OptionsSound() {
     //SoundOn Checkbox
     //================
 
-    new OptionSlider('musVol', 'Music Volume', 0, 100, 1, musicCookie)
-    new OptionSlider('sfxVol', 'Effects Volume', 0, 100, 1, sfxCookie)
-    new OptionSlider('spcVol', 'Speech Volume', 0, 100, 1, speechCookie)
+    new SoundOption('musVol', 'Music Volume', 0, 100, 1, musicCookie)
+    new SoundOption('sfxVol', 'Effects Volume', 0, 100, 1, sfxCookie)
+    new SoundOption('spcVol', 'Speech Volume', 0, 100, 1, speechCookie)
 
     popup.dialog({
         closeOnEscape: false,
@@ -551,7 +545,7 @@ function RoomTaken(list) {
 //#endregion
 
 //#region Classes
-class OptionSlider {
+class SoundOption {
     constructor(id, rangeLabel, min, max, step, initVal) {
         let cont = $('<div>').attr('id', id)
             .addClass('info-block')
