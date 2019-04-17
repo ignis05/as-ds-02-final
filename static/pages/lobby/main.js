@@ -129,6 +129,8 @@ $(document).ready(async () => {
 
     updateRoomMembers() // trigger function displaying members of room manually
 
+    InitClicks() // Initializes bottom panel
+
     // Flagged to remove, button will be removed
     /* // send message on button click
     $('#socket-chat-button').click(() => {
@@ -157,3 +159,95 @@ $(document).ready(async () => {
         }
     })
 })
+
+
+
+/* =================================== *
+ *  Bottom panel functions start here  *
+ * =================================== */
+
+function InitClicks() {
+    $('#button-back').click(() => {
+        DisplayMainMenu()
+    })
+
+    $('#button-info').click(() => {
+        DisplayRoomInfo()
+    })
+
+    $('#button-ready').click(() => {
+
+    })
+
+    $('#button-start').click(() => {
+
+    })
+}
+
+// #region Dialog Functions
+function DisplayMainMenu() {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 500,
+        height: 150,
+        title: 'Exit to Main Menu?',
+        buttons: [
+            {
+                text: 'Yes',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    window.location = '/'
+                }
+            },
+            {
+                text: 'No',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            }
+        ]
+    })
+}
+
+function DisplayRoomInfo() {
+    let overlay = $('#overlay')
+    let popup = $('#room-info').removeAttr('style')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 500,
+        height: 350,
+        title: 'Room Info',
+        buttons: [
+            {
+                text: 'Close',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    popup.css('display', 'none')
+                    overlay.css('display', 'none')
+                }
+            }
+        ]
+    })
+}
+// #endregion

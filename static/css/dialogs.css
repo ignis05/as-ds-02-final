@@ -1,5 +1,6 @@
-/*#region General*/
- .ui-dialog {
+/* #region General */
+
+.ui-dialog {
     max-height: 800px;
     display: flex;
     flex-direction: column;
@@ -60,9 +61,10 @@
     align-items: center;
     justify-content: space-evenly;
 }
-/*#endregion*/
 
-/*#region Multiple Buttons*/
+/* #endregion */
+
+/* #region Multiple Buttons */
 
 .buttonpane-double .ui-dialog-buttonpane {
     height: 120px;
@@ -72,9 +74,9 @@
     height: 160px;
 }
 
-/*#endregion*/
+/* #endregion */
 
-/*#region Dialogtype Confirm*/
+/* #region Dialogtype Confirm */
 
 .ui-dialog-confirm .ui-dialog-buttonpane {
     height: 80px;
@@ -96,9 +98,9 @@
     width: 40%;
 }
 
-/*#endregion*/
+/* #endregion */
 
-/*#region Button*/
+/* #region Button */
 
 .ui-dialog-button {
     font-weight: bold;
@@ -132,9 +134,42 @@
     text-shadow: none;
 }
 
-/*#endregion*/
+/* #endregion */
 
-/*#region Content Table*/
+/* #region Info Block */
+
+.info-block {
+    position: relative;
+    width: 400px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.info-label {
+    width: 120px;
+    height: 40px;
+    font-weight: bold;
+    color: #FFFFFF;
+    line-height: 36px;
+    border: 2px outset #444444CF;
+    background-color: #444444CF;
+    text-align: center;
+}
+
+.info-elem {
+    width: 260px;
+    height: 40px;
+    font-weight: bold;
+    color: #BBBBBB;
+    line-height: 36px;
+    text-align: center;
+}
+
+/* #endregion */
+
+/* #region Content Table */
 
 .ui-dialog-content .saves-wrap {
     height: 300px;
@@ -198,9 +233,11 @@
     line-height: 30px;
     padding-left: 5px;
 }
-/*#endregion*/
 
-/*#region Inputs*/
+/* #endregion */
+
+/* #region Inputs */
+
 .ui-dialog-content input[type=text] {
     width: 400px;
     height: 50px;
@@ -214,4 +251,5 @@
     border: none;
     border-radius: 15px;
 }
-/*#endregion*/
+
+/* #endregion */
