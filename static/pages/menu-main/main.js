@@ -1,14 +1,14 @@
 //#region Global Variables
 let socket = io('/lobby') // connect to socket instance
-    //#region Socket Setup
-    socket.on('error_token', () => {
-        window.alert('You are already connected from this browser. If you want do connect another client try incognito mode or other browsers')
-    })
+//#region Socket Setup
+socket.on('error_token', () => {
+    window.alert('You are already connected from this browser. If you want do connect another client try incognito mode or other browsers')
+})
 
-    socket.on('rooms_updated', async () => {
-        if ($('#room-table').filter(":visible").length) DisplayRooms()
-    })
-    //#endregion
+socket.on('rooms_updated', async () => {
+    if ($('#room-table').filter(":visible").length) DisplayRooms()
+})
+//#endregion
 
 //#endregion
 
@@ -287,7 +287,7 @@ function OptionsIdentity(firstCall) {
         draggable: false,
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
-        width: 600,
+        width: 500,
         height: 260,
         title: 'Setup Identity',
         buttons: [
@@ -341,7 +341,7 @@ function OptionsVideo() {
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
         width: 600,
-        height: 350,
+        height: 400,
         title: 'Video Options',
         buttons: [
             {
@@ -382,18 +382,42 @@ function OptionsSound() {
     //================
     //SoundOn Checkbox
     let cont = $('<div>').attr('id', 'sndOn')
-        .addClass('sndVol-elem')
+        .addClass('info-block')
     $('#dialog').append(cont)
 
     let lbl = $('<div>')
         .html('In-game Sound')
+        .addClass('ui-dialog-button')
+        .addClass('info-label')
     cont.append(lbl)
+
+    lbl.click(() => {
+        chk.click()
+        if ($('#sndOn').find('#chk').prop('checked'))
+            chkText.html('Yes')
+        else
+            chkText.html('No')
+    })
+
+
+    let ctrlCont = $('<div>')
+        .addClass('info-elem')
+    cont.append(ctrlCont)
 
     let chk = $('<input>')
         .attr('id', 'chk')
         .attr('type', 'checkbox')
         .prop('checked', soundCookie)
-    cont.append(chk)
+        .css('display', 'none')
+    ctrlCont.append(chk)
+
+    let chkText = $('<div>')
+    ctrlCont.append(chkText)
+
+    if (soundCookie)
+        chkText.html('Yes')
+    else
+        chkText.html('No')
     //SoundOn Checkbox
     //================
 
@@ -408,7 +432,7 @@ function OptionsSound() {
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
         width: 600,
-        height: 350,
+        height: 400,
         title: 'Sound Options',
         buttons: [
             {
@@ -461,7 +485,7 @@ function RoomIdentity(list) {
         draggable: false,
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
-        width: 600,
+        width: 500,
         height: 260,
         title: 'Room Setup', // This dialog will have basic options like password, eventually
         buttons: [
@@ -530,12 +554,17 @@ function RoomTaken(list) {
 class OptionSlider {
     constructor(id, rangeLabel, min, max, step, initVal) {
         let cont = $('<div>').attr('id', id)
-            .addClass('sndVol-elem')
+            .addClass('info-block')
         $('#dialog').append(cont)
 
         let lbl = $('<div>')
             .html(rangeLabel)
+            .addClass('info-label')
         cont.append(lbl)
+
+        let ctrlCont = $('<div>')
+            .addClass('info-elem')
+        cont.append(ctrlCont)
 
         let rng = $('<input>')
             .attr('id', 'rng')
@@ -544,7 +573,8 @@ class OptionSlider {
             .attr('max', max)
             .attr('step', step)
             .attr('value', initVal)
-        cont.append(rng)
+            .addClass('info-slider')
+        ctrlCont.append(rng)
 
         let nud = $('<input>')
             .attr('id', 'nud')
@@ -553,7 +583,7 @@ class OptionSlider {
             .attr('max', max)
             .attr('step', step)
             .attr('value', initVal)
-        cont.append(nud)
+        ctrlCont.append(nud)
 
         rng.on('input', () => {
             nud.val(rng.val())

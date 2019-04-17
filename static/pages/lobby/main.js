@@ -234,7 +234,7 @@ function DisplayRoomInfo() {
         draggable: false,
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
-        width: 500,
+        width: 600,
         height: 350,
         title: 'Room Info',
         buttons: [
