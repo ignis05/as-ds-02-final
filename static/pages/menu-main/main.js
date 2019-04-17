@@ -576,6 +576,11 @@ class OptionSlider {
             .addClass('info-slider')
         ctrlCont.append(rng)
 
+        let nudBox = $('<div>')
+            .addClass('info-nudBox')
+        ctrlCont.append(nudBox)
+
+
         let nud = $('<input>')
             .attr('id', 'nud')
             .attr('type', 'number')
@@ -583,12 +588,15 @@ class OptionSlider {
             .attr('max', max)
             .attr('step', step)
             .attr('value', initVal)
-        ctrlCont.append(nud)
+            .attr('pattern', '[0-9]{3}')
+        nudBox.append(nud)
 
         rng.on('input', () => {
             nud.val(rng.val())
         })
         nud.change(() => {
+            if (isNaN(parseInt(nud.val()))) nud.val(parseInt(Cookies.get('settings-' + id)))
+
             // Manual clamping to max and min -__-
             if (nud.val() > parseInt(nud.attr('max'))) nud.val(parseInt(nud.attr('max')))
             if (nud.val() < parseInt(nud.attr('min'))) nud.val(parseInt(nud.attr('min')))

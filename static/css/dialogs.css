@@ -122,7 +122,7 @@
 }
 
 .ui-dialog-button:active {
-    color: red;
+    color: #FFFF88;
 }
 
 .ui-dialog-button.disabled {
@@ -163,18 +163,38 @@
 .info-elem {
     width: 300px;
     height: 40px;
+
     font-weight: bold;
     color: #FFFFFF;
     line-height: 40px;
     text-align: center;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 .info-elem input[type='range'] {
-    width: 200px;
+    width: 240px;
+}
+
+.info-nudBox {
+    width: 40px;
+    overflow: hidden;
 }
 
 .info-elem input[type='number'] {
     width: 60px;
+    height: 40px;
+
+    background-color: transparent;
+    border: none;
+
+    font-weight: bold;
+    color: #FFFFFF;
+    line-height: 40px;
+    text-align: center;
 }
 
 /* #endregion */
@@ -264,7 +284,7 @@
 
 /* #endregion */
 
-/* #region Info Elem Slider */
+/* #region Info-Elem Slider */
 
 input[type=range].info-slider {
     -webkit-appearance: none;
@@ -295,7 +315,7 @@ input[type=range].info-slider::-webkit-slider-thumb {
     border-radius: 0;
     height: 40px;
     width: 30px;
-    background: #BBBB33CF;
+    color: #DDDDDDCF;
     cursor: pointer;
 }
 
@@ -327,7 +347,7 @@ input[type=range].info-slider::-moz-range-thumb {
     border-radius: 0;
     height: 40px;
     width: 30px;
-    background: #BBBB33CF;
+    color: #DDDDDDCF;
     cursor: pointer;
 }
 
