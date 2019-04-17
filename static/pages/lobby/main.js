@@ -103,7 +103,7 @@ async function updateRoomMembers() { // placeholder function triggered by 'rooms
     let display = ""
     roomMembers = room.clients
     for (let client of room.clients.map(client => client.name)) {
-        display += JSON.stringify(client, null, 4) + '<br>'
+        display += client + '<br>'
     }
     if (display == "") display = '[]'
     $('#socket-players').html(display)
