@@ -1,4 +1,4 @@
-
+//#region Global Variables
 let pack
 let cells
 let cellSettings
@@ -12,6 +12,7 @@ const dtOptions = {
     hour: '2-digit',
     minute: '2-digit'
 }
+//#endregion 
 
 // ==========================
 // Editor completely sucks as of now, but is usable...
@@ -30,19 +31,15 @@ $(document).ready(async () => {
         height: 5,
         type: 'dirt',
     }
-    init()
-})
 
-
-function init() {
-    ctrlsInit()
+    CtrlsInit()
 
     // Define additional setting sliders here:
     new OptionSlider('height', 'Height', 0, 20, 1, 5)
-}
+})
 
-// Clicks go here:
-function ctrlsInit() {
+//#region Init Functions
+function CtrlsInit() {
     $('#ctrl-genlvl').on('click', function () {
         pack.size = $('#ctrl-select').val()
         createTiles()
@@ -79,7 +76,9 @@ function ctrlsInit() {
         }
     })
 }
+//#endregion
 
+//#region Editor Internals
 function clearTypes() {
     let buts = Array.from($('#ctrl-types')[0].children)
     for (let i in buts) {
@@ -145,8 +144,9 @@ function loadMap(dataPack) {
         $('#data').html(JSON.stringify(pack, null, 4))
     }
 }
+// #endregion
 
-//#region classes
+//#region Classes
 class Cell {
     constructor(id, x, z) {
         this.id = id
@@ -235,7 +235,7 @@ class OptionSlider {
 }
 //#endregion
 
-//#region popups
+//#region Dialog Functions
 function DisplaySave(list) {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
@@ -294,7 +294,7 @@ function DisplaySave(list) {
         modal: true,
         draggable: false,
         resizable: false,
-        dialogClass: "no-close",
+        dialogClass: 'no-close  buttonpane-double',
         width: 600,
         height: 600,
         title: 'Save',
@@ -302,25 +302,25 @@ function DisplaySave(list) {
             {
                 id: 'bSave',
                 disabled: true,
-                text: "Save",
+                text: 'Save',
                 'class': 'ui-dialog-button disabled',
                 click: function () {
                     let saveName = name.val()
                     if (list.some(e => e.mapName == saveName)) {
-                        $(this).dialog("close")
+                        $(this).dialog('close')
                         DisplayOverwrite(saveName)
                     } else {
                         mapsDB.exportMap(saveName, pack)
-                        $(this).dialog("close")
+                        $(this).dialog('close')
                         overlay.css('display', 'none')
                     }
                 }
             },
             {
-                text: "Back",
+                text: 'Back',
                 'class': 'ui-dialog-button',
                 click: function () {
-                    $(this).dialog("close")
+                    $(this).dialog('close')
                     overlay.css('display', 'none')
                 }
             }
@@ -368,8 +368,9 @@ function DisplayLoad(list) {
                     elem.removeClass('saves-active')
                 })
                 row.addClass('saves-active')
+                
+                $('#bLoad').attr('disabled', false).removeClass('disabled')
             }
-            $('#bLoad').attr('disabled', false).removeClass('disabled')
 
         })
     }
@@ -382,7 +383,7 @@ function DisplayLoad(list) {
         modal: true,
         draggable: false,
         resizable: false,
-        dialogClass: 'no-close',
+        dialogClass: 'no-close  buttonpane-double',
         width: 600,
         height: 540,
         title: 'Load',

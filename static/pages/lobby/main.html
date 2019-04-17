@@ -5,24 +5,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
+    <title>[Cinnamon] Lobby</title>
+
+    <link rel="shortcut icon" href="/static/res/img/flavicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="/static/css/reset.css">
+    <link rel="stylesheet" href="/static/css/dialogs.css">
+    <link rel="stylesheet" href="/static/pages/lobby/main.css">
+
     <script src="/libs/jquery-3.3.1.js"></script>
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="/libs/jquery-ui.js"></script>
     <script src="/static/js/Token.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/static/js/classes/Cookies.js"></script>
     <script src="/static/pages/lobby/main.js"></script>
 </head>
 
 <body>
-    <h3>Room name</h3>
-    <div id='roomName'></div>
+    <div id="background"></div>
+    <div id="main">
+        <div id="lobby-window">
+            <div id="socket-room-name"></div>
 
-    <h3>Room members</h3>
-    <div id='display'></div>
+            <div id="lobby-content">
+                <div id="region-players">
+                    <div id="socket-players"></div>
+                </div>
 
-    <h3>Chat</h3>
-    <div id='chat'></div>
-    
-    <button id='chatButton'>Send</button><input id='chatInp'>
+                <div id="region-minimap">
+                    <div id="elem-minimap" class="map-placeholder"></div>
+                </div>
+
+                <div id="region-settings" class="text-placeholder">
+                    -- Settings --
+                </div>
+
+                <div id="region-mapdesc" class="text-placeholder">
+                    -- Map Desc --
+                </div>
+
+                <div id="region-chat">
+                    <div id="socket-chat-display"></div>
+                    <input id="socket-chat-input">
+                    <!-- FLAGGED TO DELETE <button id="socket-chat-button">Send</button> -->
+                </div>
+
+                <div id="region-maplist" class="text-placeholder">
+                    -- Maplist --
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="overlay" style="display: none">
+        <div id="backdrop"></div>
+        <div id="dialog"></div>
+    </div>
 </body>
 
 </html>
