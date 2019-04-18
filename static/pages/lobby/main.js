@@ -22,6 +22,12 @@ socket.on('user_disconnected', id => {
     // >here< place for additional function that will notify the users
 })
 
+// triggers when someone connects to room
+socket.on('user_connected', id => {
+    console.log(`user ${id} has connected`);
+    // >here< place for additional function that will notify the users
+})
+
 // triggers when someone in room changes username (optional)
 socket.on('username_change', id => {
     console.log(`user ${id} chnaged nickname`);
