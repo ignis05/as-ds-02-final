@@ -53,7 +53,7 @@
     flex-direction: column;
 }
 
-#socket-room-name {
+/* #socket-room-name {
     position: relative;
     --objHeight: 100px;
     --bdrWidth: 5px;
@@ -67,13 +67,12 @@
     background-color: #883333;
     border: var(--bdrWidth) outset #DDDDDD;
     border-bottom: var(--bdrWidth) solid #AAAAAA;
-}
+} */
 
 #lobby-content {
     position: relative;
     background-color: #0000007F;
     border: 5px outset #000000;
-    border-top: none;
     flex: 1;
 }
 
@@ -85,7 +84,6 @@
     top: 20px;
     box-sizing: content-box;
     border: 5px outset #883333;
-
     /* Temporary color of all players */
     color: #FF0000;
 }
@@ -136,13 +134,12 @@
     width: 534px;
     height: 150px;
     left: 20px;
-    bottom: 20px;
+    bottom: 120px;
     box-sizing: content-box;
     background-color: #0000007F;
     border: 5px outset #883333;
     display: flex;
     flex-direction: column;
-
 }
 
 #socket-chat-display {
@@ -151,7 +148,6 @@
     overflow: hidden scroll;
     flex: 1;
     padding: 5px;
-
     color: #DD8833;
     text-shadow: 2px 0px 1px #000000;
 }
@@ -162,7 +158,7 @@
     width: 100%;
     padding: 5px;
     caret-color: #338833;
-    background-color: #1111117F;
+    background-color: #2222227F;
     color: #DDDDDD;
     font-weight: bolder;
     border: none;
@@ -173,10 +169,59 @@
     width: 400px;
     height: 200px;
     right: 20px;
-    bottom: 20px;
+    bottom: 120px;
     box-sizing: content-box;
     background-color: #0000007F;
     border: 5px outset #883333;
+}
+
+#region-buttons {
+    position: absolute;
+    width: 974px;
+    height: 90px;
+    right: 20px;
+    bottom: 20px;
+    box-sizing: content-box;
+
+    /* background-color: #DD88337F; */
+
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.lobby-button {
+    box-sizing: border-box;
+    width: 200px;
+    height: 75px;
+    background-color: #7F7F7FCF;
+    border: 5px outset #7F7F7FCF;
+
+    color: #DDDDDD;
+    font-weight: bolder;
+    font-size: 1.5em;
+    text-shadow: 1px 1px 1px #000;
+}
+
+.lobby-button:hover {
+    font-weight: bolder;
+    box-shadow: -1px -1px 5px #fff, 1px -1px 5px #fff, -1px 1px 5px #fff, 1px 1px 5px #fff;
+    text-shadow: 1px 1px 1px #000;
+}
+
+.lobby-button:active {
+    /* color: red; */
+    border-style: inset;
+}
+
+.lobby-button:disabled {
+    border: 5px outset #7F7F7FCF;
+    background-color: #7F7F7FCF;
+    color: #BBBBBB;
+    box-shadow: none;
+    font-weight: bold;
+    text-shadow: none;
 }
 
 /* #endregion */
@@ -195,7 +240,18 @@
 
 /* #endregion */
 
+/* #region LOBBY INFO */
+
+#room-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+}
+/* #endregion */
+
 /* #region Placeholders */
+
 .map-placeholder {
     background-image: url(https://i.kym-cdn.com/entries/icons/original/000/017/280/e29.jpg);
     background-size: contain;
@@ -205,9 +261,11 @@
     width: 100%;
     height: 100%;
 }
+
 .text-placeholder {
     color: #00FF00;
     font-size: 4em;
     text-align: center;
 }
+
 /* #endregion */

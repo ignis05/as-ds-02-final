@@ -1,14 +1,14 @@
 //#region Global Variables
 let socket = io('/lobby') // connect to socket instance
-    //#region Socket Setup
-    socket.on('error_token', () => {
-        window.alert('You are already connected from this browser. If you want do connect another client try incognito mode or other browsers')
-    })
+//#region Socket Setup
+socket.on('error_token', () => {
+    window.alert('You are already connected from this browser. If you want do connect another client try incognito mode or other browsers')
+})
 
-    socket.on('rooms_updated', async () => {
-        if ($('#room-table').filter(":visible").length) DisplayRooms()
-    })
-    //#endregion
+socket.on('rooms_updated', async () => {
+    if ($('#room-table').filter(":visible").length) DisplayRooms()
+})
+//#endregion
 
 //#endregion
 
@@ -287,7 +287,7 @@ function OptionsIdentity(firstCall) {
         draggable: false,
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
-        width: 600,
+        width: 500,
         height: 260,
         title: 'Setup Identity',
         buttons: [
@@ -321,18 +321,10 @@ function OptionsVideo() {
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-    let name = $('<input>').css('margin-top', '20px').attr('type', 'text').on('input', e => {
-        if (e.target.value != '')
-            $('#bApply').attr('disabled', false).removeClass('disabled')
-        else
-            $('#bApply').attr('disabled', true).addClass('disabled')
-    })
-
-    console.log('TODO: Set value of \'name\' textbox from cookie here')
-    console.log(Cookies.get('username'))
-    name.val(Cookies.get('username'))
-
-    popup.append(name)
+    popup.html('-- PLACEHOLDER --')
+        .css('color', '#00FF00')
+        .css('font-weight', 'bolder')
+        .css('font-size', '1.5em')
 
     popup.dialog({
         closeOnEscape: false,
@@ -341,7 +333,7 @@ function OptionsVideo() {
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
         width: 600,
-        height: 350,
+        height: 400,
         title: 'Video Options',
         buttons: [
             {
@@ -359,6 +351,8 @@ function OptionsVideo() {
                 text: 'Back',
                 'class': 'ui-dialog-button',
                 click: function () {
+                    popup.removeAttr('style') // TEMPORARY OPTION
+
                     $(this).dialog('close')
                     DisplayOptions()
                 }
@@ -382,24 +376,48 @@ function OptionsSound() {
     //================
     //SoundOn Checkbox
     let cont = $('<div>').attr('id', 'sndOn')
-        .addClass('sndVol-elem')
+        .addClass('info-block')
     $('#dialog').append(cont)
 
     let lbl = $('<div>')
         .html('In-game Sound')
+        .addClass('ui-dialog-button')
+        .addClass('info-label')
     cont.append(lbl)
+
+    lbl.click(() => {
+        chk.click()
+        if ($('#sndOn').find('#chk').prop('checked'))
+            chkText.html('Yes')
+        else
+            chkText.html('No')
+    })
+
+
+    let ctrlCont = $('<div>')
+        .addClass('info-elem')
+    cont.append(ctrlCont)
 
     let chk = $('<input>')
         .attr('id', 'chk')
         .attr('type', 'checkbox')
         .prop('checked', soundCookie)
-    cont.append(chk)
+        .css('display', 'none')
+    ctrlCont.append(chk)
+
+    let chkText = $('<div>')
+    ctrlCont.append(chkText)
+
+    if (soundCookie)
+        chkText.html('Yes')
+    else
+        chkText.html('No')
     //SoundOn Checkbox
     //================
 
-    new OptionSlider('musVol', 'Music Volume', 0, 100, 1, musicCookie)
-    new OptionSlider('sfxVol', 'Effects Volume', 0, 100, 1, sfxCookie)
-    new OptionSlider('spcVol', 'Speech Volume', 0, 100, 1, speechCookie)
+    new SoundOption('musVol', 'Music Volume', 0, 100, 1, musicCookie)
+    new SoundOption('sfxVol', 'Effects Volume', 0, 100, 1, sfxCookie)
+    new SoundOption('spcVol', 'Speech Volume', 0, 100, 1, speechCookie)
 
     popup.dialog({
         closeOnEscape: false,
@@ -408,7 +426,7 @@ function OptionsSound() {
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
         width: 600,
-        height: 350,
+        height: 400,
         title: 'Sound Options',
         buttons: [
             {
@@ -461,7 +479,7 @@ function RoomIdentity(list) {
         draggable: false,
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
-        width: 600,
+        width: 500,
         height: 260,
         title: 'Room Setup', // This dialog will have basic options like password, eventually
         buttons: [
@@ -527,15 +545,20 @@ function RoomTaken(list) {
 //#endregion
 
 //#region Classes
-class OptionSlider {
+class SoundOption {
     constructor(id, rangeLabel, min, max, step, initVal) {
         let cont = $('<div>').attr('id', id)
-            .addClass('sndVol-elem')
+            .addClass('info-block')
         $('#dialog').append(cont)
 
         let lbl = $('<div>')
             .html(rangeLabel)
+            .addClass('info-label')
         cont.append(lbl)
+
+        let ctrlCont = $('<div>')
+            .addClass('info-elem')
+        cont.append(ctrlCont)
 
         let rng = $('<input>')
             .attr('id', 'rng')
@@ -544,7 +567,13 @@ class OptionSlider {
             .attr('max', max)
             .attr('step', step)
             .attr('value', initVal)
-        cont.append(rng)
+            .addClass('info-slider')
+        ctrlCont.append(rng)
+
+        let nudBox = $('<div>')
+            .addClass('info-nudBox')
+        ctrlCont.append(nudBox)
+
 
         let nud = $('<input>')
             .attr('id', 'nud')
@@ -553,12 +582,15 @@ class OptionSlider {
             .attr('max', max)
             .attr('step', step)
             .attr('value', initVal)
-        cont.append(nud)
+            .attr('pattern', '[0-9]{3}')
+        nudBox.append(nud)
 
         rng.on('input', () => {
             nud.val(rng.val())
         })
         nud.change(() => {
+            if (isNaN(parseInt(nud.val()))) nud.val(parseInt(Cookies.get('settings-' + id)))
+
             // Manual clamping to max and min -__-
             if (nud.val() > parseInt(nud.attr('max'))) nud.val(parseInt(nud.attr('max')))
             if (nud.val() < parseInt(nud.attr('min'))) nud.val(parseInt(nud.attr('min')))

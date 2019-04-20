@@ -14,10 +14,10 @@ const dtOptions = {
 }
 //#endregion 
 
-// ==========================
-// Editor completely sucks as of now, but is usable...
-//  ...in theory
-// ==========================
+/* ===================================================== *
+ *  Editor completely sucks as of now, but is usable...  *
+ *  ...in theory                                         *
+ * ===================================================== */
 
 $(document).ready(async () => {
     mapsDB = new MapDB()

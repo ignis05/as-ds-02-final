@@ -24,7 +24,8 @@
     <div id="background"></div>
     <div id="main">
         <div id="lobby-window">
-            <div id="socket-room-name"></div>
+            <!-- FLAGGED TO DELETE -->
+            <!-- <div id="socket-room-name" style="display: none"></div> -->
 
             <div id="lobby-content">
                 <div id="region-players">
@@ -52,12 +53,35 @@
                 <div id="region-maplist" class="text-placeholder">
                     -- Maplist --
                 </div>
+
+                <div id="region-buttons">
+                    <button id="button-back" class="lobby-button">Main Menu</button>
+                    <button id="button-info" class="lobby-button">Room Info</button>
+                    <button id="button-ready" class="lobby-button" disabled>Not Ready</button>
+                    <button id="button-start" class="lobby-button" disabled>Start Game</button>
+                </div>
             </div>
         </div>
     </div>
     <div id="overlay" style="display: none">
         <div id="backdrop"></div>
         <div id="dialog"></div>
+        <div id="room-info" style="display: none">
+            <div class="info-block">
+                <div class="info-label">Room Name</div>
+                <div id="socket-room-name" class="info-elem">-- PLACEHOLDER --</div>
+            </div>
+
+            <div class="info-block">
+                <div class="info-label">Room Admin</div>
+                <div id="socket-admin-name" class="info-elem">-- PLACEHOLDER --</div>
+            </div>
+
+            <div class="info-block">
+                <div class="info-label">Players</div>
+                <div id="socket-client-count" class="info-elem">-- PLACEHOLDER --</div>
+            </div>
+        </div>
     </div>
 </body>
 

@@ -1,5 +1,6 @@
-/*#region General*/
- .ui-dialog {
+/* #region General */
+
+.ui-dialog {
     max-height: 800px;
     display: flex;
     flex-direction: column;
@@ -60,9 +61,10 @@
     align-items: center;
     justify-content: space-evenly;
 }
-/*#endregion*/
 
-/*#region Multiple Buttons*/
+/* #endregion */
+
+/* #region Multiple Buttons */
 
 .buttonpane-double .ui-dialog-buttonpane {
     height: 120px;
@@ -72,9 +74,9 @@
     height: 160px;
 }
 
-/*#endregion*/
+/* #endregion */
 
-/*#region Dialogtype Confirm*/
+/* #region Dialogtype Confirm */
 
 .ui-dialog-confirm .ui-dialog-buttonpane {
     height: 80px;
@@ -90,15 +92,15 @@
     margin: 15px 0;
 }
 
-.ui-dialog-confirm .ui-dialog-button {
+.ui-dialog-confirm .ui-dialog-buttonset .ui-dialog-button {
     min-width: initial;
     max-width: initial;
     width: 40%;
 }
 
-/*#endregion*/
+/* #endregion */
 
-/*#region Button*/
+/* #region Button */
 
 .ui-dialog-button {
     font-weight: bold;
@@ -120,7 +122,7 @@
 }
 
 .ui-dialog-button:active {
-    color: red;
+    color: #FFFF88;
 }
 
 .ui-dialog-button.disabled {
@@ -132,9 +134,72 @@
     text-shadow: none;
 }
 
-/*#endregion*/
+/* #endregion */
 
-/*#region Content Table*/
+/* #region Info Block */
+
+.info-block {
+    position: relative;
+    width: 500px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.info-label {
+    width: 180px;
+    height: 40px;
+    font-weight: bold;
+    color: #FFFFFF;
+    line-height: 36px;
+    border: 2px outset #444444CF;
+    background-color: #444444CF;
+    text-align: center;
+    min-width: initial;
+    min-height: initial;
+}
+
+.info-elem {
+    width: 300px;
+    height: 40px;
+
+    font-weight: bold;
+    color: #FFFFFF;
+    line-height: 40px;
+    text-align: center;
+
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.info-elem input[type='range'] {
+    width: 240px;
+}
+
+.info-nudBox {
+    width: 40px;
+    overflow: hidden;
+}
+
+.info-elem input[type='number'] {
+    width: 60px;
+    height: 40px;
+
+    background-color: transparent;
+    border: none;
+
+    font-weight: bold;
+    color: #FFFFFF;
+    line-height: 40px;
+    text-align: center;
+}
+
+/* #endregion */
+
+/* #region Content Table */
 
 .ui-dialog-content .saves-wrap {
     height: 300px;
@@ -198,9 +263,11 @@
     line-height: 30px;
     padding-left: 5px;
 }
-/*#endregion*/
 
-/*#region Inputs*/
+/* #endregion */
+
+/* #region Inputs */
+
 .ui-dialog-content input[type=text] {
     width: 400px;
     height: 50px;
@@ -214,4 +281,79 @@
     border: none;
     border-radius: 15px;
 }
-/*#endregion*/
+
+/* #endregion */
+
+/* #region Info-Elem Slider */
+
+input[type=range].info-slider {
+    -webkit-appearance: none;
+    margin: 20px 0;
+    height: 0;
+}
+
+input[type=range].info-slider:focus {
+    outline: none;
+}
+
+/* ========================== *
+ *  Not Actively Maintained!  *
+ * vvvvvvvvvvvvvvvvvvvvvvvvvv */
+
+input[type=range].info-slider::-webkit-slider-runnable-track {
+    box-sizing: border-box;
+    width: 100%;
+    height: 40px;
+    cursor: pointer;
+    background: #444444CF;
+    border-radius: 0px;
+    border: 2px inset #444444CF;
+}
+
+input[type=range].info-slider::-webkit-slider-thumb {
+    border: none;
+    border-radius: 0;
+    height: 40px;
+    width: 30px;
+    color: #DDDDDDCF;
+    cursor: pointer;
+}
+
+input[type=range].info-slider::-webkit-slider-thumb:active {
+    background: #338833CF;
+    cursor: pointer;
+}
+
+input[type=range].info-slider:focus::-webkit-slider-runnable-track {
+    background: #444444CF;
+}
+
+/* ^^^^^^^^^^^^^^^^^^^^^^^^^^ *
+ *  Not Actively Maintained!  *
+ * ========================== */
+
+input[type=range].info-slider::-moz-range-track {
+    box-sizing: border-box;
+    width: 100%;
+    height: 40px;
+    cursor: pointer;
+    background: #444444CF;
+    border-radius: 0px;
+    border: 2px inset #444444CF;
+}
+
+input[type=range].info-slider::-moz-range-thumb {
+    border: none;
+    border-radius: 0;
+    height: 40px;
+    width: 30px;
+    color: #DDDDDDCF;
+    cursor: pointer;
+}
+
+input[type=range].info-slider::-moz-range-thumb:active {
+    background: #338833CF;
+    cursor: pointer;
+}
+
+/* #endregion */
