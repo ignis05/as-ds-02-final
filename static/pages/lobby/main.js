@@ -55,9 +55,14 @@ socket.on('chat', msg => {
 })
 
 // triggers when someone disconnects from room
-socket.on('user_disconnected', id => {
+socket.on('user_disconnected', async id => {
     console.log(`user ${id} has disconnected`);
     // >here< place for additional function that will notify the users
+
+    // update room admin if someon leaves
+    let rooms = await socket.getRooms()
+    let currentRoom = rooms.find(room => room.clients.find(client => client.id == socket.id))
+    $('#socket-admin-name').html(currentRoom.admin.name)
 })
 
 // triggers when someone connects to room
@@ -105,13 +110,19 @@ async function updateChat(msg) { // placeholder function triggered by 'chat' eve
 
 $(document).ready(async () => {
     // block of code that cheks if user succesfully joined a room
-    // if not (for example he refreshed page or sth) he should be redirected to main page
+    // if not (for example he refreshed page or room is full) he should be redirected to main page
     let myRooms = await socket.getMyRooms()
     if (Object.values(myRooms).length < 2) {
         window.location = '/'
     }
 
-    $('#socket-room-name').html(Object.values(myRooms)[1]) // display room name in #roomName div
+    // actually get room name from server room list, to prevent displaying client id instead of roomname
+    let rooms = await socket.getRooms()
+    let currentRoom = rooms.find(room => room.clients.find(client => client.id == socket.id))
+
+    $('#socket-room-name').html(currentRoom.name) // display room name in #roomName div
+
+    $('#socket-admin-name').html(currentRoom.admin.name) // fix admin display placeholder
 
     updateRoomMembers() // trigger function displaying members of room manually
 
