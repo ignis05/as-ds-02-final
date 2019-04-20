@@ -123,6 +123,8 @@ $(document).ready(async () => {
     $('#socket-room-name').html(currentRoom.name) // display room name in #roomName div
 
     $('#socket-admin-name').html(currentRoom.admin.name) // fix admin display placeholder
+    $('#socket-client-count').html(currentRoom.clients.length + '/' + currentRoom.size) // fix admin display placeholder
+
 
     updateRoomMembers() // trigger function displaying members of room manually
 
