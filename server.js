@@ -438,6 +438,14 @@ lobby.io.on('connect', socket => {
 
     // #region custom events
 
+    // kick user
+    socket.on('kick', userID => {
+        let room = lobby.getRoomByClientId(socket.id)
+        if (room.admin.id == socket.id && room.clients.find(client => client.id == userID)) // check if user is room admin and kicked user is in same room
+            lobby.io.to(userID).emit('get_kicked')
+        else console.error('ERROR: invalid kick triggered')
+    })
+
     // set readyState
     socket.on('setReadyState', ready => {
         let client = lobby.getClientByID(socket.id)

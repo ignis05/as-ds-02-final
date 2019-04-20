@@ -42,6 +42,9 @@ socket.getMyRooms = function () {
 socket.setReadyState = function (boolean) {
     socket.emit('setReadyState', boolean)
 }
+socket.kick = function (userID) {
+    socket.emit('kick', userID)
+}
 
 //      #region socket events
 
@@ -92,6 +95,13 @@ socket.on('readyState_change', async () => {
     let readyList = room.clients.map(client => `${client.name}: ${client.ready ? 'ready' : 'not ready'}`)
     console.log('list of ready cients');
     console.log(readyList);
+})
+
+// triggers when user is being kicked
+socket.on('get_kicked', () => {
+    window.alert('You have been removed from this room by administrator') // for some reason this alert doesn't work in chrome incognito mode
+    socket.leaveRoom()
+    window.location = '/'
 })
 
 //      #endregion socket events
