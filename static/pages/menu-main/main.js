@@ -105,7 +105,7 @@ async function DisplayRooms() {
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html(list[i].clients.length + ' / maxAmount')
+            cell1.html(list[i].clients.length + ' / ' + list[i].size)
         row.append(cell1)
 
         saveTable.append(row)
@@ -142,7 +142,9 @@ async function DisplayRooms() {
                 text: 'Join',
                 'class': 'ui-dialog-button disabled',
                 click: async function () {
-                    socket.emit('carryRoomName', name.val()) // assign room that will be join on next socket connection
+                    socket.emit('carryRoom', name.val()) // create room: socket.emit('carryRoom', name, password, size) 
+                    // set password to false to disable (autoset to false if undefined)
+                    // size autoset to 2 if undefined
                     window.location = '/lobby'
 
                     /* $(this).dialog('close')
@@ -494,7 +496,7 @@ function RoomIdentity(list) {
                         $(this).dialog('close')
                         RoomTaken(list)
                     } else {
-                        socket.emit('carryRoomName', saveName)
+                        socket.emit('carryRoom', saveName) // to join with password use: socket.emit('carryRoom', name, password), check should be client-sided (if password is wrong, client will attempt to join lobby, fail, and get redirected to main page)
                         window.location = '/lobby'
                     }
                 },
