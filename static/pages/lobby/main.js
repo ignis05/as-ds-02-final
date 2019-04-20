@@ -195,6 +195,7 @@ function DisplayMainMenu() {
                 text: 'Yes',
                 'class': 'ui-dialog-button',
                 click: function () {
+                    socket.leaveRoom() // prevent autoreconnect attempts
                     window.location = '/'
                 }
             },

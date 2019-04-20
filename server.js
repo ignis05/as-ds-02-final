@@ -282,7 +282,7 @@ var lobby = {
         // if room exists, joins it
         else lobby.joinRoom(socket, client.carryRoomName)
 
-        client.carryRoomName = false
+        // client.carryRoomName = false - don't clear - auto reconnect
     },
     leaveRoom(socket) {
         console.log(`${socket.id} leaves room`);
@@ -440,7 +440,11 @@ lobby.io.on('connect', socket => {
     // leave room
     socket.on('room_leave', () => {
         // if client was in room
-        if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
+        if (lobby.getRoomByClientId(socket.id)) {
+            let client = lobby.getClientByID(socket.id)
+            client.carryRoomName = false // clear autojoin on manual leave
+            lobby.leaveRoom(socket)
+        }
     })
 
     // join room
