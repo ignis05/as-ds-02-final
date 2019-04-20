@@ -412,7 +412,8 @@ lobby.io.on('connect', socket => {
             id: socket.id,
             name: (cookies["username"] ? cookies["username"] : "user#" + Math.random().toString().slice(-4)),
             connected: true,
-            carryRoom: false
+            carryRoom: false,
+            ready: false,
         }
         lobby.clients.push(client)
     }
@@ -425,13 +426,27 @@ lobby.io.on('connect', socket => {
         var client = lobby.getClientByID(socket.id)
         var room = lobby.getRoomByClientId(socket.id)
 
+        client.ready = false
+
         if (room) { // if client in room remove him from room and notify room that he left
+            lobby.io.to(room.name).emit('readyState_change', socket.id)
             lobby.leaveRoom(socket)
         }
+
         client.connected = false
     })
 
     // #region custom events
+
+    // set readyState
+    socket.on('setReadyState', ready => {
+        let client = lobby.getClientByID(socket.id)
+        let room = lobby.getRoomByClientId(socket.id)
+        client.ready = ready
+
+        // notify room
+        lobby.io.to(room.name).emit('readyState_change', socket.id)
+    })
 
     // carry roomname - used to carry roomname from / to /lobby
     socket.on('carryRoom', (roomName, roomPassword, roomSize) => {

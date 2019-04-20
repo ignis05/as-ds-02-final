@@ -39,6 +39,9 @@ socket.getMyRooms = function () {
         })
     })
 }
+socket.setReadyState = function (boolean) {
+    socket.emit('setReadyState', boolean)
+}
 
 //      #region socket events
 
@@ -80,6 +83,15 @@ socket.on('username_change', id => {
 // triggers when someone joins / leaves / creates a room - conveinient to update room list or sth
 socket.on('rooms_updated', () => {
     updateRoomMembers()
+})
+
+// triggers when user in room changes his ready state
+socket.on('readyState_change', async () => {
+    let rooms = await socket.getRooms()
+    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+    let readyList = room.clients.map(client => `${client.name}: ${client.ready ? 'ready' : 'not ready'}`)
+    console.log('list of ready cients');
+    console.log(readyList);
 })
 
 //      #endregion socket events
@@ -177,8 +189,12 @@ function InitClicks() {
         DisplayRoomInfo()
     })
 
-    $('#button-ready').click(() => {
-
+    $('#button-ready').click(async () => {
+        let rooms = await socket.getRooms()
+        let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+        let client = room.clients.find(client => client.id == socket.id)
+        socket.setReadyState(!client.ready)
+        $('#button-ready').html(`${!client.ready ? 'Ready' : 'Not ready'}`)
     })
 
     $('#button-start').click(() => {
