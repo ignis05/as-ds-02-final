@@ -1,4 +1,4 @@
 .vscode
-node_modules
 !node_modules/pathfinding-customized
+node_modules
 static/database/test1.db
