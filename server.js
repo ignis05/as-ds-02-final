@@ -17,7 +17,7 @@ var Datastore = require('nedb')
 var cookieParser = require("cookie-parser")
 app.use(cookieParser())
 var cookie = require('cookie')
-var PF = require('pathfinding')
+var PF = require('pathfinding-customized')
 // #endregion initial
 
 var ServerDB = {
@@ -25,7 +25,7 @@ var ServerDB = {
 }
 
 var test_LoadedMap = {
-    "size": "4",
+    "size": "8",
     "level": [{
         "id": 0,
         "x": 0,
@@ -48,78 +48,366 @@ var test_LoadedMap = {
         "id": 3,
         "x": 3,
         "z": 0,
-        "type": "rock",
+        "type": "dirt",
         "height": 5
     }, {
         "id": 4,
-        "x": 0,
-        "z": 1,
+        "x": 4,
+        "z": 0,
         "type": "dirt",
         "height": 5
     }, {
         "id": 5,
-        "x": 1,
-        "z": 1,
-        "type": "rock",
+        "x": 5,
+        "z": 0,
+        "type": "dirt",
         "height": 5
     }, {
         "id": 6,
-        "x": 2,
-        "z": 1,
+        "x": 6,
+        "z": 0,
         "type": "dirt",
         "height": 5
     }, {
         "id": 7,
-        "x": 3,
-        "z": 1,
+        "x": 7,
+        "z": 0,
         "type": "dirt",
         "height": 5
     }, {
         "id": 8,
         "x": 0,
-        "z": 2,
-        "type": "dirt",
+        "z": 1,
+        "type": "rock",
         "height": 5
     }, {
         "id": 9,
         "x": 1,
-        "z": 2,
+        "z": 1,
         "type": "rock",
         "height": 5
     }, {
         "id": 10,
         "x": 2,
-        "z": 2,
-        "type": "dirt",
+        "z": 1,
+        "type": "rock",
         "height": 5
     }, {
         "id": 11,
         "x": 3,
+        "z": 1,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 12,
+        "x": 4,
+        "z": 1,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 13,
+        "x": 5,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 14,
+        "x": 6,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 15,
+        "x": 7,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 16,
+        "x": 0,
         "z": 2,
         "type": "rock",
         "height": 5
     }, {
-        "id": 12,
+        "id": 17,
+        "x": 1,
+        "z": 2,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 18,
+        "x": 2,
+        "z": 2,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 19,
+        "x": 3,
+        "z": 2,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 20,
+        "x": 4,
+        "z": 2,
+        "type": "dirt",
+        "height": "13"
+    }, {
+        "id": 21,
+        "x": 5,
+        "z": 2,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 22,
+        "x": 6,
+        "z": 2,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 23,
+        "x": 7,
+        "z": 2,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 24,
         "x": 0,
         "z": 3,
         "type": "dirt",
         "height": 5
     }, {
-        "id": 13,
+        "id": 25,
         "x": 1,
         "z": 3,
         "type": "rock",
         "height": 5
     }, {
-        "id": 14,
+        "id": 26,
         "x": 2,
+        "z": 3,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 27,
+        "x": 3,
+        "z": 3,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 28,
+        "x": 4,
+        "z": 3,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 29,
+        "x": 5,
+        "z": 3,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 30,
+        "x": 6,
+        "z": 3,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 31,
+        "x": 7,
         "z": 3,
         "type": "dirt",
         "height": 5
     }, {
-        "id": 15,
+        "id": 32,
+        "x": 0,
+        "z": 4,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 33,
+        "x": 1,
+        "z": 4,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 34,
+        "x": 2,
+        "z": 4,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 35,
         "x": 3,
-        "z": 3,
+        "z": 4,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 36,
+        "x": 4,
+        "z": 4,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 37,
+        "x": 5,
+        "z": 4,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 38,
+        "x": 6,
+        "z": 4,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 39,
+        "x": 7,
+        "z": 4,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 40,
+        "x": 0,
+        "z": 5,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 41,
+        "x": 1,
+        "z": 5,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 42,
+        "x": 2,
+        "z": 5,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 43,
+        "x": 3,
+        "z": 5,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 44,
+        "x": 4,
+        "z": 5,
+        "type": "dirt",
+        "height": "4"
+    }, {
+        "id": 45,
+        "x": 5,
+        "z": 5,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 46,
+        "x": 6,
+        "z": 5,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 47,
+        "x": 7,
+        "z": 5,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 48,
+        "x": 0,
+        "z": 6,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 49,
+        "x": 1,
+        "z": 6,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 50,
+        "x": 2,
+        "z": 6,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 51,
+        "x": 3,
+        "z": 6,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 52,
+        "x": 4,
+        "z": 6,
+        "type": "dirt",
+        "height": "4"
+    }, {
+        "id": 53,
+        "x": 5,
+        "z": 6,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 54,
+        "x": 6,
+        "z": 6,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 55,
+        "x": 7,
+        "z": 6,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 56,
+        "x": 0,
+        "z": 7,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 57,
+        "x": 1,
+        "z": 7,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 58,
+        "x": 2,
+        "z": 7,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 59,
+        "x": 3,
+        "z": 7,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 60,
+        "x": 4,
+        "z": 7,
+        "type": "dirt",
+        "height": "4"
+    }, {
+        "id": 61,
+        "x": 5,
+        "z": 7,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 62,
+        "x": 6,
+        "z": 7,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 63,
+        "x": 7,
+        "z": 7,
         "type": "dirt",
         "height": 5
     }]
@@ -136,16 +424,16 @@ function createMatrix(dbfile) {
         }
         switch (map[cell].type) {
             case "dirt":
-                matrix[matrix.length - 1].push(0)
+                matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
                 break
 
             case "rock":
-                matrix[matrix.length - 1].push(1)
+                matrix[matrix.length - 1].push([1, parseInt(map[cell].height)])
                 break
         }
 
     }
-    console.log(matrix);
+    console.log("KeK");
 
     return matrix
 }
@@ -473,9 +761,8 @@ var lobby = {
         if (room.clients.length == 0) { // if room empty, delete it
             let i = lobby.rooms.indexOf(room)
             lobby.rooms.splice(i, 1)
-        }
-        else { // if room not empty after client leave
-            if (room.admin == client) {// if user was room admin, choose new admin
+        } else { // if room not empty after client leave
+            if (room.admin == client) { // if user was room admin, choose new admin
                 room.admin = room.clients[0]
             }
         }
@@ -491,8 +778,7 @@ var lobby = {
 
         if (lobby.getRoomByName(roomName)) {
             console.error(`ERROR: room ${roomName} already exists`)
-        }
-        else {
+        } else {
             // if client was in room - leave it
             if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
 
@@ -517,8 +803,7 @@ var lobby = {
 
         if (!lobby.getRoomByName(roomName)) { // if room doesn't exist
             console.error(`ERROR: trying to join room that doesn't exist`)
-        }
-        else {
+        } else {
             // if client was in room
             if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
 

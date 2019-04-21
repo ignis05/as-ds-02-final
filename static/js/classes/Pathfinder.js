@@ -10,17 +10,17 @@ class Pathfinder {
             }
             switch (map[cell].type) {
                 case "dirt":
-                    matrix[matrix.length - 1].push(0)
+                    matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
                     break
-
+    
                 case "rock":
-                    matrix[matrix.length - 1].push(1)
+                    matrix[matrix.length - 1].push([1, parseInt(map[cell].height)])
                     break
             }
-
+    
         }
-        console.log(matrix);
-
+        console.log("KeK");
+    
         return matrix
     }
 
@@ -32,8 +32,8 @@ class Pathfinder {
             let moveInterval = setInterval(() => {
                 unitPosition.z = movePath[move][1]
                 unitPosition.x = movePath[move][0]
-                console.log(matrix);
-                unit.mesh.position.set(unitPosition.x * Settings.tileSize, 50 ,unitPosition.z * Settings.tileSize)
+                unitPosition.height = matrix[unitPosition.z][unitPosition.x].position.y
+                unit.mesh.position.set(unitPosition.x * Settings.tileSize, unitPosition.height ,unitPosition.z * Settings.tileSize)
                 matrix[unitPosition.z][unitPosition.x].material.color.set(0xff0000)
                 move++
                 if (move > movePath.length - 1) {
