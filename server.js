@@ -464,11 +464,9 @@ app.post("/database_create", function (req, res) { // create database in array a
 
     let i = ServerDB.databases.findIndex(entry => entry.filename == data.filename)
     if (i != -1) { // already exists
-        res.send({
-            msg: "OK",
-            id: i
-        });
-    } else {
+        res.send({ msg: "OK", id: i });
+    }
+    else {
         let db = new Datastore({
             filename: path.join(__dirname + `/static/database/${data.filename}`),
             autoload: true
@@ -479,10 +477,7 @@ app.post("/database_create", function (req, res) { // create database in array a
             filename: data.filename
         })
         let index = ServerDB.databases.length - 1
-        res.send({
-            msg: "OK",
-            id: index
-        });
+        res.send({ msg: "OK", id: index });
     }
 })
 
@@ -495,9 +490,7 @@ app.post("/database_insert", function (req, res) {
     db.insert(data.entry, function (err, entry) {
         console.log("entry added")
         console.log(entry)
-        res.send({
-            msg: "OK"
-        });
+        res.send({ msg: "OK" });
     });
 })
 
@@ -510,10 +503,7 @@ app.post("/database_findOne", function (req, res) {
     db.findOne(data.match, function (err, entry) {
         console.log("entry found")
         console.log(entry)
-        res.send({
-            msg: "OK",
-            entry: entry
-        });
+        res.send({ msg: "OK", entry: entry });
     });
 })
 
@@ -526,10 +516,7 @@ app.post("/database_find", function (req, res) {
     db.find(data.match, function (err, entries) {
         console.log("entries found")
         console.log(entries)
-        res.send({
-            msg: "OK",
-            entries: entries
-        });
+        res.send({ msg: "OK", entries: entries });
     });
 })
 
@@ -541,10 +528,7 @@ app.post("/database_count", function (req, res) {
 
     db.count(data.match, function (err, count) {
         console.log(`${count} entries found`)
-        res.send({
-            msg: "OK",
-            count: count
-        });
+        res.send({ msg: "OK", count: count });
     });
 })
 
@@ -558,10 +542,7 @@ app.post("/database_remove", function (req, res) {
 
     db.remove(data.match, data.params, function (err, count) {
         console.log(`removed ${count} entries`)
-        res.send({
-            msg: "OK",
-            count: count
-        });
+        res.send({ msg: "OK", count: count });
     });
 })
 
@@ -572,14 +553,9 @@ app.post("/database_update", function (req, res) {
 
     let db = ServerDB.databases[data.id].db
 
-    db.update(data.match, {
-        $set: data.entry
-    }, {}, function (err, count) {
+    db.update(data.match, { $set: data.entry }, {}, function (err, count) {
         console.log("updated " + count)
-        res.send({
-            msg: "OK",
-            count: count
-        });
+        res.send({ msg: "OK", count: count });
     });
 })
 // #endregion ajax - database
@@ -587,20 +563,14 @@ app.post("/database_update", function (req, res) {
 // #region ajax - token
 app.post("/token", function (req, res) {
     getToken(req, res)
-    res.send({
-        msg: "OK"
-    })
+    res.send({ msg: "OK" })
 })
-
 function getToken(req, res) {
     let cookies = req.cookies
     // console.log(cookies);
     let token = (cookies["token"] ? cookies["token"] : Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10))
-    let time = 1000 * 60 * 60 * 8 // 8h
-    res.cookie("token", token, {
-        expires: new Date(Date.now() + time),
-        httpOnly: true
-    })
+    let time = 1000 * 60 * 60 * 8      // 8h
+    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: true })
     console.log("token:", token);
     return token
 }
@@ -622,10 +592,12 @@ app.post("/getTestPages", function (req, res) {
         }
         testPages.push(obj)
     })
-    res.send({
-        msg: "OK",
-        testPages: testPages
-    })
+    res.send(
+        {
+            msg: "OK",
+            testPages: testPages
+        }
+    )
 })
 app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
@@ -642,14 +614,16 @@ app.post("/getModels", function (req, res) {
         }
         models.push(obj)
     })
-    res.send({
-        msg: "OK",
-        models: models
-    })
+    res.send(
+        {
+            msg: "OK",
+            models: models
+        }
+    )
 })
 
 app.post("/sendClickedPoint", function (req, res) {
-    let data = req.body
+    let data = req.bodygit 
     let temp_grid = grid.clone() //after finding path pathfinder modifies grid, so backup bois    
     let path = finder.findPath(data.unit.x, data.unit.z, data.click.x, data.click.z, temp_grid)
     console.log(path);
@@ -761,8 +735,9 @@ var lobby = {
         if (room.clients.length == 0) { // if room empty, delete it
             let i = lobby.rooms.indexOf(room)
             lobby.rooms.splice(i, 1)
-        } else { // if room not empty after client leave
-            if (room.admin == client) { // if user was room admin, choose new admin
+        }
+        else { // if room not empty after client leave
+            if (room.admin == client) {// if user was room admin, choose new admin
                 room.admin = room.clients[0]
             }
         }
@@ -778,7 +753,8 @@ var lobby = {
 
         if (lobby.getRoomByName(roomName)) {
             console.error(`ERROR: room ${roomName} already exists`)
-        } else {
+        }
+        else {
             // if client was in room - leave it
             if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
 
@@ -803,7 +779,8 @@ var lobby = {
 
         if (!lobby.getRoomByName(roomName)) { // if room doesn't exist
             console.error(`ERROR: trying to join room that doesn't exist`)
-        } else {
+        }
+        else {
             // if client was in room
             if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
 
@@ -845,40 +822,14 @@ lobby.io.on('connect', socket => {
         client.id = socket.id // update socket id
         client.connected = true // update status
 
-        if (client.carryRoomName) { // if redirected from / to /lobby
-            if (!lobby_rooms.find(room => room.name == client.carryRoomName)) { // if room doesn't exist
-                let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-                if (room) { // if client was in room
-                    lobby_leaveRoom()
-                }
-                let new_room = {
-                    name: client.carryRoomName,
-                    clients: [
-                        client
-                    ],
-                    admin: client
-                }
-                lobby_rooms.push(new_room)
-
-                socket.join(client.carryRoomName)
-
-                // notify all
-                io_lobby.emit('rooms_updated')
-            } else {
-                let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-                if (room) { // if client was in room
-                    lobby_leaveRoom()
-                }
-                room = lobby_rooms.find(room => room.name == client.carryRoomName)
-                room.clients.push(client)
-                socket.join(client.carryRoomName)
-
-                // notify all
-                io_lobby.emit('rooms_updated')
-            }
-            client.carryRoomName = false
+        // if redirected from / to /lobby
+        if (client.carryRoomName) {
+            lobby.joinRoomAfterRedirect(socket, client)
         }
-    } else {
+
+    }
+    else {
+        // create new client entry
         client = {
             token: token,
             id: socket.id,
@@ -890,37 +841,7 @@ lobby.io.on('connect', socket => {
     }
     // #endregion client indentification
 
-    // #region functions
-    function lobby_leaveRoom() {
-        var client = lobby_clients.find(client => client.id == socket.id)
-        var room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-
-        // remove from room array
-        let i = room.clients.indexOf(client)
-        room.clients.splice(i, 1);
-
-        socket.leave(room.name)
-
-        // if room empty, delete it
-        if (room.clients.length == 0) {
-            let i = lobby_rooms.indexOf(room)
-            lobby_rooms.splice(i, 1)
-        } else {
-            // if user was room admin, choose new admin
-            if (room.admin == client) {
-                room.admin = room.clients[0]
-            }
-        }
-
-        // notify room
-        io_lobby.to(room.name).emit('user_disconnected', socket.id)
-
-        // notify all
-        io_lobby.emit('rooms_updated')
-    }
-    // #endregion functions
-
-    // notify room on user disconnect
+    // built in disconnect event :
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
 
@@ -948,30 +869,7 @@ lobby.io.on('connect', socket => {
 
     // create room
     socket.on('room_create', roomName => {
-        console.log(`${socket.id} is creating room ${roomName}`);
-        if (lobby_rooms.find(room => room.name == roomName)) {
-            console.error(`ERROR: room ${roomName} already exists`)
-        } else {
-            let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-            if (room) { // if client was in room
-                lobby_leaveRoom()
-            }
-
-            let client = lobby_clients.find(client => client.id == socket.id)
-            let new_room = {
-                name: roomName,
-                clients: [
-                    client
-                ],
-                admin: client
-            }
-            lobby_rooms.push(new_room)
-
-            socket.join(roomName)
-
-            // notify all
-            io_lobby.emit('rooms_updated')
-        }
+        lobby.createRoom(socket, roomName)
     })
 
     // leave room
@@ -982,23 +880,7 @@ lobby.io.on('connect', socket => {
 
     // join room
     socket.on('room_join', roomName => {
-        console.log(`${socket.id} is joining room ${roomName}`);
-
-        if (!lobby_rooms.find(room => room.name == roomName)) { // if room doesn't exist
-            console.error(`ERROR: trying to join room that doesn't exist`)
-        } else {
-            let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-            if (room) { // if client was in room
-                lobby_leaveRoom()
-            }
-            room = lobby_rooms.find(room => room.name == roomName)
-            let client = lobby_clients.find(client => client.id == socket.id)
-            room.clients.push(client)
-            socket.join(roomName)
-
-            // notify all
-            io_lobby.emit('rooms_updated')
-        }
+        lobby.joinRoom(socket, roomName)
     })
 
     // send to room
