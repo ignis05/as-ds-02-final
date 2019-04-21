@@ -27,93 +27,6 @@
     background-color: #000000AF;
     z-index: 5;
 }
-.no-close .ui-dialog-titlebar-close {
-    display: none;
-}
-
-.ui-dialog {
-    max-height: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 100;
-}
-
-.ui-dialog-titlebar {
-    --objHeight: 100px;
-    --bdrWidth: 2px;
-
-    color: #fff;
-    width: 100%;
-    height: var(--objHeight);
-    line-height: calc(var(--objHeight) - 2 * var(--bdrWidth));
-    text-align: center;
-    font-family: serif;
-    font-size: 3em;
-    background-color: #883333CF;
-    border: var(--bdrWidth) solid #DDDDDD;
-}
-
-.ui-dialog-content {
-    width: 100%;
-    text-align: left;
-    background-color: #333333CF;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-around;
-    overflow: hidden auto;
-    padding-top: 10px;
-    border-left: 2px outset #333333CF;
-    border-right: 2px outset #333333CF;
-}
-
-.ui-dialog-buttonpane {
-    width: 100%;
-    height: 80px;
-    background-color: #333333CF;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden auto;
-    border-left: 2px outset #333333CF;
-    border-bottom: 2px outset #333333CF;
-    border-right: 2px outset #333333CF;
-}
-
-.ui-dialog-buttonset {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden auto;
-}
-
-.ui-dialog-button {
-    font-weight: bold;
-    color: #fff;
-    min-width: 200px;
-    width: 80%;
-    height: 40px;
-    line-height: 36px;
-    border: 2px outset #444444CF;
-    background-color: #444444CF;
-    text-align: center;
-}
-
-.ui-dialog-button:hover {
-    font-weight: bolder;
-    box-shadow: -1px -1px 5px #fff, 1px -1px 5px #fff, -1px 1px 5px #fff, 1px 1px 5px #fff;
-    text-shadow: 1px 1px 1px #000;
-}
-
-.ui-dialog-button:active {
-    color: red;
-}
 /*#endregion*/
 
 /*#region MAIN MENU*/
@@ -147,7 +60,7 @@
     border: 5px outset #883333;
 
     color: #FFFFFF;
-    text-shadow: 1px 1px 2px #000;
+    text-shadow: 2px 2px 2px #000;
 }
 .main-button:hover { 
     border-style: inset;

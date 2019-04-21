@@ -432,25 +432,131 @@ io_test.on('connect', socket => { // listen for connection on '/socket.io_test' 
 // #endregion socket.io - test
 
 // #region socket.io - lobby
-var lobby_clients = [] // assigning clients with tokens
-var lobby_rooms = [] // rooms list
-const io_lobby = io.of('/lobby')
-io_lobby.on('connect', socket => {
+var lobby = {
+    io: io.of('/lobby'), // separate instace for lobby
+    clients: [], // clients data
+    rooms: [], // active rooms
+
+    // search functions
+    getClientByID: id => lobby.clients.find(client => client.id == id),
+    getClientByToken: token => lobby.clients.find(client => client.token == token),
+    getRoomByName: roomName => lobby.rooms.find(room => room.name == roomName),
+    getRoomByClientId: id => lobby.rooms.find(room => room.clients.find(client => client.id == id)),
+
+    // utility functions
+    joinRoomAfterRedirect(socket) {
+        console.log(`${socket.id} joins room adter redirect`);
+
+        var client = lobby.getClientByID(socket.id)
+
+        // if room doesn't exist - creates new room
+        if (!lobby.getRoomByName(client.carryRoomName)) lobby.createRoom(socket, client.carryRoomName)
+
+        // if room exists, joins it
+        else lobby.joinRoom(socket, client.carryRoomName)
+
+        client.carryRoomName = false
+    },
+    leaveRoom(socket) {
+        console.log(`${socket.id} leaves room`);
+
+        var client = lobby.getClientByID(socket.id)
+        var room = lobby.getRoomByClientId(socket.id)
+
+        // remove from room array
+        let i = room.clients.indexOf(client)
+        room.clients.splice(i, 1);
+
+        socket.leave(room.name)
+
+
+        if (room.clients.length == 0) { // if room empty, delete it
+            let i = lobby.rooms.indexOf(room)
+            lobby.rooms.splice(i, 1)
+        }
+        else { // if room not empty after client leave
+            if (room.admin == client) {// if user was room admin, choose new admin
+                room.admin = room.clients[0]
+            }
+        }
+
+        // notify room
+        lobby.io.to(room.name).emit('user_disconnected', socket.id)
+
+        // notify all
+        lobby.io.emit('rooms_updated')
+    },
+    createRoom(socket, roomName) {
+        console.log(`${socket.id} is creating room ${roomName}`);
+
+        if (lobby.getRoomByName(roomName)) {
+            console.error(`ERROR: room ${roomName} already exists`)
+        }
+        else {
+            // if client was in room - leave it
+            if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
+
+            let client = lobby.clients.find(client => client.id == socket.id)
+            let room = {
+                name: roomName,
+                clients: [
+                    client
+                ],
+                admin: client
+            }
+            lobby.rooms.push(room)
+
+            socket.join(roomName)
+
+            // notify all
+            lobby.io.emit('rooms_updated')
+        }
+    },
+    joinRoom(socket, roomName) {
+        console.log(`${socket.id} is joining room ${roomName}`);
+
+        if (!lobby.getRoomByName(roomName)) { // if room doesn't exist
+            console.error(`ERROR: trying to join room that doesn't exist`)
+        }
+        else {
+            // if client was in room
+            if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
+
+            let room = lobby.getRoomByName(roomName)
+            let client = lobby.getClientByID(socket.id)
+
+            room.clients.push(client)
+            socket.join(roomName)
+
+            // notify room
+            lobby.io.to(room.name).emit('user_connected', socket.id)
+
+            // notify all
+            lobby.io.emit('rooms_updated')
+        }
+    },
+}
+
+lobby.io.on('connect', socket => {
     console.log(`${socket.id} connected`);
+
     var cookies = cookie.parse(socket.handshake.headers.cookie);
     var token = cookies["token"]
     // console.log(`user token: ${token}`)
 
-    // identify client by token
-    var client = lobby_clients.find(client => client.token == token)
-    // console.log(client);
+    // #region client indentification
+    var client = lobby.getClientByToken(token)
+    console.log(client);
+
 
     if (client) { // server remembers client profile
-        if (client.connected) {
-            // someone is already connected using this token
+
+        if (client.connected) { // someone is already connected using this token
             socket.emit('error_token')
             return
         }
+
+        // update client data
         client.id = socket.id // update socket id
         client.connected = true // update status
 
@@ -495,8 +601,9 @@ io_lobby.on('connect', socket => {
             connected: true,
             carryRoomName: false
         }
-        lobby_clients.push(client)
+        lobby.clients.push(client)
     }
+    // #endregion client indentification
 
     // #region functions
     function lobby_leaveRoom() {
@@ -531,17 +638,21 @@ io_lobby.on('connect', socket => {
     // notify room on user disconnect
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
-        var client = lobby_clients.find(client => client.id == socket.id)
-        var room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
+
+        var client = lobby.getClientByID(socket.id)
+        var room = lobby.getRoomByClientId(socket.id)
+
         if (room) { // if client in room remove him from room and notify room that he left
-            lobby_leaveRoom()
+            lobby.leaveRoom(socket)
         }
         client.connected = false
     })
 
+    // #region custom events
+
     // carry roomname - used to carry roomname from / to /lobby
     socket.on('carryRoomName', roomName => {
-        var client = lobby_clients.find(client => client.id == socket.id)
+        var client = lobby.getClientByID(socket.id)
         client.carryRoomName = roomName
     })
 
@@ -580,11 +691,8 @@ io_lobby.on('connect', socket => {
 
     // leave room
     socket.on('room_leave', () => {
-        console.log(`${socket.id} leaves room`);
-        let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-        if (room) { // if client was in room
-            lobby_leaveRoom()
-        }
+        // if client was in room
+        if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
     })
 
     // join room
@@ -611,28 +719,31 @@ io_lobby.on('connect', socket => {
     // send to room
     socket.on('send', msg => {
         console.log(`${socket.id} sent: ${msg}`)
-        let room = lobby_rooms.find(room => room.clients.find(client => client.id == socket.id))
-        if (room) io_lobby.to(room.name).emit('chat', msg)
+        let room = lobby.getRoomByClientId(socket.id)
+        if (room) lobby.io.to(room.name).emit('chat', msg)
     })
 
     // respond with rooms list
     socket.on('getRooms', res => {
-        res(lobby_rooms)
+        res(lobby.rooms)
     })
 
     // respond with clients list
     socket.on('getClients', res => {
-        res(lobby_clients)
+        res(lobby.clients)
     })
 
     // change client name
     socket.on('setName', name => {
-        let client = lobby_clients.find(client => client.id == socket.id)
+        let client = lobby.getClientByID(socket.id)
         client.name = name
-        let room = lobby_rooms.find(room => room.clients.indexOf(client) != -1)
+
         // if in room, notify room
-        if (room) io_lobby.to(room.name).emit('username_change', socket.id)
+        let room = lobby.getRoomByClientId(socket.id)
+        if (room) lobby.io.to(room.name).emit('username_change', socket.id)
     })
+
+    // #endregion custom events
 
 })
 // #endregion socket.io - lobby
