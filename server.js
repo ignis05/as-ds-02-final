@@ -623,7 +623,7 @@ app.post("/getModels", function (req, res) {
 })
 
 app.post("/sendClickedPoint", function (req, res) {
-    let data = req.bodygit 
+    let data = req.body 
     let temp_grid = grid.clone() //after finding path pathfinder modifies grid, so backup bois    
     let path = finder.findPath(data.unit.x, data.unit.z, data.click.x, data.click.z, temp_grid)
     console.log(path);
