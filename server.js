@@ -277,12 +277,12 @@ var lobby = {
         var client = lobby.getClientByID(socket.id)
 
         // if room doesn't exist - creates new room
-        if (!lobby.getRoomByName(client.carryRoomName)) lobby.createRoom(socket, client.carryRoomName)
+        if (!lobby.getRoomByName(client.carryRoom.name)) lobby.createRoom(socket, client.carryRoom)
 
         // if room exists, joins it
-        else lobby.joinRoom(socket, client.carryRoomName)
+        else lobby.joinRoom(socket, client.carryRoom.name, client.carryRoom.password)
 
-        client.carryRoomName = false
+        // client.carryRoom = false - don't clear - auto reconnect
     },
     leaveRoom(socket) {
         console.log(`${socket.id} leaves room`);
@@ -313,33 +313,35 @@ var lobby = {
         // notify all
         lobby.io.emit('rooms_updated')
     },
-    createRoom(socket, roomName) {
-        console.log(`${socket.id} is creating room ${roomName}`);
+    createRoom(socket, room) {
+        console.log(`${socket.id} is creating room ${room.name}`);
 
-        if (lobby.getRoomByName(roomName)) {
-            console.error(`ERROR: room ${roomName} already exists`)
+        if (lobby.getRoomByName(room.name)) {
+            console.error(`ERROR: room ${room.name} already exists`)
         }
         else {
             // if client was in room - leave it
             if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
 
             let client = lobby.clients.find(client => client.id == socket.id)
-            let room = {
-                name: roomName,
+            let newRoom = {
+                name: room.name,
                 clients: [
                     client
                 ],
-                admin: client
+                admin: client,
+                size: room.size,
+                password: room.password
             }
-            lobby.rooms.push(room)
+            lobby.rooms.push(newRoom)
 
-            socket.join(roomName)
+            socket.join(room.name)
 
             // notify all
             lobby.io.emit('rooms_updated')
         }
     },
-    joinRoom(socket, roomName) {
+    joinRoom(socket, roomName, passwd) {
         console.log(`${socket.id} is joining room ${roomName}`);
 
         if (!lobby.getRoomByName(roomName)) { // if room doesn't exist
@@ -351,6 +353,16 @@ var lobby = {
 
             let room = lobby.getRoomByName(roomName)
             let client = lobby.getClientByID(socket.id)
+
+            if (room.size <= room.clients.length) {
+                console.error(`ERROR: room is full`)
+                return
+            }
+
+            if (room.password && room.password != passwd) {
+                console.error(`ERROR: password wrong`)
+                return
+            }
 
             room.clients.push(client)
             socket.join(roomName)
@@ -388,8 +400,8 @@ lobby.io.on('connect', socket => {
         client.connected = true // update status
 
         // if redirected from / to /lobby
-        if (client.carryRoomName) {
-            lobby.joinRoomAfterRedirect(socket, client)
+        if (client.carryRoom) {
+            lobby.joinRoomAfterRedirect(socket)
         }
 
     }
@@ -400,7 +412,8 @@ lobby.io.on('connect', socket => {
             id: socket.id,
             name: (cookies["username"] ? cookies["username"] : "user#" + Math.random().toString().slice(-4)),
             connected: true,
-            carryRoomName: false
+            carryRoom: false,
+            ready: false,
         }
         lobby.clients.push(client)
     }
@@ -413,18 +426,46 @@ lobby.io.on('connect', socket => {
         var client = lobby.getClientByID(socket.id)
         var room = lobby.getRoomByClientId(socket.id)
 
+        client.ready = false
+
         if (room) { // if client in room remove him from room and notify room that he left
+            lobby.io.to(room.name).emit('readyState_change', socket.id)
             lobby.leaveRoom(socket)
         }
+
         client.connected = false
     })
 
     // #region custom events
 
+    // kick user
+    socket.on('kick', userID => {
+        let room = lobby.getRoomByClientId(socket.id)
+        if (room.admin.id == socket.id && room.clients.find(client => client.id == userID)) // check if user is room admin and kicked user is in same room
+            lobby.io.to(userID).emit('get_kicked')
+        else console.error('ERROR: invalid kick triggered')
+    })
+
+    // set readyState
+    socket.on('setReadyState', ready => {
+        let client = lobby.getClientByID(socket.id)
+        let room = lobby.getRoomByClientId(socket.id)
+        client.ready = ready
+
+        // notify room
+        lobby.io.to(room.name).emit('readyState_change', socket.id)
+    })
+
     // carry roomname - used to carry roomname from / to /lobby
-    socket.on('carryRoomName', roomName => {
+    socket.on('carryRoom', (roomName, roomPassword, roomSize) => {
+        if (!roomSize) roomSize = 2 // placeholder for room size
+        if (!roomPassword) roomPassword = false // placeholder for password protected rooms
         var client = lobby.getClientByID(socket.id)
-        client.carryRoomName = roomName
+        client.carryRoom = {
+            name: roomName,
+            size: roomSize,
+            password: roomPassword
+        }
     })
 
     // return active rooms to which socket is connected
@@ -440,12 +481,16 @@ lobby.io.on('connect', socket => {
     // leave room
     socket.on('room_leave', () => {
         // if client was in room
-        if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
+        if (lobby.getRoomByClientId(socket.id)) {
+            let client = lobby.getClientByID(socket.id)
+            client.carryRoom = false // clear autojoin on manual leave
+            lobby.leaveRoom(socket)
+        }
     })
 
     // join room
-    socket.on('room_join', roomName => {
-        lobby.joinRoom(socket, roomName)
+    socket.on('room_join', (roomName, passwd) => {
+        lobby.joinRoom(socket, roomName, passwd)
     })
 
     // send to room
