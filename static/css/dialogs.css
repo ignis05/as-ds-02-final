@@ -268,10 +268,24 @@
 
 /* #region Inputs */
 
-.ui-dialog-content input[type=text] {
+.ui-dialog-content input[type=text], .ui-dialog-content input[type=password] {
     width: 400px;
     height: 50px;
     padding: 12px 20px;
+    font-size: 1.2em;
+    box-sizing: border-box;
+    caret-color: #338833;
+    background-color: #1111117F;
+    color: #DDDDDD;
+    font-weight: bolder;
+    border: none;
+    border-radius: 15px;
+}
+
+.ui-dialog-content .info-block input[type=text], .ui-dialog-content .info-block input[type=password] {
+    width: 250px;
+    height: 40px;
+    padding: 6px 20px;
     font-size: 1.2em;
     box-sizing: border-box;
     caret-color: #338833;

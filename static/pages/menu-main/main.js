@@ -155,7 +155,7 @@ async function DisplayRooms() {
                 'class': 'ui-dialog-button',
                 click: async function () {
                     $(this).dialog('close')
-                    RoomIdentity(list)
+                    RoomSetup(list)
                 }
             },
             {
@@ -234,7 +234,6 @@ function DisplayOptions() {
         bOption.click(() => {
             if (list[i].action != undefined)
                 eval(list[i].action)
-            // window.location = list[i].path
         })
     }
 
@@ -393,7 +392,6 @@ function OptionsSound() {
             chkText.html('No')
     })
 
-
     let ctrlCont = $('<div>')
         .addClass('info-elem')
     cont.append(ctrlCont)
@@ -455,30 +453,90 @@ function OptionsSound() {
     })
 }
 
-function RoomIdentity(list) {
+function RoomSetup(list) {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-    let name = $('<input>').css('margin-top', '20px').attr('type', 'text').on('input', e => {
+    /* let name = $('<input>').css('margin-top', '20px').attr('type', 'text').on('input', e => {
+        if (e.target.value != '')
+            $('#bApply').attr('disabled', false).removeClass('disabled')
+        else
+            $('#bApply').attr('disabled', true).addClass('disabled')
+    }) */
+
+    /* let password = $('<input>').css('margin-top', '20px').attr('type', 'password')
+
+    let size = $('<input>').css('margin-top', '20px').attr('type', 'text') */
+
+    
+    let NameCont = $('<div>')
+        .addClass('info-block')
+    $('#dialog').append(NameCont)
+
+    let nameLbl = $('<div>')
+        .html('Room Name')
+        .addClass('info-label')
+    NameCont.append(nameLbl)
+
+    let ctrlNameCont = $('<div>')
+        .addClass('info-elem')
+    NameCont.append(ctrlNameCont)
+
+    let name = $('<input>').attr('type', 'text').on('input', e => {
         if (e.target.value != '')
             $('#bApply').attr('disabled', false).removeClass('disabled')
         else
             $('#bApply').attr('disabled', true).addClass('disabled')
     })
 
-    let password = $('<input>').css('margin-top', '20px').attr('type', 'text')
+    ctrlNameCont.append(name)
 
-    let size = $('<input>').css('margin-top', '20px').attr('type', 'text')
+    
+    let passwordCont = $('<div>')
+        .addClass('info-block')
+    $('#dialog').append(passwordCont)
+
+    let passwordLbl = $('<div>')
+        .html('Password')
+        .addClass('info-label')
+    passwordCont.append(passwordLbl)
+
+    let ctrlpasswordCont = $('<div>')
+        .addClass('info-elem')
+    passwordCont.append(ctrlpasswordCont)
+
+    let password = $('<input>').attr('type', 'password')
+
+    ctrlpasswordCont.append(password)
+
+
+    let sizeCont = $('<div>')
+        .addClass('info-block')
+    $('#dialog').append(sizeCont)
+
+    let sizeLbl = $('<div>')
+        .html('[TEMP] Room Size')
+        .addClass('info-label')
+    sizeCont.append(sizeLbl)
+
+    let ctrlsizeCont = $('<div>')
+        .addClass('info-elem')
+    sizeCont.append(ctrlsizeCont)
+
+    let size = $('<input>').attr('type', 'text')
+
+    ctrlsizeCont.append(size)
+
 
     name.val(Cookies.get('username') + '\'s Room')
     size.val('2')
 
-    popup.append(name)
-    popup.append(password)
-    popup.append(size)
+    //popup.append(name)
+    /* popup.append(password)
+    popup.append(size) */
 
     popup.dialog({
         closeOnEscape: false,
@@ -486,7 +544,7 @@ function RoomIdentity(list) {
         draggable: false,
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
-        width: 500,
+        width: 600,
         height: 460,
         title: 'Room Setup', // This dialog will have basic options like password, eventually
         buttons: [
@@ -547,7 +605,7 @@ function RoomTaken(list) {
                 'class': 'ui-dialog-button',
                 click: function () {
                     $(this).dialog('close')
-                    RoomIdentity(list)
+                    RoomSetup(list)
                 }
             }
         ]
