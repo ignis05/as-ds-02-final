@@ -105,7 +105,7 @@ async function DisplayRooms() {
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html(list[i].clients.length + ' / maxAmount')
+            cell1.html(list[i].clients.length + ' / ' + list[i].size)
         row.append(cell1)
 
         saveTable.append(row)
@@ -142,7 +142,7 @@ async function DisplayRooms() {
                 text: 'Join',
                 'class': 'ui-dialog-button disabled',
                 click: async function () {
-                    socket.emit('carryRoomName', name.val()) // assign room that will be join on next socket connection
+                    socket.emit('carryRoom', name.val()/*, password */) // requires password check ( rooms[index].password ), if password not matching client will be redirected to main page
                     window.location = '/lobby'
 
                     /* $(this).dialog('close')
@@ -469,9 +469,16 @@ function RoomIdentity(list) {
             $('#bApply').attr('disabled', true).addClass('disabled')
     })
 
+    let password = $('<input>').css('margin-top', '20px').attr('type', 'text')
+
+    let size = $('<input>').css('margin-top', '20px').attr('type', 'text')
+
     name.val(Cookies.get('username') + '\'s Room')
+    size.val('2')
 
     popup.append(name)
+    popup.append(password)
+    popup.append(size)
 
     popup.dialog({
         closeOnEscape: false,
@@ -480,7 +487,7 @@ function RoomIdentity(list) {
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
         width: 500,
-        height: 260,
+        height: 460,
         title: 'Room Setup', // This dialog will have basic options like password, eventually
         buttons: [
             {
@@ -494,7 +501,11 @@ function RoomIdentity(list) {
                         $(this).dialog('close')
                         RoomTaken(list)
                     } else {
-                        socket.emit('carryRoomName', saveName)
+                        let passwd = password.val() != '' ? password.val() : false
+                        let roomSize = size.val() != '' ? parseInt(size.val()) : 2
+                        if (isNaN(roomSize) || roomSize < 2) roomSize = 2
+
+                        socket.emit('carryRoom', saveName, passwd, roomSize)
                         window.location = '/lobby'
                     }
                 },
