@@ -84,9 +84,9 @@ async function DisplayRooms() {
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-    let saveTable = $('<table id="room-table">')
+    let saveTable = $('<table>').attr('id', 'room-table').addClass('lobby-table')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'room-table\', 0)">Room Name</th><th onclick="sortTable(\'room-table\', 1)">Players</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table class="lobby-table"><tr><th onclick="sortTable(\'room-table\', 0)">Pass</th><th onclick="sortTable(\'room-table\', 1)">Room Name</th><th onclick="sortTable(\'room-table\', 2)">Players</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
 
     let nor = list.length
@@ -98,20 +98,35 @@ async function DisplayRooms() {
         let row = $('<tr>').addClass('saves-row')
         rowlist.push(row)
 
-        let cell0 = $('<td>').html('')
+        let cellPass = $('<td>').html('')
         if (list[i] !== undefined)
-            cell0.html(list[i].name)
-        row.append(cell0)
+            if (list[i].password)
+                cellPass.html('X')
+            else
+                cellPass.html(' ')
+        row.append(cellPass)
 
-        let cell1 = $('<td>').html('')
+        let cellName = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html(list[i].clients.length + ' / ' + list[i].size)
-        row.append(cell1)
+            cellName.html(list[i].name)
+        row.append(cellName)
+
+        let cellPlayers = $('<td>').html('')
+        if (list[i] !== undefined)
+            cellPlayers.html(list[i].clients.length + ' / ' + list[i].size)
+        row.append(cellPlayers)
 
         saveTable.append(row)
         row.click(() => {
-            if (cell0.html() != '') {
-                name.val(cell0.html())
+            let connected = cellPlayers.html().replace(' ', '').split('/')
+            if (cellName.html() != '' && parseInt(connected[0]) < parseInt(connected[1])) {
+                name.val(cellName.html())
+
+                if (cellPass.html() != ' ')
+                    requestPass = true
+                else
+                    requestPass = false
+
                 rowlist.forEach(elem => {
                     elem.removeClass('saves-active')
                 })
@@ -124,6 +139,7 @@ async function DisplayRooms() {
     }
 
     let name = $('<input>').attr('type', 'hidden')
+    let requestPass = false
     popup.append(name)
 
     popup.dialog({
@@ -142,8 +158,14 @@ async function DisplayRooms() {
                 text: 'Join',
                 'class': 'ui-dialog-button disabled',
                 click: async function () {
-                    socket.emit('carryRoom', name.val()/*, password */) // requires password check ( rooms[index].password ), if password not matching client will be redirected to main page
-                    window.location = '/lobby'
+                    if (!requestPass) {
+                        socket.emit('carryRoom', name.val())
+                        window.location = '/lobby'
+                    } else {
+                        console.log(requestPass)
+                        socket.emit('carryRoom', name.val(), 'password')
+                        window.location = '/lobby'
+                    }
 
                     /* $(this).dialog('close')
                     overlay.css('display', 'none') */
