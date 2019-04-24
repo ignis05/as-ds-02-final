@@ -86,7 +86,7 @@ async function DisplayRooms() {
 
     let saveTable = $('<table>').attr('id', 'room-table').addClass('lobby-table')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table class="lobby-table"><tr><th onclick="sortTable(\'room-table\', 0)">Pass</th><th onclick="sortTable(\'room-table\', 1)">Room Name</th><th onclick="sortTable(\'room-table\', 2)">Players</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table class="lobby-table"><tr><th onclick="sortTable(\'room-table\', 0)">PW</th><th style="width: 300px" onclick="sortTable(\'room-table\', 1)">Room Name</th><th onclick="sortTable(\'room-table\', 2)">Players</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
 
     let nor = list.length
@@ -98,15 +98,16 @@ async function DisplayRooms() {
         let row = $('<tr>').addClass('saves-row')
         rowlist.push(row)
 
-        let cellPass = $('<td>').html('')
+        let cellPass = $('<td>').html('') //.css('border-right', '2px solid #FFFFFF') //.css('text-align', 'center')
         if (list[i] !== undefined)
-            if (list[i].password)
+            if (list[i].password) {
+                console.warn('[TODO] Stop sending passwords to rooms like so:' + list[i].password)
                 cellPass.html('X')
-            else
+            } else
                 cellPass.html(' ')
         row.append(cellPass)
 
-        let cellName = $('<td>').html('')
+        let cellName = $('<td>').html('').css('width', '300px')
         if (list[i] !== undefined)
             cellName.html(list[i].name)
         row.append(cellName)
@@ -162,13 +163,8 @@ async function DisplayRooms() {
                         socket.emit('carryRoom', name.val())
                         window.location = '/lobby'
                     } else {
-                        console.log(requestPass)
-                        socket.emit('carryRoom', name.val(), 'password')
-                        window.location = '/lobby'
+                        RequestPass(name.val())
                     }
-
-                    /* $(this).dialog('close')
-                    overlay.css('display', 'none') */
                 }
             },
             {
@@ -178,6 +174,56 @@ async function DisplayRooms() {
                 click: async function () {
                     $(this).dialog('close')
                     RoomSetup(list)
+                }
+            },
+            {
+                text: 'Back',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            }
+        ]
+    })
+}
+
+function RequestPass(roomName) {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    let pass = $('<input>').css('margin-top', '20px').attr('type', 'password').on('input', e => {
+        if (e.target.value != '')
+            $('#bApply').attr('disabled', false).removeClass('disabled')
+        else
+            $('#bApply').attr('disabled', true).addClass('disabled')
+    })
+
+    popup.append(pass)
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 500,
+        height: 260,
+        title: 'Enter Password',
+        buttons: [
+            {
+                id: 'bApply',
+                disabled: true,
+                text: 'Apply',
+                'class': 'ui-dialog-button disabled',
+                click: function () {
+                    console.warn('[TODO] Await password check result')
+
+                    socket.emit('carryRoom', roomName, pass.val())
+                    window.location = '/lobby'
                 }
             },
             {
