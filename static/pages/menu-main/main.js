@@ -100,11 +100,10 @@ async function DisplayRooms() {
 
         let cellPass = $('<td>').html('') //.css('border-right', '2px solid #FFFFFF') //.css('text-align', 'center')
         if (list[i] !== undefined)
-            if (list[i].password) {
-                console.warn('[TODO] Stop sending passwords to rooms like so:' + list[i].password)
+            if (list[i].password)
                 cellPass.html('X')
-            } else
-                cellPass.html(' ')
+            else
+                cellPass.html('')
         row.append(cellPass)
 
         let cellName = $('<td>').html('').css('width', '300px')
@@ -123,7 +122,7 @@ async function DisplayRooms() {
             if (cellName.html() != '' && parseInt(connected[0]) < parseInt(connected[1])) {
                 name.val(cellName.html())
 
-                if (cellPass.html() != ' ')
+                if (cellPass.html() == 'X')
                     requestPass = true
                 else
                     requestPass = false
@@ -222,8 +221,10 @@ function RequestPass(roomName) {
                 click: function () {
                     console.warn('[TODO] Await password check result')
 
-                    socket.emit('carryRoom', roomName, pass.val())
-                    window.location = '/lobby'
+                    setTimeout(() => {
+                        socket.emit('carryRoom', roomName, pass.val())
+                        window.location = '/lobby'
+                    }, 2000)
                 }
             },
             {
