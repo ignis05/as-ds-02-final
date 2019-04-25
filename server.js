@@ -433,7 +433,7 @@ function createMatrix(dbfile) {
         }
 
     }
-    console.log("KeK");
+    // console.log("KeK");
 
     return matrix
 }
