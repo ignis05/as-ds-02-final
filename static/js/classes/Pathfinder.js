@@ -32,7 +32,7 @@ class Pathfinder {
             let moveInterval = setInterval(() => {
                 unitPosition.z = movePath[move][1]
                 unitPosition.x = movePath[move][0]
-                unitPosition.height = matrix[unitPosition.z][unitPosition.x].position.y
+                unitPosition.height = matrix[unitPosition.z][unitPosition.x].position.y*2
                 unit.mesh.position.set(unitPosition.x * Settings.tileSize, unitPosition.height ,unitPosition.z * Settings.tileSize)
                 matrix[unitPosition.z][unitPosition.x].material.color.set(0xff0000)
                 move++

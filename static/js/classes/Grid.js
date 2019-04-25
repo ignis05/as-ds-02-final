@@ -9,9 +9,8 @@ class Grid {
         this.init()
     }
     init() {
-        var floor = new THREE.PlaneGeometry(this.cellSize, this.cellSize, 1, 1);
-
         for (var cell in this.map) {
+            let floor = new THREE.BoxGeometry(this.cellSize, this.cellSize, this.map[cell].height * 10 );
             let singleCell
             switch (this.map[cell].type) {
                 case "dirt":
@@ -25,23 +24,23 @@ class Grid {
                     break
 
                 case "rock":
-                    var materialRock = new THREE.MeshBasicMaterial({
+                    var materialRock = new THREE.MeshPhongMaterial({
                         side: THREE.DoubleSide,
                         color: "#666666",
-                        wireframe: this.wireframe
+                        //wireframe: this.wireframe
                     })
                     singleCell = new THREE.Mesh(floor, materialRock)
                     singleCell.userData.type = "rock"
                     break
             }
 
-            if(cell % this.size == 0){
+            if (cell % this.size == 0) {
                 console.log(cell);
                 this.matrix.push([])
             }
-            this.matrix[this.matrix.length-1].push(singleCell)
+            this.matrix[this.matrix.length - 1].push(singleCell)
 
-            singleCell.position.set(this.cellSize * this.map[cell].x, this.map[cell].height * 10, this.cellSize * this.map[cell].z)
+            singleCell.position.set(this.cellSize * this.map[cell].x, this.map[cell].height * 5, this.cellSize * this.map[cell].z)
             singleCell.rotation.set(Math.PI / 2, 0, 0)
             singleCell.userData.x = this.map[cell].x
             singleCell.userData.z = this.map[cell].z

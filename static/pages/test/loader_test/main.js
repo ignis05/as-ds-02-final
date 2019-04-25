@@ -502,7 +502,7 @@ $(document).ready(async function () {
                 await testmodel.load()
                 testmodel.addTo(scene)
                 testmodel.createButtons()
-                testmodel.mesh.position.set(gridMatrix[0][0].position.x, gridMatrix[0][0].position.y, gridMatrix[0][0].position.z)
+                testmodel.mesh.position.set(gridMatrix[0][0].position.x, gridMatrix[0][0].position.y*2, gridMatrix[0][0].position.z)
             } else {
                 $(".modelSelectButton").css("color", "white")
                 currentModel = null
