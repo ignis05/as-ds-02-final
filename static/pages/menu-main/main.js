@@ -219,12 +219,8 @@ function RequestPass(roomName) {
                 text: 'Apply',
                 'class': 'ui-dialog-button disabled',
                 click: function () {
-                    console.warn('[TODO] Await password check result')
-
-                    setTimeout(() => {
-                        socket.emit('carryRoom', roomName, pass.val())
-                        window.location = '/lobby'
-                    }, 2000)
+                    socket.emit('carryRoom', roomName, pass.val())
+                    window.location = '/lobby'
                 }
             },
             {
@@ -540,7 +536,7 @@ function RoomSetup(list) {
 
     let size = $('<input>').css('margin-top', '20px').attr('type', 'text') */
 
-    
+
     let NameCont = $('<div>')
         .addClass('info-block')
     $('#dialog').append(NameCont)
@@ -563,7 +559,7 @@ function RoomSetup(list) {
 
     ctrlNameCont.append(name)
 
-    
+
     let passwordCont = $('<div>')
         .addClass('info-block')
     $('#dialog').append(passwordCont)
