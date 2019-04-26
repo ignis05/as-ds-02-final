@@ -468,6 +468,13 @@ lobby.io.on('connect', socket => {
         }
     })
 
+    // check password - server sided check if password is correct
+    socket.on('room_check_password', (roomName, roomPassword, res) => {
+        let room = lobby.getRoomByName(roomName)
+        if (room.password && room.password != roomPassword) res(false)
+        else res(true)
+    })
+
     // return active rooms to which socket is connected
     socket.on('get_my_rooms', res => {
         res(socket.rooms)

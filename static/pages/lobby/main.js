@@ -135,8 +135,7 @@ $(document).ready(async () => {
     // if not (for example he refreshed page or room is full) he should be redirected to main page
     let myRooms = await socket.getMyRooms()
     if (Object.values(myRooms).length < 2) {
-        DisplayBadPassword()
-        //window.location = '/'
+        window.location = '/'
     }
 
     // actually get room name from server room list, to prevent displaying client id instead of roomname
@@ -275,38 +274,6 @@ function DisplayRoomInfo() {
                     $(this).dialog('close')
                     popup.css('display', 'none')
                     overlay.css('display', 'none')
-                }
-            }
-        ]
-    })
-}
-
-function DisplayBadPassword() {
-    let overlay = $('#overlay')
-    let popup = $('#dialog').html('')
-
-    $('#main').css('display', 'none')
-
-    if (overlay.css('display') == 'none')
-        overlay.removeAttr('style')
-
-    popup.dialog({
-        closeOnEscape: false,
-        modal: true,
-        draggable: false,
-        resizable: false,
-        dialogClass: 'no-close ui-dialog-confirm',
-        width: 500,
-        height: 150,
-        title: 'Incorrect Password',
-        buttons: [
-            {
-                text: 'Ok',
-                'class': 'ui-dialog-button',
-                click: function () {
-                    /* $(this).dialog('close')
-                    RoomSetup(list) */
-                    window.location = '/'
                 }
             }
         ]

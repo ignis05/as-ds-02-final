@@ -218,9 +218,14 @@ function RequestPass(roomName) {
                 disabled: true,
                 text: 'Apply',
                 'class': 'ui-dialog-button disabled',
-                click: function () {
-                    socket.emit('carryRoom', roomName, pass.val())
-                    window.location = '/lobby'
+                click: async function () {
+                    let passwd = pass.val()
+                    if (await Socket_CheckPassword(roomName, passwd)) {
+                        socket.emit('carryRoom', roomName, passwd)
+                        window.location = '/lobby'
+                    } else {
+                        DisplayBadPassword()
+                    }
                 }
             },
             {
@@ -676,6 +681,35 @@ function RoomTaken(list) {
         ]
     })
 }
+
+function DisplayBadPassword() {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 500,
+        height: 150,
+        title: 'Incorrect Password',
+        buttons: [
+            {
+                text: 'Ok',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    DisplayRooms()
+                }
+            }
+        ]
+    })
+}
 //#endregion
 
 //#region Classes
@@ -805,6 +839,15 @@ function Socket_GetRooms() {
 function Socket_GetClients() {
     return new Promise(resolve => {
         socket.emit('getClients', res => {
+            resolve(res)
+        })
+    })
+}
+
+// returns true if password is correct
+function Socket_CheckPassword(roomName, roomPassword) {
+    return new Promise(resolve => {
+        socket.emit('room_check_password', roomName, roomPassword, res => {
             resolve(res)
         })
     })
