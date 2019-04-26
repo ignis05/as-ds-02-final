@@ -8,16 +8,439 @@ var io = require("socket.io")(server)
 const PORT = 3000
 var path = require("path")
 var bodyParser = require("body-parser")
-app.use(bodyParser.urlencoded({ limit: '50mb', extended: true, parameterLimit: 1000000 }))
+app.use(bodyParser.urlencoded({
+    limit: '50mb',
+    extended: true,
+    parameterLimit: 1000000
+}))
 var Datastore = require('nedb')
 var cookieParser = require("cookie-parser")
 app.use(cookieParser())
-var cookie = require('cookie');
+var cookie = require('cookie')
+var PF = require('pathfinding-customized')
 // #endregion initial
 
 var ServerDB = {
     databases: [],
 }
+
+var test_LoadedMap = {
+    "size": "8",
+    "level": [{
+        "id": 0,
+        "x": 0,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 1,
+        "x": 1,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 2,
+        "x": 2,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 3,
+        "x": 3,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 4,
+        "x": 4,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 5,
+        "x": 5,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 6,
+        "x": 6,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 7,
+        "x": 7,
+        "z": 0,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 8,
+        "x": 0,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 9,
+        "x": 1,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 10,
+        "x": 2,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 11,
+        "x": 3,
+        "z": 1,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 12,
+        "x": 4,
+        "z": 1,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 13,
+        "x": 5,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 14,
+        "x": 6,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 15,
+        "x": 7,
+        "z": 1,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 16,
+        "x": 0,
+        "z": 2,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 17,
+        "x": 1,
+        "z": 2,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 18,
+        "x": 2,
+        "z": 2,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 19,
+        "x": 3,
+        "z": 2,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 20,
+        "x": 4,
+        "z": 2,
+        "type": "dirt",
+        "height": "13"
+    }, {
+        "id": 21,
+        "x": 5,
+        "z": 2,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 22,
+        "x": 6,
+        "z": 2,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 23,
+        "x": 7,
+        "z": 2,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 24,
+        "x": 0,
+        "z": 3,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 25,
+        "x": 1,
+        "z": 3,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 26,
+        "x": 2,
+        "z": 3,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 27,
+        "x": 3,
+        "z": 3,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 28,
+        "x": 4,
+        "z": 3,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 29,
+        "x": 5,
+        "z": 3,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 30,
+        "x": 6,
+        "z": 3,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 31,
+        "x": 7,
+        "z": 3,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 32,
+        "x": 0,
+        "z": 4,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 33,
+        "x": 1,
+        "z": 4,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 34,
+        "x": 2,
+        "z": 4,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 35,
+        "x": 3,
+        "z": 4,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 36,
+        "x": 4,
+        "z": 4,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 37,
+        "x": 5,
+        "z": 4,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 38,
+        "x": 6,
+        "z": 4,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 39,
+        "x": 7,
+        "z": 4,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 40,
+        "x": 0,
+        "z": 5,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 41,
+        "x": 1,
+        "z": 5,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 42,
+        "x": 2,
+        "z": 5,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 43,
+        "x": 3,
+        "z": 5,
+        "type": "dirt",
+        "height": "8"
+    }, {
+        "id": 44,
+        "x": 4,
+        "z": 5,
+        "type": "dirt",
+        "height": "4"
+    }, {
+        "id": 45,
+        "x": 5,
+        "z": 5,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 46,
+        "x": 6,
+        "z": 5,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 47,
+        "x": 7,
+        "z": 5,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 48,
+        "x": 0,
+        "z": 6,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 49,
+        "x": 1,
+        "z": 6,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 50,
+        "x": 2,
+        "z": 6,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 51,
+        "x": 3,
+        "z": 6,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 52,
+        "x": 4,
+        "z": 6,
+        "type": "dirt",
+        "height": "4"
+    }, {
+        "id": 53,
+        "x": 5,
+        "z": 6,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 54,
+        "x": 6,
+        "z": 6,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 55,
+        "x": 7,
+        "z": 6,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 56,
+        "x": 0,
+        "z": 7,
+        "type": "dirt",
+        "height": 5
+    }, {
+        "id": 57,
+        "x": 1,
+        "z": 7,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 58,
+        "x": 2,
+        "z": 7,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 59,
+        "x": 3,
+        "z": 7,
+        "type": "dirt",
+        "height": "18"
+    }, {
+        "id": 60,
+        "x": 4,
+        "z": 7,
+        "type": "dirt",
+        "height": "4"
+    }, {
+        "id": 61,
+        "x": 5,
+        "z": 7,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 62,
+        "x": 6,
+        "z": 7,
+        "type": "rock",
+        "height": 5
+    }, {
+        "id": 63,
+        "x": 7,
+        "z": 7,
+        "type": "dirt",
+        "height": 5
+    }]
+}
+
+// #region pathfinding
+function createMatrix(dbfile) {
+    let size = dbfile.size
+    let map = dbfile.level
+    let matrix = []
+    for (var cell in map) {
+        if (cell % size == 0) {
+            matrix.push([])
+        }
+        switch (map[cell].type) {
+            case "dirt":
+                matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
+                break
+
+            case "rock":
+                matrix[matrix.length - 1].push([1, parseInt(map[cell].height)])
+                break
+        }
+
+    }
+    // console.log("KeK");
+
+    return matrix
+}
+
+var grid = new PF.Grid(createMatrix(test_LoadedMap))
+var finder = new PF.AStarFinder()
+// #endregion pathfinding
 
 // #region static routing
 app.get("/", function (req, res) {
@@ -197,6 +620,18 @@ app.post("/getModels", function (req, res) {
             models: models
         }
     )
+})
+
+app.post("/sendClickedPoint", function (req, res) {
+    let data = req.body 
+    let temp_grid = grid.clone() //after finding path pathfinder modifies grid, so backup bois    
+    let path = finder.findPath(data.unit.x, data.unit.z, data.click.x, data.click.z, temp_grid)
+    console.log(path);
+
+    res.send({
+        msg: "sendClickedPoint-Sent",
+        path: path
+    })
 })
 // #endregion ajax - Net.js requests
 

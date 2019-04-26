@@ -26,7 +26,7 @@ $(document).ready(async function () {
     camera.lookAt(scene.position)
     // #endregion initial
 
-    let grid = new Grid(500, 0x000000, true)
+    let grid = new Plane(500, 0x000000, true)
     grid.addTo(scene)
 
     var orbitControl = new THREE.OrbitControls(camera, renderer.domElement);
