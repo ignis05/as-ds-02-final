@@ -17,7 +17,7 @@ var Datastore = require('nedb')
 var cookieParser = require("cookie-parser")
 app.use(cookieParser())
 var cookie = require('cookie')
-var PF = require('pathfinding-customized')
+var PF = require('pathfinding')
 // #endregion initial
 
 var ServerDB = {
