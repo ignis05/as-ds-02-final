@@ -84,9 +84,9 @@ async function DisplayRooms() {
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-    let saveTable = $('<table id="room-table">')
+    let saveTable = $('<table>').attr('id', 'room-table').addClass('lobby-table')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'room-table\', 0)">Room Name</th><th onclick="sortTable(\'room-table\', 1)">Players</th></tr></table>').append(svtScroll)
+    let svtCont = $('<div>').addClass('saves-wrap').append('<table class="lobby-table"><tr><th onclick="sortTable(\'room-table\', 0)">PW</th><th style="width: 300px" onclick="sortTable(\'room-table\', 1)">Room Name</th><th onclick="sortTable(\'room-table\', 2)">Players</th></tr></table>').append(svtScroll)
     popup.append(svtCont)
 
     let nor = list.length
@@ -98,20 +98,35 @@ async function DisplayRooms() {
         let row = $('<tr>').addClass('saves-row')
         rowlist.push(row)
 
-        let cell0 = $('<td>').html('')
+        let cellPass = $('<td>').html('') //.css('border-right', '2px solid #FFFFFF') //.css('text-align', 'center')
         if (list[i] !== undefined)
-            cell0.html(list[i].name)
-        row.append(cell0)
+            if (list[i].password)
+                cellPass.html('X')
+            else
+                cellPass.html('')
+        row.append(cellPass)
 
-        let cell1 = $('<td>').html('')
+        let cellName = $('<td>').html('').css('width', '300px')
         if (list[i] !== undefined)
-            cell1.html(list[i].clients.length + ' / ' + list[i].size)
-        row.append(cell1)
+            cellName.html(list[i].name)
+        row.append(cellName)
+
+        let cellPlayers = $('<td>').html('')
+        if (list[i] !== undefined)
+            cellPlayers.html(list[i].clients.length + ' / ' + list[i].size)
+        row.append(cellPlayers)
 
         saveTable.append(row)
         row.click(() => {
-            if (cell0.html() != '') {
-                name.val(cell0.html())
+            let connected = cellPlayers.html().replace(' ', '').split('/')
+            if (cellName.html() != '' && parseInt(connected[0]) < parseInt(connected[1])) {
+                name.val(cellName.html())
+
+                if (cellPass.html() == 'X')
+                    requestPass = true
+                else
+                    requestPass = false
+
                 rowlist.forEach(elem => {
                     elem.removeClass('saves-active')
                 })
@@ -124,6 +139,7 @@ async function DisplayRooms() {
     }
 
     let name = $('<input>').attr('type', 'hidden')
+    let requestPass = false
     popup.append(name)
 
     popup.dialog({
@@ -142,11 +158,12 @@ async function DisplayRooms() {
                 text: 'Join',
                 'class': 'ui-dialog-button disabled',
                 click: async function () {
-                    socket.emit('carryRoom', name.val()/*, password */) // requires password check ( rooms[index].password ), if password not matching client will be redirected to main page
-                    window.location = '/lobby'
-
-                    /* $(this).dialog('close')
-                    overlay.css('display', 'none') */
+                    if (!requestPass) {
+                        socket.emit('carryRoom', name.val())
+                        window.location = '/lobby'
+                    } else {
+                        RequestPass(name.val())
+                    }
                 }
             },
             {
@@ -155,7 +172,60 @@ async function DisplayRooms() {
                 'class': 'ui-dialog-button',
                 click: async function () {
                     $(this).dialog('close')
-                    RoomIdentity(list)
+                    RoomSetup(list)
+                }
+            },
+            {
+                text: 'Back',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            }
+        ]
+    })
+}
+
+function RequestPass(roomName) {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    let pass = $('<input>').css('margin-top', '20px').attr('type', 'password').on('input', e => {
+        if (e.target.value != '')
+            $('#bApply').attr('disabled', false).removeClass('disabled')
+        else
+            $('#bApply').attr('disabled', true).addClass('disabled')
+    })
+
+    popup.append(pass)
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 500,
+        height: 260,
+        title: 'Enter Password',
+        buttons: [
+            {
+                id: 'bApply',
+                disabled: true,
+                text: 'Apply',
+                'class': 'ui-dialog-button disabled',
+                click: async function () {
+                    let passwd = pass.val()
+                    if (await Socket_CheckPassword(roomName, passwd)) {
+                        socket.emit('carryRoom', roomName, passwd)
+                        window.location = '/lobby'
+                    } else {
+                        DisplayBadPassword()
+                    }
                 }
             },
             {
@@ -234,7 +304,6 @@ function DisplayOptions() {
         bOption.click(() => {
             if (list[i].action != undefined)
                 eval(list[i].action)
-            // window.location = list[i].path
         })
     }
 
@@ -393,7 +462,6 @@ function OptionsSound() {
             chkText.html('No')
     })
 
-
     let ctrlCont = $('<div>')
         .addClass('info-elem')
     cont.append(ctrlCont)
@@ -455,30 +523,90 @@ function OptionsSound() {
     })
 }
 
-function RoomIdentity(list) {
+function RoomSetup(list) {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
 
-    let name = $('<input>').css('margin-top', '20px').attr('type', 'text').on('input', e => {
+    /* let name = $('<input>').css('margin-top', '20px').attr('type', 'text').on('input', e => {
+        if (e.target.value != '')
+            $('#bApply').attr('disabled', false).removeClass('disabled')
+        else
+            $('#bApply').attr('disabled', true).addClass('disabled')
+    }) */
+
+    /* let password = $('<input>').css('margin-top', '20px').attr('type', 'password')
+
+    let size = $('<input>').css('margin-top', '20px').attr('type', 'text') */
+
+
+    let NameCont = $('<div>')
+        .addClass('info-block')
+    $('#dialog').append(NameCont)
+
+    let nameLbl = $('<div>')
+        .html('Room Name')
+        .addClass('info-label')
+    NameCont.append(nameLbl)
+
+    let ctrlNameCont = $('<div>')
+        .addClass('info-elem')
+    NameCont.append(ctrlNameCont)
+
+    let name = $('<input>').attr('type', 'text').on('input', e => {
         if (e.target.value != '')
             $('#bApply').attr('disabled', false).removeClass('disabled')
         else
             $('#bApply').attr('disabled', true).addClass('disabled')
     })
 
-    let password = $('<input>').css('margin-top', '20px').attr('type', 'text')
+    ctrlNameCont.append(name)
 
-    let size = $('<input>').css('margin-top', '20px').attr('type', 'text')
+
+    let passwordCont = $('<div>')
+        .addClass('info-block')
+    $('#dialog').append(passwordCont)
+
+    let passwordLbl = $('<div>')
+        .html('Password')
+        .addClass('info-label')
+    passwordCont.append(passwordLbl)
+
+    let ctrlpasswordCont = $('<div>')
+        .addClass('info-elem')
+    passwordCont.append(ctrlpasswordCont)
+
+    let password = $('<input>').attr('type', 'password')
+
+    ctrlpasswordCont.append(password)
+
+
+    let sizeCont = $('<div>')
+        .addClass('info-block')
+    $('#dialog').append(sizeCont)
+
+    let sizeLbl = $('<div>')
+        .html('[TEMP] Room Size')
+        .addClass('info-label')
+    sizeCont.append(sizeLbl)
+
+    let ctrlsizeCont = $('<div>')
+        .addClass('info-elem')
+    sizeCont.append(ctrlsizeCont)
+
+    let size = $('<input>').attr('type', 'text')
+
+    ctrlsizeCont.append(size)
+
 
     name.val(Cookies.get('username') + '\'s Room')
     size.val('2')
 
-    popup.append(name)
-    popup.append(password)
-    popup.append(size)
+    //popup.append(name)
+    /* popup.append(password)
+    popup.append(size) */
 
     popup.dialog({
         closeOnEscape: false,
@@ -486,7 +614,7 @@ function RoomIdentity(list) {
         draggable: false,
         resizable: false,
         dialogClass: 'no-close ui-dialog-confirm',
-        width: 500,
+        width: 600,
         height: 460,
         title: 'Room Setup', // This dialog will have basic options like password, eventually
         buttons: [
@@ -547,7 +675,36 @@ function RoomTaken(list) {
                 'class': 'ui-dialog-button',
                 click: function () {
                     $(this).dialog('close')
-                    RoomIdentity(list)
+                    RoomSetup(list)
+                }
+            }
+        ]
+    })
+}
+
+function DisplayBadPassword() {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 500,
+        height: 150,
+        title: 'Incorrect Password',
+        buttons: [
+            {
+                text: 'Ok',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    DisplayRooms()
                 }
             }
         ]
@@ -682,6 +839,15 @@ function Socket_GetRooms() {
 function Socket_GetClients() {
     return new Promise(resolve => {
         socket.emit('getClients', res => {
+            resolve(res)
+        })
+    })
+}
+
+// returns true if password is correct
+function Socket_CheckPassword(roomName, roomPassword) {
+    return new Promise(resolve => {
+        socket.emit('room_check_password', roomName, roomPassword, res => {
             resolve(res)
         })
     })

@@ -707,7 +707,7 @@ var lobby = {
 
     // utility functions
     joinRoomAfterRedirect(socket) {
-        console.log(`${socket.id} joins room adter redirect`);
+        console.log(`${socket.id} joins room after redirect`);
 
         var client = lobby.getClientByID(socket.id)
 
@@ -795,7 +795,7 @@ var lobby = {
             }
 
             if (room.password && room.password != passwd) {
-                console.error(`ERROR: password wrong`)
+                console.error(`ERROR: incorrect password`)
                 return
             }
 
@@ -903,6 +903,13 @@ lobby.io.on('connect', socket => {
         }
     })
 
+    // check password - server sided check if password is correct
+    socket.on('room_check_password', (roomName, roomPassword, res) => {
+        let room = lobby.getRoomByName(roomName)
+        if (room.password && room.password != roomPassword) res(false)
+        else res(true)
+    })
+
     // return active rooms to which socket is connected
     socket.on('get_my_rooms', res => {
         res(socket.rooms)
@@ -937,7 +944,15 @@ lobby.io.on('connect', socket => {
 
     // respond with rooms list
     socket.on('getRooms', res => {
-        res(lobby.rooms)
+        let info = JSON.parse(JSON.stringify(lobby.rooms)) // deep copy of lobby rooms (to not modify original)
+
+        // sanitizing passwords from info sent to clients
+        for (let i in info) {
+            if (info[i].password)
+                info[i].password = true
+        }
+
+        res(info)
     })
 
     // respond with clients list
