@@ -18,6 +18,8 @@ $(document).ready(async () => {
     InitCookies()
 
     InitClicks()
+
+    socket.emit('room_leave')
 })
 
 //#region Init Functions
