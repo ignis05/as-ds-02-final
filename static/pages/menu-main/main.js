@@ -799,13 +799,14 @@ function sortTable(tableId, cellId) {
             shouldSwitch = false
             x = rows[i].getElementsByTagName('TD')[cellId]
             y = rows[i + 1].getElementsByTagName('TD')[cellId]
+            let nameCell = rows[i + 1].getElementsByTagName('TD')[1]
             if (dir == 'asc') {
-                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() && y.innerHTML != '') {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() && nameCell.innerHTML != '') {
                     shouldSwitch = true
                     break
                 }
             } else if (dir == 'desc') {
-                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase() && y.innerHTML != '') {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase() && nameCell.innerHTML != '') {
                     shouldSwitch = true
                     break
                 }
