@@ -128,6 +128,8 @@ async function updateChat(msg) { // placeholder function triggered by 'chat' eve
     let chat = $('#socket-chat-display').html()
     chat += `<div style="display: inline; color: #FF0000; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
     $('#socket-chat-display').html(chat)
+
+    $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
 }
 
 $(document).ready(async () => {
