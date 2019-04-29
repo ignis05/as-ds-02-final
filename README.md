@@ -1,5 +1,27 @@
-"krótka dokumentacja instalacji przesłana wraz z projektem - warunek niezbędny"<br>
-
+# cinnamon-game
+aplikacje serwerowe - projekt końcowy
 <br>
+# Projekt:
+Autorzy:
+- Jakub Dyrcz
+- Michał Piwowarski
+- Grzegorz Mikołajczyk
+
+Repozytoria:
+- main repository:    [cinnamon-game](https://github.com/ignis05/cinnamon-game)
+- custom modules:    [cinnamon-game-modules](https://github.com/ignis05/cinnamon-game-modules)
+
+# Instalacja i uruchamianie:
+Projekt wymaga zainstalowanego pakietu [node.js](https://nodejs.org/en/)
+
+1.) Pobrać [projekt](https://github.com/ignis05/cinnamon-game) jako .zip i wypakować, lub użyć `git clone`<br>
+2.) Uruchomić wiersz poleceń w głównym katalogu aplikacji<br>
+3.) Zainstalować moduły za pomocą `npm i` (tylko przy pierwszym uruchomieniu)<br>
+4.) Uruchomić serwer za pomocą `node server.js`<br>
+5.) Wejść w przeglądarce na adres ip komputera na którym został uruchomiony serwer<br>
+# Założenia:
+![image error](https://i.ibb.co/jJWKwzH/spec-pl.png)
+
+
 Pozdrawiam<br>
-DS<br>
+DS
