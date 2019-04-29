@@ -2,7 +2,9 @@
 let socket = io('/lobby') // connect to socket instance
 //#region Socket Setup
 socket.on('error_token', () => {
-    window.alert('You are already connected from this browser. If you want do connect another client try incognito mode or other browsers')
+    window.alert('You are already connected from this browser. If you want to connect another client try incognito mode or other browsers')
+
+    DisplayMultiTabError()
 })
 
 socket.on('rooms_updated', async () => {
@@ -77,6 +79,37 @@ function InitClicks() {
 //#endregion
 
 //#region Dialog Functions
+function DisplayMultiTabError() {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+
+    popup.append('You are already connected from this browser. If you want to connect as another client try incognito mode or other browsers')
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-errormsg',
+        width: 500,
+        height: 250,
+        title: 'MultiTab Error',
+        /* buttons: [
+            {
+                text: 'Ok',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    DisplayRooms()
+                }
+            }
+        ] */
+    })
+}
+
 async function DisplayRooms() {
     let list = await Socket_GetRooms()
 
