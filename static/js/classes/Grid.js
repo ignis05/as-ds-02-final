@@ -35,7 +35,6 @@ class Grid {
             }
 
             if (cell % this.size == 0) {
-                console.log(cell);
                 this.matrix.push([])
             }
             this.matrix[this.matrix.length - 1].push(singleCell)
@@ -48,7 +47,6 @@ class Grid {
             //positions for pathfinding (or anything else)
             this.plane.add(singleCell)
         }
-        console.log(this.matrix);
     }
 
     addTo(scene) {
