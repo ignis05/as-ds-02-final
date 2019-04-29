@@ -1,5 +1,5 @@
 {
-  "name": "appservproject",
+  "name": "cinnamon-game",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -9,21 +9,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ignis05/appservProject.git"
+    "url": "git+https://github.com/ignis05/cinnamon-game.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/ignis05/appservProject/issues"
+    "url": "https://github.com/ignis05/cinnamon-game/issues"
   },
-  "homepage": "https://github.com/ignis05/appservProject#readme",
+  "homepage": "https://github.com/ignis05/cinnamon-game#readme",
   "dependencies": {
     "body-parser": "^1.18.3",
     "cookie": "^0.3.1",
     "cookie-parser": "^1.4.4",
     "express": "^4.16.4",
     "nedb": "^1.8.0",
-    "pathfinding": "file:custom_modules/pathfinding-customized",
+    "pathfinding": "https://github.com/ignis05/cinnamon-game-modules/tarball/pathfinding-customized",
     "socket.io": "^2.2.0"
   }
 }
