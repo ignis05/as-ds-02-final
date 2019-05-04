@@ -216,7 +216,13 @@ function InitClicks() {
     $('#button-start').click(async () => {
         let rooms = await socket.getRooms()
         let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
-        for (let client of room.clients) {
+
+        if(room.size != room.clients.length){ // prevent start if room not full
+            window.alert('Room is not full')
+            return
+        }
+
+        for (let client of room.clients) { // checking if everyone is ready
             if (!client.ready) {
                 window.alert('Not everyone is ready')
                 return
