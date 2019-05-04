@@ -452,6 +452,9 @@ app.get("/editor", function (req, res) {
 app.get("/lobby", function (req, res) {
     res.sendFile(path.join(__dirname + `/static/pages/lobby/main.html`))
 })
+app.get("/game", function (req, res) {
+    res.sendFile(path.join(__dirname + `/static/pages/game/main.html`))
+})
 // #endregion static routing
 
 // automatic routing
@@ -873,6 +876,36 @@ lobby.io.on('connect', socket => {
 
     // #region custom events
 
+    // start game
+    socket.on('start_game', () => {
+        let room = lobby.getRoomByClientId(socket.id)
+        if (!room) {
+            console.log('ERROR: room doesn\'t exist');
+            return
+        }
+        for (let client of room.clients) {
+            if (!client.ready) {
+                console.log('ERROR: client not ready');
+                return
+            }
+        }
+
+        game.sessions.push({ // push game session to game instance of socket
+            clients: room.clients.map(client => {
+                let _client = {
+                    id: client.id,
+                    token: client.token,
+                    name: client.name,
+                    connected: false,
+                }
+                return _client
+            }),
+            mapName: 'placeholder_mapName'
+        })
+
+        lobby.io.to(room.name).emit('startGame')
+    })
+
     // kick user
     socket.on('kick', userID => {
         let room = lobby.getRoomByClientId(socket.id)
@@ -974,6 +1007,30 @@ lobby.io.on('connect', socket => {
 
 })
 // #endregion socket.io - lobby
+
+// #region socket.io - game
+var game = {
+    io: io.of('/game'), // separate instace for game
+    sessions: [],
+    getClientByToken: token => {
+        let client = game.sessions.find(session => {
+            let cl = session.clients.find(client => client.token == token)
+            return cl
+        })
+        return client
+    }
+}
+game.io.on('connect', socket => {
+    console.log(`${socket.id} connected`);
+
+    var cookies = cookie.parse(socket.handshake.headers.cookie);
+    var token = cookies["token"]
+    console.log(`user token: ${token}`)
+
+    let client = game.getClientByToken(token)
+    console.log(client);
+})
+// #endregion
 
 //nasłuch na określonym porcie
 server.listen(PORT, function () {
