@@ -77,10 +77,7 @@ app.post("/database_create", function (req, res) { // create database in array a
 
     let i = ServerDB.databases.findIndex(entry => entry.filename == data.filename)
     if (i != -1) { // already exists
-        res.send({
-            msg: "OK",
-            id: i
-        });
+        res.send({msg: "OK", id: i});
     } else {
         let db = new Datastore({
             filename: path.join(__dirname + `/static/database/${data.filename}`),
@@ -92,10 +89,7 @@ app.post("/database_create", function (req, res) { // create database in array a
             filename: data.filename
         })
         let index = ServerDB.databases.length - 1
-        res.send({
-            msg: "OK",
-            id: index
-        });
+        res.send({msg: "OK", id: index});
     }
 })
 
@@ -108,9 +102,7 @@ app.post("/database_insert", function (req, res) {
     db.insert(data.entry, function (err, entry) {
         console.log("entry added")
         console.log(entry)
-        res.send({
-            msg: "OK"
-        });
+        res.send({msg: "OK"});
     });
 })
 
@@ -123,10 +115,7 @@ app.post("/database_findOne", function (req, res) {
     db.findOne(data.match, function (err, entry) {
         console.log("entry found")
         console.log(entry)
-        res.send({
-            msg: "OK",
-            entry: entry
-        });
+        res.send({msg: "OK", entry: entry});
     });
 })
 
@@ -134,15 +123,12 @@ app.post("/database_find", function (req, res) {
     let data = req.body
     console.log("/database_find: ", data)
 
-    let db = ServerDB.databases[data.id].db    
+    let db = ServerDB.databases[data.id].db
 
     db.find(data.match, function (err, entries) {
         console.log("entries found")
         console.log(entries)
-        res.send({
-            msg: "OK",
-            entries: entries
-        });
+        res.send({msg: "OK", entries: entries});
     });
 })
 
@@ -154,10 +140,7 @@ app.post("/database_count", function (req, res) {
 
     db.count(data.match, function (err, count) {
         console.log(`${count} entries found`)
-        res.send({
-            msg: "OK",
-            count: count
-        });
+        res.send({msg: "OK", count: count});
     });
 })
 
@@ -171,10 +154,7 @@ app.post("/database_remove", function (req, res) {
 
     db.remove(data.match, data.params, function (err, count) {
         console.log(`removed ${count} entries`)
-        res.send({
-            msg: "OK",
-            count: count
-        });
+        res.send({msg: "OK", count: count});
     });
 })
 
@@ -189,10 +169,7 @@ app.post("/database_update", function (req, res) {
         $set: data.entry
     }, {}, function (err, count) {
         console.log("updated " + count)
-        res.send({
-            msg: "OK",
-            count: count
-        });
+        res.send({msg: "OK", count: count});
     });
 })
 // #endregion ajax - database
@@ -200,9 +177,7 @@ app.post("/database_update", function (req, res) {
 // #region ajax - token
 app.post("/token", function (req, res) {
     getToken(req, res)
-    res.send({
-        msg: "OK"
-    })
+    res.send({msg: "OK"})
 })
 
 function getToken(req, res) {
@@ -210,10 +185,7 @@ function getToken(req, res) {
     // console.log(cookies);
     let token = (cookies["token"] ? cookies["token"] : Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10))
     let time = 1000 * 60 * 60 * 8 // 8h
-    res.cookie("token", token, {
-        expires: new Date(Date.now() + time),
-        httpOnly: true
-    })
+    res.cookie("token", token, {expires: new Date(Date.now() + time), httpOnly: true})
     console.log("token:", token);
     return token
 }
@@ -235,11 +207,9 @@ app.post("/getTestPages", function (req, res) {
         }
         testPages.push(obj)
     })
-    res.send({
-        msg: "OK",
-        testPages: testPages
-    })
+    res.send({msg: "OK", testPages: testPages})
 })
+
 app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
     console.log(dirs);
@@ -255,10 +225,7 @@ app.post("/getModels", function (req, res) {
         }
         models.push(obj)
     })
-    res.send({
-        msg: "OK",
-        models: models
-    })
+    res.send({msg: "OK", models: models})
 })
 
 app.post("/sendClickedPoint", function (req, res) {
@@ -267,10 +234,7 @@ app.post("/sendClickedPoint", function (req, res) {
     let path = finder.findPath(data.unit.x, data.unit.z, data.click.x, data.click.z, temp_grid)
     console.log(path);
 
-    res.send({
-        msg: "sendClickedPoint-Sent",
-        path: path
-    })
+    res.send({msg: "sendClickedPoint-Sent", path: path})
 })
 
 app.post("/gameInit", function (req, res) {
@@ -280,15 +244,15 @@ app.post("/gameInit", function (req, res) {
         filename: path.join(__dirname + `/static/database/maps.db`),
         autoload: true
     });
-    
-    db.findOne({_id: data.id}, function (err, doc) {        
+
+    db.findOne({
+        _id: data.id
+    }, function (err, doc) {
         grid = new PF.Grid(createMatrix(doc.mapData))
         finder = new PF.AStarFinder()
     })
 
-    res.send({
-        msg: "OK",
-    })
+    res.send({msg: "OK"})
 })
 // #endregion ajax - Net.js requests
 
