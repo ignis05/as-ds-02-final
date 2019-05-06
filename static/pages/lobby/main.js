@@ -217,8 +217,13 @@ function InitClicks() {
         let rooms = await socket.getRooms()
         let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
 
-        if(room.size != room.clients.length){ // prevent start if room not full
+        if (room.size != room.clients.length) { // prevent start if room not full
             window.alert('Room is not full')
+            return
+        }
+
+        if (room.admin.id != socket.id) {
+            window.alert('Only room admin can start game')
             return
         }
 
