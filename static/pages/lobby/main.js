@@ -244,6 +244,14 @@ function DisplayMainMenu() {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
+
+    $(window).on('keydown', e => {
+        let bTarget = $('#bExit')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    })
 
     popup.dialog({
         closeOnEscape: false,
@@ -256,6 +264,7 @@ function DisplayMainMenu() {
         title: 'Exit to Main Menu?',
         buttons: [
             {
+                id: 'bExit',
                 text: 'Yes',
                 'class': 'ui-dialog-button',
                 click: function () {
@@ -281,6 +290,14 @@ function DisplayRoomInfo() {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
+
+    /* $(window).on('keydown', e => {
+        let bTarget = $('#bClose')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    }) */
 
     popup.dialog({
         closeOnEscape: false,
@@ -293,6 +310,7 @@ function DisplayRoomInfo() {
         title: 'Room Info',
         buttons: [
             {
+                id: 'bClose',
                 text: 'Close',
                 'class': 'ui-dialog-button',
                 click: function () {
