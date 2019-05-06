@@ -14,6 +14,10 @@ socket.on('rooms_updated', async () => {
 
 //#endregion
 
+/* =================================================== *
+ * $(window).off('keydown') is triggered every prompt! *
+ * =================================================== */
+
 $(document).ready(async () => {
     // Check if cookies exist and set them or prompt the user to set them
     InitName()
@@ -85,6 +89,7 @@ function DisplayMultiTabError() {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
 
     popup.append('You are already connected from this browser. If you want to connect as another client try incognito mode or other browsers')
 
@@ -96,17 +101,7 @@ function DisplayMultiTabError() {
         dialogClass: 'no-close ui-dialog-errormsg',
         width: 500,
         height: 250,
-        title: 'MultiTab Error',
-        /* buttons: [
-            {
-                text: 'Ok',
-                'class': 'ui-dialog-button',
-                click: function () {
-                    $(this).dialog('close')
-                    DisplayRooms()
-                }
-            }
-        ] */
+        title: 'MultiTab Error'
     })
 }
 
@@ -118,6 +113,7 @@ async function DisplayRooms() {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
 
     let saveTable = $('<table>').attr('id', 'room-table').addClass('lobby-table')
     let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
@@ -172,6 +168,13 @@ async function DisplayRooms() {
 
         })
     }
+
+    $(window).on('keydown', e => {
+        let bTarget = $('#bJoin')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    })
 
     let name = $('<input>').attr('type', 'hidden')
     let requestPass = false
@@ -228,12 +231,20 @@ function RequestPass(roomName) {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
 
     let pass = $('<input>').css('margin-top', '20px').attr('type', 'password').on('input', e => {
         if (e.target.value != '')
             $('#bApply').attr('disabled', false).removeClass('disabled')
         else
             $('#bApply').attr('disabled', true).addClass('disabled')
+    })
+
+    $(window).on('keydown', e => {
+        let bTarget = $('#bApply')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
     })
 
     popup.append(pass)
@@ -283,6 +294,7 @@ async function DisplayTests() {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
 
     popup.html('')
     for (let i = 0; i < list.length; i++) {
@@ -330,6 +342,7 @@ function DisplayOptions() {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
 
     for (let i = 0; i < list.length; i++) {
         let bOption = $('<div>')
@@ -373,6 +386,7 @@ function OptionsIdentity(firstCall) {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
 
     let name = $('<input>').css('margin-top', '20px').attr('type', 'text').on('input', e => {
         if (e.target.value != '')
@@ -382,6 +396,13 @@ function OptionsIdentity(firstCall) {
     })
 
     name.val(Cookies.get('username'))
+
+    $(window).on('keydown', e => {
+        let bTarget = $('#bApply')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    })
 
     popup.append(name)
 
@@ -424,6 +445,14 @@ function OptionsVideo() {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
+
+    $(window).on('keydown', e => {
+        let bTarget = $('#bApply')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    })
 
     popup.html('-- PLACEHOLDER --')
         .css('color', '#00FF00')
@@ -471,6 +500,7 @@ function OptionsSound() {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
 
     let soundCookie = (Cookies.get('settings-sndOn') === 'true') // Convert from string to boolean ¯\_(ツ)_/¯
     let musicCookie = Cookies.get('settings-musVol')
@@ -522,6 +552,13 @@ function OptionsSound() {
     new SoundOption('sfxVol', 'Effects Volume', 0, 100, 1, sfxCookie)
     new SoundOption('spcVol', 'Speech Volume', 0, 100, 1, speechCookie)
 
+    $(window).on('keydown', e => {
+        let bTarget = $('#bApply')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    })
+
     popup.dialog({
         closeOnEscape: false,
         modal: true,
@@ -543,7 +580,7 @@ function OptionsSound() {
                     Cookies.set('settings-spcVol', $('#spcVol').find('#rng').val(), 7)
                     ApplySound()
                     $(this).dialog('close')
-                    overlay.css('display', 'none')
+                    DisplayOptions()
                 }
             },
             {
@@ -564,17 +601,7 @@ function RoomSetup(list) {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
-
-    /* let name = $('<input>').css('margin-top', '20px').attr('type', 'text').on('input', e => {
-        if (e.target.value != '')
-            $('#bApply').attr('disabled', false).removeClass('disabled')
-        else
-            $('#bApply').attr('disabled', true).addClass('disabled')
-    }) */
-
-    /* let password = $('<input>').css('margin-top', '20px').attr('type', 'password')
-
-    let size = $('<input>').css('margin-top', '20px').attr('type', 'text') */
+    $(window).off('keydown')
 
 
     let NameCont = $('<div>')
@@ -639,9 +666,12 @@ function RoomSetup(list) {
     name.val(Cookies.get('username') + '\'s Room')
     size.val('2')
 
-    //popup.append(name)
-    /* popup.append(password)
-    popup.append(size) */
+    $(window).on('keydown', e => {
+        let bTarget = $('#bApply')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    })
 
     popup.dialog({
         closeOnEscape: false,
@@ -694,6 +724,14 @@ function RoomTaken(list) {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
+
+    $(window).on('keydown', e => {
+        let bTarget = $('#bApply')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    })
 
     popup.dialog({
         closeOnEscape: false,
@@ -706,6 +744,7 @@ function RoomTaken(list) {
         title: 'Name already taken',
         buttons: [
             {
+                id: 'bApply',
                 text: 'Ok',
                 'class': 'ui-dialog-button',
                 click: function () {
@@ -723,6 +762,14 @@ function DisplayBadPassword() {
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
+    $(window).off('keydown')
+
+    $(window).on('keydown', e => {
+        let bTarget = $('#bApply')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    })
 
     popup.dialog({
         closeOnEscape: false,
@@ -735,6 +782,7 @@ function DisplayBadPassword() {
         title: 'Incorrect Password',
         buttons: [
             {
+                id: 'bApply',
                 text: 'Ok',
                 'class': 'ui-dialog-button',
                 click: function () {
