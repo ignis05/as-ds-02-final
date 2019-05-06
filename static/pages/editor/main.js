@@ -2,9 +2,13 @@
 let pack
 let cells
 let cellSettings
+let brushSize
+
+let input
 
 let mapsDB
 
+const cellSize = 50
 const dtOptions = {
     year: '2-digit',
     month: '2-digit',
@@ -24,27 +28,35 @@ $(document).ready(async () => {
     await mapsDB.create()
 
     pack = {}
-    pack.size = $('#ctrl-select').val()
+    pack.size = $('#ctrl-lvlsize').val()
     pack.level = []
+
+    brushSize = parseInt($('#ctrl-brushsize').val())
+
     cells = []
     cellSettings = {
         height: 5,
         type: 'dirt',
     }
 
+    InputInit()
     CtrlsInit()
 
     // Define additional setting sliders here:
-    new OptionSlider('height', 'Height', 0, 20, 1, 5)
+    new OptionSlider('height', 'Height', 0, 255, 1, 5)
 })
 
 //#region Init Functions
 function CtrlsInit() {
     $('#ctrl-genlvl').on('click', function () {
-        pack.size = $('#ctrl-select').val()
+        pack.size = $('#ctrl-lvlsize').val()
         createTiles()
     })
     createTiles()
+
+    $('#ctrl-brushsize').on('change', function () {
+        brushSize = parseInt($('#ctrl-brushsize').val())
+    })
 
     $('#ctrl-types').children().on('click', function () {
         type = this.innerHTML
@@ -76,6 +88,46 @@ function CtrlsInit() {
         }
     })
 }
+
+function InputInit() {
+    input = {
+        leftMouse: false,
+        rightMouse: false,
+        middleMouse: false,
+    }
+
+    $(window).on('mousedown', e => {
+        switch (e.which) {
+            case 1:
+                input.leftMouse = true
+                break
+            case 2:
+                input.middleMouse = true
+                break
+            case 3:
+                input.rightMouse = true
+                break
+            default:
+                console.error('Incorrect mouse event: ' + e.which)
+        }
+    })
+
+    $(window).on('mouseup', e => {
+        switch (e.which) {
+            case 1:
+                input.leftMouse = false
+                break
+            case 2:
+                input.middleMouse = false
+                break
+            case 3:
+                input.rightMouse = false
+                break
+            default:
+                console.error('Incorrect mouse event: ' + e.which)
+        }
+    })
+}
 //#endregion
 
 //#region Editor Internals
@@ -89,10 +141,10 @@ function clearTypes() {
 function createTiles() {
     pack.level = []
     cells = []
-    $('#map').html('').css('width', pack.size * 50 + 50 + 'px').css('height', pack.size * 50 + 50 + 'px').css('position', 'relative')
+    $('#map').html('').css('width', pack.size * cellSize + cellSize + 'px').css('height', pack.size * cellSize + cellSize + 'px').css('position', 'relative')
     for (let i = 0; i < pack.size; i++) {
         for (let j = 0; j < pack.size; j++) {
-            let cell = new Cell(cells.length, j, i)
+            let cell = new Cell(i * pack.size + j, j, i)
             cells.push(cell)
             cell.object.on('click', cellClick)
             $('#map').append(cell.object)
@@ -102,29 +154,27 @@ function createTiles() {
 }
 
 function cellClick() {
-    cell = this
-    cell.type = cellSettings.type
-    cell.height = cellSettings.height
-    cell.innerHTML = cell.height
+    let cellArray = Array.from($(document).find('.cell-active'))
+    for (let i in cellArray) {
 
-    switch (cellSettings.type) {
-        case 'dirt':
-            $(this).css('backgroundColor', '#338833')
-            break
-        case 'rock':
-            $(this).css('backgroundColor', '#888888')
-            break
-    }
+        cell = cellArray[i]
+        cell.cell.type = cellSettings.type
+        cell.cell.height = cellSettings.height
+        cell.innerHTML = cell.height
 
-    for (let i in pack.level) {
-        let datapack = pack.level[i]
-        if (datapack.id === cell.cell.id) {
-            datapack.height = cell.height
-            datapack.type = cell.type
-            break
+        for (let i in pack.level) {
+            let datapack = pack.level[i]
+            if (datapack.id === cell.cell.id) {
+                datapack.height = cell.cell.height
+                datapack.type = cell.cell.type
+                break
+            }
         }
+        cell.cell.setup()
     }
+
     $('#data').html(JSON.stringify(pack, null, 4))
+
 }
 
 function loadMap(dataPack) {
@@ -162,9 +212,42 @@ class Cell {
     create() {
         let cont = $('<div>')
         cont.addClass('cell')
-            .css('left', this.x * 50)
-            .css('top', this.z * 50)
+            .css('left', this.x * cellSize)
+            .css('top', this.z * cellSize)
             .html(this.height)
+
+        cont.on('mouseover', e => {
+            let x = e.target.cell.x
+            let z = e.target.cell.z
+            for (let i = -(brushSize - 1) / 2; i < (brushSize + 1) / 2; i++) {
+                for (let j = -(brushSize - 1) / 2; j < (brushSize + 1) / 2; j++) {
+                    for (let k in cells) {
+                        if (cells[k].x == x + i && cells[k].z == z + j) {
+                            $(cells[k].object).addClass('cell-active')
+                            break
+                        }
+                    }
+                }
+            }
+            if (input.leftMouse) {
+                cellClick()
+            }
+        })
+
+        cont.on('mouseout', e => {
+            let x = e.target.cell.x
+            let z = e.target.cell.z
+            for (let i = -(brushSize - 1) / 2; i < (brushSize + 1) / 2; i++) {
+                for (let j = -(brushSize - 1) / 2; j < (brushSize + 1) / 2; j++) {
+                    for (let k in cells) {
+                        if (cells[k].x == x + i && cells[k].z == z + j) {
+                            $(cells[k].object).removeClass('cell-active')
+                            break
+                        }
+                    }
+                }
+            }
+        })
 
         cont[0].cell = this
         this.object = cont
@@ -368,7 +451,7 @@ function DisplayLoad(list) {
                     elem.removeClass('saves-active')
                 })
                 row.addClass('saves-active')
-                
+
                 $('#bLoad').attr('disabled', false).removeClass('disabled')
             }
 

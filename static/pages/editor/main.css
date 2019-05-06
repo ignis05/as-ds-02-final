@@ -3,11 +3,13 @@
     margin: 0;
     overflow: hidden;
     box-sizing: border-box;
+    -moz-user-select: none;
+    user-select: none;
 }
 
 /*#region Legacy UI*/
 
-.ctrl-block button, #ctrl-create * {
+.ctrl-block * {
     background-color: #333333;
     color: #dddddd;
     border: 2px solid #dddddd;
@@ -30,6 +32,10 @@
 .ctrl-block .active, #ctrl-create .active, .ctrl-block .active:hover, #ctrl-create .active:hover {
     border-color: #88dd33;
     color: #88dd33;
+}
+
+.size-unstable {
+    color: #883333;
 }
 
 /*#endregion*/
@@ -72,7 +78,8 @@
 }
 
 #ctrl-create * {
-    width: 45%;
+    box-sizing: border-box;
+    width: 48%;
 }
 
 .ctrl-block {
@@ -123,16 +130,18 @@
     position: relative;
     width: calc(100vw - 400px);
     height: 100vh;
-    padding: 50px;
+    padding: 30px;
     overflow: auto;
     background-color: #111111;
 }
 
 .cell {
+    --cellSize: 50px;
+
     position: absolute;
-    width: 50px;
-    height: 50px;
-    line-height: 50px;
+    width: var(--cellSize);
+    height: var(--cellSize);
+    line-height: var(--cellSize);
     text-align: center;
     font-size: 2em;
     font-weight: bolder;
@@ -141,10 +150,10 @@
     z-index: 2;
     background-color: #888888;
     pointer-events: all;
-    border: 2px solid #333333;
+    border: 1px solid #333333;
 }
 
-.cell:hover {
+.cell-active {
     background-color: #88dd33 !important;
     border-color: #55aa00 !important;
 }
