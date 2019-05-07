@@ -65,6 +65,9 @@ app.get("/editor", function (req, res) {
 app.get("/lobby", function (req, res) {
     res.sendFile(path.join(__dirname + `/static/pages/lobby/main.html`))
 })
+app.get("/game", function (req, res) {
+    res.sendFile(path.join(__dirname + `/static/pages/game/main.html`))
+})
 // #endregion static routing
 
 // automatic routing
@@ -490,6 +493,37 @@ lobby.io.on('connect', socket => {
 
     // #region custom events
 
+    // start game
+    socket.on('start_game', () => {
+        let room = lobby.getRoomByClientId(socket.id)
+        if (!room) {
+            console.log('ERROR: room doesn\'t exist');
+            return
+        }
+        for (let client of room.clients) {
+            if (!client.ready) {
+                console.log('ERROR: client not ready');
+                return
+            }
+        }
+
+        game.sessions.push({ // push game session to game instance of socket
+            clients: room.clients.map(client => {
+                let _client = {
+                    id: client.id,
+                    token: client.token,
+                    name: client.name,
+                    connected: false,
+                }
+                return _client
+            }),
+            mapName: 'placeholder_mapName',
+            id: Math.random().toString(36).substring(2, 10),
+        })
+
+        lobby.io.to(room.name).emit('startGame')
+    })
+
     // kick user
     socket.on('kick', userID => {
         let room = lobby.getRoomByClientId(socket.id)
@@ -591,6 +625,91 @@ lobby.io.on('connect', socket => {
 
 })
 // #endregion socket.io - lobby
+
+// #region socket.io - game
+var game = {
+    io: io.of('/game'), // separate instace for game
+    sessions: [],
+    getClientByToken: token => {
+        let session = game.sessions.find(session => session.clients.find(client => client.token == token))
+        let cl = session.clients.find(client => client.token == token)
+        return cl
+    },
+    getClientByID: id => {
+        let session = game.sessions.find(session => session.clients.find(client => client.id == id))
+        let cl = session.clients.find(client => client.id == id)
+        return cl
+    },
+    getSessionByClientID: id => game.sessions.find(session => session.clients.find(client => client.id == id)),
+    getSessionByClientToken: token => game.sessions.find(session => session.clients.find(client => client.token == token)),
+}
+game.io.on('connect', socket => {
+    console.log(`${socket.id} connected`);
+
+    var cookies = cookie.parse(socket.handshake.headers.cookie);
+    var token = cookies["token"]
+    console.log(`user token: ${token}`)
+
+    let session = game.getSessionByClientToken(token)
+
+    let client
+
+    if (session) { // client is assigned to session
+
+        client = game.getClientByToken(token)
+
+        if (client.connected) { // someone is already connected using this token
+            socket.emit('error_token')
+            return
+        }
+
+        // update client data
+
+        client.id = socket.id // update socket id
+        client.connected = true // update status
+
+    }
+    else {
+        socket.emit('session_not_found')
+        return
+    }
+
+    // join room
+    socket.join(session.id)
+    game.io.to(session.id).emit('player_connected', socket.id)
+
+    // check if all players connected
+    let readyCount = 0
+    for (player of session.clients) {
+        if (player.connected) readyCount++
+    }
+    if (readyCount == session.clients.length) {
+        game.io.to(session.id).emit('all_players_connected')
+    }
+
+    // built in disconnect event :
+    socket.on('disconnect', () => {
+        console.log(`${socket.id} disconnected`);
+
+        var client = game.getClientByID(socket.id)
+        let session = game.getSessionByClientID(socket.id)
+
+        game.io.to(session.id).emit('player_disconnected', socket.id) // notify room
+
+        session.clients[session.clients.indexOf(client)].connected = false
+
+        // delete session if last player leaves
+        let empty = true
+        for (let client of session.clients) {
+            if (client.connected) empty = false
+        }
+        if (empty) {
+            let i = game.sessions.indexOf(session)
+            game.sessions.splice(i, 1)
+        }
+    })
+})
+// #endregion socket.io - game
 
 //nasłuch na określonym porcie
 server.listen(PORT, function () {
