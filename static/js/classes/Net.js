@@ -34,6 +34,25 @@ class Net {
         })
     }
 
+    static gameInit(mapID) {
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: "/gameInit",
+                data: {
+                    id: mapID
+                },
+                type: "POST",
+                success: data => {
+                    resolve(data)
+                },
+                error: (xhr, status, error) => {
+                    console.log(xhr);
+                    reject(new Error("promise rejected"))
+                },
+            })
+        })
+    }
+
     static sendClickedPoint(clickPosition, unitPosition) {
         return new Promise((resolve, reject) => {
             $.ajax({

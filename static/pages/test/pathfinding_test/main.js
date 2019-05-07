@@ -1,5 +1,124 @@
-$(document).ready(async function () {
+$(document).ready(async () => {
+    mapsDB = new MapDB()
+    await mapsDB.create()
 
+    pack = {}
+    pack.size = 0
+    pack.level = []
+
+    const dtOptions = {
+        year: '2-digit',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+    }
+
+    class Cell {
+        constructor(id, x, z) {
+            this.id = id
+            this.x = x
+            this.z = z
+            this.height = 5
+            this.type = 'dirt'
+        }
+    }
+
+    async function loadMap(dataPack) {
+        let data = dataPack.mapData
+        if (data != null) {
+            Net.gameInit(dataPack._id)
+            return data
+        }
+    }
+
+    function DisplayLoad(list) {
+        let overlay = $('#overlay')
+        let popup = $('#dialog').html('')
+
+        if (overlay.css('display') == 'none')
+            overlay.removeAttr('style')
+
+
+        let saveTable = $('<table id="save-table">')
+        let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
+        let svtCont = $('<div>').addClass('saves-wrap').append('<table><tr><th onclick="sortTable(\'save-table\', 0)">Name</th><th onclick="sortTable(\'save-table\', 1)">Date</th></tr></table>').append(svtScroll)
+        popup.append(svtCont)
+
+        let nor = list.length
+        if (nor < 9) nor = 9
+
+        let rowlist = []
+
+        for (let i = 0; i < nor; i++) {
+            let row = $('<tr>').addClass('saves-row')
+            rowlist.push(row)
+
+            let cell0 = $('<td>').html('')
+            if (list[i] !== undefined)
+                cell0.html(list[i].mapName)
+            row.append(cell0)
+
+            let cell1 = $('<td>').html('')
+            if (list[i] !== undefined)
+                cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
+            row.append(cell1)
+
+            saveTable.append(row)
+            row.click(() => {
+                if (cell0.html() != '') {
+                    name.val(cell0.html())
+                    rowlist.forEach(elem => {
+                        elem.removeClass('saves-active')
+                    })
+                    row.addClass('saves-active')
+
+                    $('#bLoad').attr('disabled', false).removeClass('disabled')
+                }
+
+            })
+        }
+
+        let name = $('<input>').attr('type', 'hidden')
+        popup.append(name)
+
+        popup.dialog({
+            closeOnEscape: false,
+            modal: true,
+            draggable: false,
+            resizable: false,
+            dialogClass: 'no-close  buttonpane-double',
+            width: 600,
+            height: 540,
+            title: 'Load',
+            buttons: [{
+                    id: 'bLoad',
+                    disabled: true,
+                    text: 'Load',
+                    'class': 'ui-dialog-button disabled',
+                    click: async function () {
+                        startGame(await loadMap(await mapsDB.importMap(name.val())))
+                        $(this).dialog('close')
+                        overlay.css('display', 'none')
+                    }
+                },
+                {
+                    text: 'Back',
+                    'class': 'ui-dialog-button',
+                    click: function () {
+                        $(this).dialog('close')
+                        overlay.css('display', 'none')
+                    }
+                }
+            ]
+        })
+    }
+
+    let mapList = await mapsDB.getMaps()
+    DisplayLoad(mapList)
+})
+
+async function startGame(map) {
     // #region initial
     $(window).on("resize", () => {
         camera.aspect = $(window).width() / $(window).height()
@@ -11,399 +130,9 @@ $(document).ready(async function () {
     var renderer = new THREE.WebGLRenderer({
         antialias: true
     });
+    var test_LoadedMap = map
 
-    //dump in future
-    var test_LoadedMap = {
-        "size": "8",
-        "level": [{
-            "id": 0,
-            "x": 0,
-            "z": 0,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 1,
-            "x": 1,
-            "z": 0,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 2,
-            "x": 2,
-            "z": 0,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 3,
-            "x": 3,
-            "z": 0,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 4,
-            "x": 4,
-            "z": 0,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 5,
-            "x": 5,
-            "z": 0,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 6,
-            "x": 6,
-            "z": 0,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 7,
-            "x": 7,
-            "z": 0,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 8,
-            "x": 0,
-            "z": 1,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 9,
-            "x": 1,
-            "z": 1,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 10,
-            "x": 2,
-            "z": 1,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 11,
-            "x": 3,
-            "z": 1,
-            "type": "dirt",
-            "height": "8"
-        }, {
-            "id": 12,
-            "x": 4,
-            "z": 1,
-            "type": "dirt",
-            "height": "18"
-        }, {
-            "id": 13,
-            "x": 5,
-            "z": 1,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 14,
-            "x": 6,
-            "z": 1,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 15,
-            "x": 7,
-            "z": 1,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 16,
-            "x": 0,
-            "z": 2,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 17,
-            "x": 1,
-            "z": 2,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 18,
-            "x": 2,
-            "z": 2,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 19,
-            "x": 3,
-            "z": 2,
-            "type": "dirt",
-            "height": "8"
-        }, {
-            "id": 20,
-            "x": 4,
-            "z": 2,
-            "type": "dirt",
-            "height": "13"
-        }, {
-            "id": 21,
-            "x": 5,
-            "z": 2,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 22,
-            "x": 6,
-            "z": 2,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 23,
-            "x": 7,
-            "z": 2,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 24,
-            "x": 0,
-            "z": 3,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 25,
-            "x": 1,
-            "z": 3,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 26,
-            "x": 2,
-            "z": 3,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 27,
-            "x": 3,
-            "z": 3,
-            "type": "dirt",
-            "height": "8"
-        }, {
-            "id": 28,
-            "x": 4,
-            "z": 3,
-            "type": "dirt",
-            "height": "18"
-        }, {
-            "id": 29,
-            "x": 5,
-            "z": 3,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 30,
-            "x": 6,
-            "z": 3,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 31,
-            "x": 7,
-            "z": 3,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 32,
-            "x": 0,
-            "z": 4,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 33,
-            "x": 1,
-            "z": 4,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 34,
-            "x": 2,
-            "z": 4,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 35,
-            "x": 3,
-            "z": 4,
-            "type": "dirt",
-            "height": "8"
-        }, {
-            "id": 36,
-            "x": 4,
-            "z": 4,
-            "type": "dirt",
-            "height": "18"
-        }, {
-            "id": 37,
-            "x": 5,
-            "z": 4,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 38,
-            "x": 6,
-            "z": 4,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 39,
-            "x": 7,
-            "z": 4,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 40,
-            "x": 0,
-            "z": 5,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 41,
-            "x": 1,
-            "z": 5,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 42,
-            "x": 2,
-            "z": 5,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 43,
-            "x": 3,
-            "z": 5,
-            "type": "dirt",
-            "height": "8"
-        }, {
-            "id": 44,
-            "x": 4,
-            "z": 5,
-            "type": "dirt",
-            "height": "4"
-        }, {
-            "id": 45,
-            "x": 5,
-            "z": 5,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 46,
-            "x": 6,
-            "z": 5,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 47,
-            "x": 7,
-            "z": 5,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 48,
-            "x": 0,
-            "z": 6,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 49,
-            "x": 1,
-            "z": 6,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 50,
-            "x": 2,
-            "z": 6,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 51,
-            "x": 3,
-            "z": 6,
-            "type": "dirt",
-            "height": "18"
-        }, {
-            "id": 52,
-            "x": 4,
-            "z": 6,
-            "type": "dirt",
-            "height": "4"
-        }, {
-            "id": 53,
-            "x": 5,
-            "z": 6,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 54,
-            "x": 6,
-            "z": 6,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 55,
-            "x": 7,
-            "z": 6,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 56,
-            "x": 0,
-            "z": 7,
-            "type": "dirt",
-            "height": 5
-        }, {
-            "id": 57,
-            "x": 1,
-            "z": 7,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 58,
-            "x": 2,
-            "z": 7,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 59,
-            "x": 3,
-            "z": 7,
-            "type": "dirt",
-            "height": "18"
-        }, {
-            "id": 60,
-            "x": 4,
-            "z": 7,
-            "type": "dirt",
-            "height": "4"
-        }, {
-            "id": 61,
-            "x": 5,
-            "z": 7,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 62,
-            "x": 6,
-            "z": 7,
-            "type": "rock",
-            "height": 5
-        }, {
-            "id": 63,
-            "x": 7,
-            "z": 7,
-            "type": "dirt",
-            "height": 5
-        }]
-    }
-    //enddump in future
-
-    var raycaster = new THREE.Raycaster(); 
+    var raycaster = new THREE.Raycaster();
     var finishPoint = null
     var movePath = null
     var selectedUnitPoint = {
@@ -432,6 +161,19 @@ $(document).ready(async function () {
     grid.addTo(scene)
 
     var gridMatrix = grid.matrix
+    
+    for(object in grid.map){
+        console.log(grid.map[object].type);
+        
+        if(grid.map[object].type == "dirt"){
+            selectedUnitPoint.x = grid.map[object].x
+            selectedUnitPoint.z = grid.map[object].z
+            selectedUnitPoint.height = grid.map[object].height
+            break
+        }
+    }
+    console.log(selectedUnitPoint);
+    
 
     var rayClick = () => {
         mouseVector.x = (event.clientX / $(window).width()) * 2 - 1;
@@ -449,10 +191,9 @@ $(document).ready(async function () {
                     z: clickedPosition.userData.z
                 }
                 //clickedPosition.material.color.set(0xff0000)
-                Net.sendClickedPoint(finishPoint, selectedUnitPoint).then(function (result) {                    
+                Net.sendClickedPoint(finishPoint, selectedUnitPoint).then(function (result) {
                     Pathfinder.moveTiles(result, gridMatrix, selectedUnitPoint, testmodel)
                     console.log(selectedUnitPoint);
-                    
                 })
             }
         }
@@ -502,7 +243,7 @@ $(document).ready(async function () {
                 await testmodel.load()
                 testmodel.addTo(scene)
                 testmodel.createButtons()
-                testmodel.mesh.position.set(gridMatrix[0][0].position.x, gridMatrix[0][0].position.y, gridMatrix[0][0].position.z)
+                testmodel.mesh.position.set(gridMatrix[selectedUnitPoint.z][selectedUnitPoint.x].position.x, gridMatrix[selectedUnitPoint.z][selectedUnitPoint.x].position.y, gridMatrix[selectedUnitPoint.z][selectedUnitPoint.x].position.z)
             } else {
                 $(".modelSelectButton").css("color", "white")
                 currentModel = null
@@ -515,6 +256,7 @@ $(document).ready(async function () {
         $(container).append(button)
     })
     $("#root").on("click", rayClick)
+
     function render() {
 
         if (testmodel) testmodel.animate()
@@ -524,4 +266,4 @@ $(document).ready(async function () {
     }
     render()
 
-})
+}

@@ -1,0 +1,158 @@
+* {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+/*#region Legacy UI*/
+
+#root {
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+.ctrl-block button, #ctrl-create * {
+    background-color: #333333;
+    color: #dddddd;
+    border: 2px solid #dddddd;
+    margin-bottom: 2px;
+    padding: 5px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.ctrl-block button:hover, #ctrl-create button:hover {
+    color: #dd8833;
+    border-color: #dd8833;
+}
+
+.ctrl-block button:active, #ctrl-create button:active {
+    color: #88dd33;
+    border-color: #88dd33;
+}
+
+.ctrl-block .active, #ctrl-create .active, .ctrl-block .active:hover, #ctrl-create .active:hover {
+    border-color: #88dd33;
+    color: #88dd33;
+}
+
+/*#endregion*/
+
+/*#region OVERLAY POPUPS*/
+
+#overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: #000000AF;
+    z-index: 5;
+}
+/*#endregion*/
+
+/*#region More Legacy UI*/
+
+#ctrls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 200px;
+    height: 100%;
+    padding: 5px;
+    background-color: #33333388;
+}
+
+#ctrl-create * {
+    width: 45%;
+}
+
+.ctrl-block {
+    margin-top: 5%;
+}
+
+.ctrl-block * {
+    width: 100%;
+}
+
+.ctrl-slider {
+    border: 2px solid black;
+    padding: 5px;
+}
+
+.ctrl-slider input[type="range"] {
+    display: inline-block;
+    width: 70%;
+}
+
+.ctrl-slider input[type="number"] {
+    display: inline-block;
+    width: 30%;
+    background: #dddddd7F;
+    border: none;
+}
+
+#data {
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    right: 200px;
+    width: 200px;
+    height: 100%;
+    padding: 5px;
+    background-color: #11111188;
+    overflow: hidden auto;
+    color: #ffffff;
+    white-space: pre;
+}
+
+/*#endregion*/
+
+/*#region Editor Window*/
+
+#cont {
+    box-sizing: border-box;
+    position: relative;
+    width: calc(100vw - 400px);
+    height: 100vh;
+    padding: 50px;
+    overflow: auto;
+    background-color: #111111;
+}
+
+.cell {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    font-size: 2em;
+    font-weight: bolder;
+    cursor: pointer;
+    overflow: visible;
+    z-index: 2;
+    background-color: #888888;
+    pointer-events: all;
+    border: 2px solid #333333;
+}
+
+.cell:hover {
+    background-color: #88dd33 !important;
+    border-color: #55aa00 !important;
+}
+
+/*#endregion*/

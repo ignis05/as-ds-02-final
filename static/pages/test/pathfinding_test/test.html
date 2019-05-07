@@ -5,20 +5,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Loader test</title>
-    <style>
-        * {
-            padding: 0;
-            margin: 0;
-        }
 
-        #root {
-            overflow: hidden;
-            width: 100vw;
-            height: 100vh;
-        }
-    </style>
+    <title>Pathfinder test</title>
+
+    <link rel="stylesheet" href="/static/css/reset.css">
+    <link rel="stylesheet" href="/static/css/dialogs.css">
+    <link rel="stylesheet" href="/static/pages/editor/main.css">
+
     <script src="/libs/jquery-3.3.1.js"></script>
+    <script src="/libs/jquery-ui.js"></script>
     <script src="/libs/three.js"></script>
     <script src="/libs/Loaders/GLTFLoader.js"></script>
     <script src="/libs/Loaders/inflate.min.js"></script>
@@ -27,6 +22,8 @@
     <script src="/static/js/classes/Net.js"></script>
     <script src="/static/js/classes/Settings.js"></script>
     <script src="/static/js/classes/Pathfinder.js"></script>
+    <script src="/static/js/classes/Database.js"></script>
+    <script src="/static/js/classes/MapDB.js"></script>
     <script src="/static/js/classes/Grid.js"></script>
     <script src="/static/js/classes/Model.js"></script>
     <script src="/static/pages/test/pathfinding_test/main.js"></script>
@@ -34,8 +31,8 @@
 
 <body>
     <div id="root">
-
     </div>
+    <div id="dialog"></div>
 </body>
 
 </html>

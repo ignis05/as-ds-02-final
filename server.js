@@ -24,394 +24,9 @@ var ServerDB = {
     databases: [],
 }
 
-var test_LoadedMap = {
-    "size": "8",
-    "level": [{
-        "id": 0,
-        "x": 0,
-        "z": 0,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 1,
-        "x": 1,
-        "z": 0,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 2,
-        "x": 2,
-        "z": 0,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 3,
-        "x": 3,
-        "z": 0,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 4,
-        "x": 4,
-        "z": 0,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 5,
-        "x": 5,
-        "z": 0,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 6,
-        "x": 6,
-        "z": 0,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 7,
-        "x": 7,
-        "z": 0,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 8,
-        "x": 0,
-        "z": 1,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 9,
-        "x": 1,
-        "z": 1,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 10,
-        "x": 2,
-        "z": 1,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 11,
-        "x": 3,
-        "z": 1,
-        "type": "dirt",
-        "height": "8"
-    }, {
-        "id": 12,
-        "x": 4,
-        "z": 1,
-        "type": "dirt",
-        "height": "18"
-    }, {
-        "id": 13,
-        "x": 5,
-        "z": 1,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 14,
-        "x": 6,
-        "z": 1,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 15,
-        "x": 7,
-        "z": 1,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 16,
-        "x": 0,
-        "z": 2,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 17,
-        "x": 1,
-        "z": 2,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 18,
-        "x": 2,
-        "z": 2,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 19,
-        "x": 3,
-        "z": 2,
-        "type": "dirt",
-        "height": "8"
-    }, {
-        "id": 20,
-        "x": 4,
-        "z": 2,
-        "type": "dirt",
-        "height": "13"
-    }, {
-        "id": 21,
-        "x": 5,
-        "z": 2,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 22,
-        "x": 6,
-        "z": 2,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 23,
-        "x": 7,
-        "z": 2,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 24,
-        "x": 0,
-        "z": 3,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 25,
-        "x": 1,
-        "z": 3,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 26,
-        "x": 2,
-        "z": 3,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 27,
-        "x": 3,
-        "z": 3,
-        "type": "dirt",
-        "height": "8"
-    }, {
-        "id": 28,
-        "x": 4,
-        "z": 3,
-        "type": "dirt",
-        "height": "18"
-    }, {
-        "id": 29,
-        "x": 5,
-        "z": 3,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 30,
-        "x": 6,
-        "z": 3,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 31,
-        "x": 7,
-        "z": 3,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 32,
-        "x": 0,
-        "z": 4,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 33,
-        "x": 1,
-        "z": 4,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 34,
-        "x": 2,
-        "z": 4,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 35,
-        "x": 3,
-        "z": 4,
-        "type": "dirt",
-        "height": "8"
-    }, {
-        "id": 36,
-        "x": 4,
-        "z": 4,
-        "type": "dirt",
-        "height": "18"
-    }, {
-        "id": 37,
-        "x": 5,
-        "z": 4,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 38,
-        "x": 6,
-        "z": 4,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 39,
-        "x": 7,
-        "z": 4,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 40,
-        "x": 0,
-        "z": 5,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 41,
-        "x": 1,
-        "z": 5,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 42,
-        "x": 2,
-        "z": 5,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 43,
-        "x": 3,
-        "z": 5,
-        "type": "dirt",
-        "height": "8"
-    }, {
-        "id": 44,
-        "x": 4,
-        "z": 5,
-        "type": "dirt",
-        "height": "4"
-    }, {
-        "id": 45,
-        "x": 5,
-        "z": 5,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 46,
-        "x": 6,
-        "z": 5,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 47,
-        "x": 7,
-        "z": 5,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 48,
-        "x": 0,
-        "z": 6,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 49,
-        "x": 1,
-        "z": 6,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 50,
-        "x": 2,
-        "z": 6,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 51,
-        "x": 3,
-        "z": 6,
-        "type": "dirt",
-        "height": "18"
-    }, {
-        "id": 52,
-        "x": 4,
-        "z": 6,
-        "type": "dirt",
-        "height": "4"
-    }, {
-        "id": 53,
-        "x": 5,
-        "z": 6,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 54,
-        "x": 6,
-        "z": 6,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 55,
-        "x": 7,
-        "z": 6,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 56,
-        "x": 0,
-        "z": 7,
-        "type": "dirt",
-        "height": 5
-    }, {
-        "id": 57,
-        "x": 1,
-        "z": 7,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 58,
-        "x": 2,
-        "z": 7,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 59,
-        "x": 3,
-        "z": 7,
-        "type": "dirt",
-        "height": "18"
-    }, {
-        "id": 60,
-        "x": 4,
-        "z": 7,
-        "type": "dirt",
-        "height": "4"
-    }, {
-        "id": 61,
-        "x": 5,
-        "z": 7,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 62,
-        "x": 6,
-        "z": 7,
-        "type": "rock",
-        "height": 5
-    }, {
-        "id": 63,
-        "x": 7,
-        "z": 7,
-        "type": "dirt",
-        "height": 5
-    }]
-}
+var test_LoadedMap = []
+var grid
+var finder
 
 // #region pathfinding
 function createMatrix(dbfile) {
@@ -438,8 +53,6 @@ function createMatrix(dbfile) {
     return matrix
 }
 
-var grid = new PF.Grid(createMatrix(test_LoadedMap))
-var finder = new PF.AStarFinder()
 // #endregion pathfinding
 
 // #region static routing
@@ -464,9 +77,8 @@ app.post("/database_create", function (req, res) { // create database in array a
 
     let i = ServerDB.databases.findIndex(entry => entry.filename == data.filename)
     if (i != -1) { // already exists
-        res.send({ msg: "OK", id: i });
-    }
-    else {
+        res.send({msg: "OK", id: i});
+    } else {
         let db = new Datastore({
             filename: path.join(__dirname + `/static/database/${data.filename}`),
             autoload: true
@@ -477,7 +89,7 @@ app.post("/database_create", function (req, res) { // create database in array a
             filename: data.filename
         })
         let index = ServerDB.databases.length - 1
-        res.send({ msg: "OK", id: index });
+        res.send({msg: "OK", id: index});
     }
 })
 
@@ -490,7 +102,7 @@ app.post("/database_insert", function (req, res) {
     db.insert(data.entry, function (err, entry) {
         console.log("entry added")
         console.log(entry)
-        res.send({ msg: "OK" });
+        res.send({msg: "OK"});
     });
 })
 
@@ -503,7 +115,7 @@ app.post("/database_findOne", function (req, res) {
     db.findOne(data.match, function (err, entry) {
         console.log("entry found")
         console.log(entry)
-        res.send({ msg: "OK", entry: entry });
+        res.send({msg: "OK", entry: entry});
     });
 })
 
@@ -516,7 +128,7 @@ app.post("/database_find", function (req, res) {
     db.find(data.match, function (err, entries) {
         console.log("entries found")
         console.log(entries)
-        res.send({ msg: "OK", entries: entries });
+        res.send({msg: "OK", entries: entries});
     });
 })
 
@@ -528,7 +140,7 @@ app.post("/database_count", function (req, res) {
 
     db.count(data.match, function (err, count) {
         console.log(`${count} entries found`)
-        res.send({ msg: "OK", count: count });
+        res.send({msg: "OK", count: count});
     });
 })
 
@@ -542,7 +154,7 @@ app.post("/database_remove", function (req, res) {
 
     db.remove(data.match, data.params, function (err, count) {
         console.log(`removed ${count} entries`)
-        res.send({ msg: "OK", count: count });
+        res.send({msg: "OK", count: count});
     });
 })
 
@@ -553,9 +165,11 @@ app.post("/database_update", function (req, res) {
 
     let db = ServerDB.databases[data.id].db
 
-    db.update(data.match, { $set: data.entry }, {}, function (err, count) {
+    db.update(data.match, {
+        $set: data.entry
+    }, {}, function (err, count) {
         console.log("updated " + count)
-        res.send({ msg: "OK", count: count });
+        res.send({msg: "OK", count: count});
     });
 })
 // #endregion ajax - database
@@ -563,14 +177,15 @@ app.post("/database_update", function (req, res) {
 // #region ajax - token
 app.post("/token", function (req, res) {
     getToken(req, res)
-    res.send({ msg: "OK" })
+    res.send({msg: "OK"})
 })
+
 function getToken(req, res) {
     let cookies = req.cookies
     // console.log(cookies);
     let token = (cookies["token"] ? cookies["token"] : Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10))
-    let time = 1000 * 60 * 60 * 8      // 8h
-    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: true })
+    let time = 1000 * 60 * 60 * 8 // 8h
+    res.cookie("token", token, {expires: new Date(Date.now() + time), httpOnly: true})
     console.log("token:", token);
     return token
 }
@@ -592,13 +207,9 @@ app.post("/getTestPages", function (req, res) {
         }
         testPages.push(obj)
     })
-    res.send(
-        {
-            msg: "OK",
-            testPages: testPages
-        }
-    )
+    res.send({msg: "OK", testPages: testPages})
 })
+
 app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
     console.log(dirs);
@@ -614,12 +225,7 @@ app.post("/getModels", function (req, res) {
         }
         models.push(obj)
     })
-    res.send(
-        {
-            msg: "OK",
-            models: models
-        }
-    )
+    res.send({msg: "OK", models: models})
 })
 
 app.post("/sendClickedPoint", function (req, res) {
@@ -628,10 +234,25 @@ app.post("/sendClickedPoint", function (req, res) {
     let path = finder.findPath(data.unit.x, data.unit.z, data.click.x, data.click.z, temp_grid)
     console.log(path);
 
-    res.send({
-        msg: "sendClickedPoint-Sent",
-        path: path
+    res.send({msg: "sendClickedPoint-Sent", path: path})
+})
+
+app.post("/gameInit", function (req, res) {
+    let data = req.body
+
+    let db = new Datastore({
+        filename: path.join(__dirname + `/static/database/maps.db`),
+        autoload: true
+    });
+
+    db.findOne({
+        _id: data.id
+    }, function (err, doc) {
+        grid = new PF.Grid(createMatrix(doc.mapData))
+        finder = new PF.AStarFinder()
     })
+
+    res.send({msg: "OK"})
 })
 // #endregion ajax - Net.js requests
 
@@ -735,9 +356,8 @@ var lobby = {
         if (room.clients.length == 0) { // if room empty, delete it
             let i = lobby.rooms.indexOf(room)
             lobby.rooms.splice(i, 1)
-        }
-        else { // if room not empty after client leave
-            if (room.admin == client) {// if user was room admin, choose new admin
+        } else { // if room not empty after client leave
+            if (room.admin == client) { // if user was room admin, choose new admin
                 room.admin = room.clients[0]
             }
         }
@@ -753,8 +373,7 @@ var lobby = {
 
         if (lobby.getRoomByName(room.name)) {
             console.error(`ERROR: room ${room.name} already exists`)
-        }
-        else {
+        } else {
             // if client was in room - leave it
             if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
 
@@ -781,8 +400,7 @@ var lobby = {
 
         if (!lobby.getRoomByName(roomName)) { // if room doesn't exist
             console.error(`ERROR: trying to join room that doesn't exist`)
-        }
-        else {
+        } else {
             // if client was in room
             if (lobby.getRoomByClientId(socket.id)) lobby.leaveRoom(socket)
 
@@ -839,8 +457,7 @@ lobby.io.on('connect', socket => {
             lobby.joinRoomAfterRedirect(socket)
         }
 
-    }
-    else {
+    } else {
         // create new client entry
         client = {
             token: token,
