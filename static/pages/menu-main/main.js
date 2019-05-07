@@ -2,7 +2,7 @@
 let socket = io('/lobby') // connect to socket instance
 //#region Socket Setup
 socket.on('error_token', () => {
-    window.alert('You are already connected from this browser. If you want to connect another client try incognito mode or other browsers')
+    //window.alert('You are already connected from this browser. If you want to connect another client try incognito mode or other browsers')
 
     DisplayMultiTabError()
 })
