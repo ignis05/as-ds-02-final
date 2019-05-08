@@ -66,7 +66,7 @@ socket.on('startGame', () => {
 
 // triggers when someone disconnects from room
 socket.on('user_disconnected', async id => {
-    console.log(`user ${id} has disconnected`);
+    console.log(`user ${id} has disconnected`)
     // >here< place for additional function that will notify the users
 
     // update room admin if someon leaves
@@ -77,13 +77,13 @@ socket.on('user_disconnected', async id => {
 
 // triggers when someone connects to room
 socket.on('user_connected', id => {
-    console.log(`user ${id} has connected`);
+    console.log(`user ${id} has connected`)
     // >here< place for additional function that will notify the users
 })
 
 // triggers when someone in room changes username (optional)
 socket.on('username_change', id => {
-    console.log(`user ${id} chnaged nickname`);
+    console.log(`user ${id} chnaged nickname`)
     // >here< place for additional function that will update list of room members
 })
 
@@ -97,8 +97,22 @@ socket.on('readyState_change', async () => {
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
     let readyList = room.clients.map(client => `${client.name}: ${client.ready ? 'ready' : 'not ready'}`)
-    console.log('list of ready cients');
-    console.log(readyList);
+    console.log('list of ready cients')
+    console.log(readyList)
+    updateRoomMembers()
+
+    if (room.admin.id == socket.id) {
+        let everyone = true
+        for (let client of room.clients) { // checking if everyone is ready
+            if (!client.ready && room.admin.id != client.id) {
+                everyone = false
+            }
+        }
+        if (everyone)
+            $('#button-start').removeAttr('disabled')
+        else
+            $('#button-start').attr('disabled', true)
+    }
 })
 
 // triggers when user is being kicked
@@ -112,29 +126,18 @@ socket.on('get_kicked', () => {
 
 // #endregion socket.io
 
-
-
-async function updateRoomMembers() { // placeholder function triggered by 'rooms_updated' event
-    let rooms = await socket.getRooms()
-    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
-    let display = ""
-    socket.roomMembers = room.clients
-    for (let client of room.clients.map(client => client.name)) {
-        display += client + '<br>'
-    }
-    if (display == "") display = '[]'
-    $('#socket-players').html(display)
-}
-
-async function updateChat(msg) { // placeholder function triggered by 'chat' event
-    let author = socket.roomMembers.find(client => client.id == msg.author)
-
-    let chat = $('#socket-chat-display').html()
-    chat += `<div style="display: inline; color: #FF0000; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
-    $('#socket-chat-display').html(chat)
-
-    $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
-}
+// #region Global Values
+const memberColors = [
+    '#DD3333',
+    '#DD8833',
+    '#DDDD33',
+    '#3333DD',
+    '#333333',
+    '#DD33DD',
+    '#33DDDD',
+    '#33DD33'
+]
+// #endregion
 
 $(document).ready(async () => {
     // block of code that cheks if user succesfully joined a room
@@ -155,21 +158,9 @@ $(document).ready(async () => {
 
 
     updateRoomMembers() // trigger function displaying members of room manually
+    UpdateBottomPanel()
 
     InitClicks() // Initializes bottom panel
-
-    // Flagged to remove, button will be removed
-    /* // send message on button click
-    $('#socket-chat-button').click(() => {
-        if ($('#socket-chat-input').val() !== '') { // Blocking empty messages
-            let msg = {
-                author: socket.id, // id of current connection - will always be unique
-                content: $('#socket-chat-input').val()
-            }
-            socket_send(msg) // trigger event 'chat' for every user in room (including self) and pass msg obj as data
-            $('#socket-chat-input').val('') // Clear message field to prevent accidental spam
-        }
-    }) */
 
     // send message on "enter" in chat
     $('#socket-chat-input').on('keyup', e => {
@@ -206,34 +197,27 @@ function InitClicks() {
     })
 
     $('#button-ready').click(async () => {
-        let rooms = await socket.getRooms()
-        let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
-        let client = room.clients.find(client => client.id == socket.id)
-        socket.setReadyState(!client.ready)
-        $('#button-ready').html(`${!client.ready ? 'Ready' : 'Not ready'}`)
+
     })
 
     $('#button-start').click(async () => {
         let rooms = await socket.getRooms()
         let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
 
-        if (room.size != room.clients.length) { // prevent start if room not full
-            window.alert('Room is not full')
-            return
-        }
-
-        if (room.admin.id != socket.id) {
-            window.alert('Only room admin can start game')
-            return
-        }
-
-        for (let client of room.clients) { // checking if everyone is ready
-            if (!client.ready) {
-                window.alert('Not everyone is ready')
+        if (room.admin.id == socket.id) { // Checking if client is admin
+            if (room.size != room.clients.length) { // prevent start if room not full
+                window.alert('Room is not full')
                 return
             }
+
+            socket.setReadyState(true) // Host is ready when he presses this button (their ready-state wont be displayed anyways)
+
+            socket.emit('start_game')
+        } else {
+            let client = room.clients.find(client => client.id == socket.id)
+            socket.setReadyState(!client.ready)
+            $('#button-start').html(`${!client.ready ? 'Ready' : 'Not ready'}`)
         }
-        socket.emit('start_game')
     })
 }
 
@@ -285,19 +269,14 @@ function DisplayMainMenu() {
 }
 
 function DisplayRoomInfo() {
+    UpdateRoomInfo()
+
     let overlay = $('#overlay')
     let popup = $('#room-info').removeAttr('style')
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
     $(window).off('keydown')
-
-    /* $(window).on('keydown', e => {
-        let bTarget = $('#bClose')
-        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
-            bTarget.trigger('click')
-        }
-    }) */
 
     popup.dialog({
         closeOnEscape: false,
@@ -321,5 +300,111 @@ function DisplayRoomInfo() {
             }
         ]
     })
+}
+// #endregion
+
+// #region Misc Functions
+async function UpdateRoomInfo() {
+    let rooms = await socket.getRooms()
+    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+
+    $('#socket-room-name').html(room.name)
+    $('#socket-admin-name').html(room.admin.name)
+    $('#socket-client-count').html(room.clients.length + '/' + room.size)
+}
+
+async function UpdateBottomPanel() {
+    let rooms = await socket.getRooms()
+    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+
+    if (room.admin.id == socket.id) {
+        $('#button-start').html('Start Game')
+
+        let everyone = true
+        for (let client of room.clients) { // checking if everyone is ready
+            if (!client.ready && room.admin.id != client.id) { // except for yourself
+                everyone = false
+            }
+        }
+        if (everyone)
+            $('#button-start').removeAttr('disabled')
+        else
+            $('#button-start').attr('disabled', true)
+    } else {
+        let client = room.clients.find(client => client.id == socket.id)
+        $('#button-start').html(`${client.ready ? 'Ready' : 'Not ready'}`)
+    }
+}
+
+async function updateRoomMembers() { // placeholder function triggered by 'rooms_updated' event
+    let rooms = await socket.getRooms()
+    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+
+    $('#socket-players').html('')
+
+    let display = $('<div>')
+    socket.roomMembers = room.clients
+    for (let i in room.clients) {
+        display.append(new RoomMember(i, room.clients[i].name, room.clients[i].ready))
+    }
+    if (display.html() == '') display.html() = '[]'
+    $('#socket-players').append(display)
+
+    UpdateBottomPanel()
+}
+
+async function updateChat(msg) { // placeholder function triggered by 'chat' event
+    let author = socket.roomMembers.find(client => client.id == msg.author)
+
+    let chat = $('#socket-chat-display').html()
+    chat += `<div style="display: inline; color: #FF0000; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
+    $('#socket-chat-display').html(chat)
+
+    $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
+}
+// #endregion
+
+// #region Classes
+class RoomMember {
+    constructor(id, name, readyState) {
+        let cont = $('<div>')
+            .addClass('room-member')
+
+        let nameTag = $('<div>')
+            .addClass('room-member-name')
+            .html(name)
+            .css('color', memberColors[id])
+        cont.append(nameTag)
+
+        if (id != 0) {
+            let ready = $('<div>')
+                .addClass('room-member-ready')
+                .html(readyState ? 'Ready' : 'Not ready')
+                .css('color', readyState ? '#33DD33' : '#DD3333')
+            cont.append(ready)
+
+            let kickButton = $('<button>')
+                .addClass('room-member-kick')
+                .html('Kick')
+                .click(() => {
+                    window.alert('KICK-PLACEHOLDER')
+                })
+            cont.append(kickButton)
+        } else {
+            let ready = $('<div>')
+                .addClass('room-member-ready')
+                .html('Host')
+                .css('color', '#DDDD33')
+            cont.append(ready)
+
+            let kickButton = $('<button>')
+                .addClass('room-member-kick')
+                .html('Kick')
+                .attr('disabled', true)
+            cont.append(kickButton)
+        }
+
+        return cont
+    }
 }
 // #endregion
