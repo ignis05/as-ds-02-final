@@ -14,7 +14,7 @@ Repozytoria:
 # Instalacja i uruchamianie:
 Projekt wymaga zainstalowanego pakietu [node.js](https://nodejs.org/en/)
 
-1.) Pobrać [projekt](https://github.com/ignis05/cinnamon-game) jako .zip i wypakować, lub użyć `git clone`<br>
+1.) Pobrać [projekt](https://github.com/ignis05/cinnamon-game) jako [.zip](https://github.com/ignis05/cinnamon-game/archive/master.zip) i wypakować, lub użyć `git clone`<br>
 2.) Uruchomić wiersz poleceń w głównym katalogu aplikacji<br>
 3.) Zainstalować moduły za pomocą `npm i` (tylko przy pierwszym uruchomieniu)<br>
 4.) Uruchomić serwer za pomocą `node server.js`<br>

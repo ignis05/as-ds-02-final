@@ -53,22 +53,6 @@
     flex-direction: column;
 }
 
-/* #socket-room-name {
-    position: relative;
-    --objHeight: 100px;
-    --bdrWidth: 5px;
-    color: #FFFFFF;
-    width: 100%;
-    height: var(--objHeight);
-    line-height: calc(var(--objHeight) - 2 * var(--bdrWidth));
-    text-align: center;
-    font-family: serif;
-    font-size: 3em;
-    background-color: #883333;
-    border: var(--bdrWidth) outset #DDDDDD;
-    border-bottom: var(--bdrWidth) solid #AAAAAA;
-} */
-
 #lobby-content {
     position: relative;
     background-color: #0000007F;
@@ -78,14 +62,12 @@
 
 #region-players {
     position: absolute;
-    width: 734px;
+    width: 634px;
     height: 200px;
     left: 20px;
     top: 20px;
     box-sizing: content-box;
     border: 5px outset #883333;
-    /* Temporary color of all players */
-    color: #FF0000;
 }
 
 #socket-players {
@@ -93,13 +75,69 @@
     height: 100%;
     background-color: #0000007F;
     border: 5px inset #0000007F;
-    padding: 5px;
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.room-member {
+    box-sizing: border-box;
+    width: 500px;
+    height: 22px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.room-member-name {
+    box-sizing: border-box;
+    width: 100px;
+    text-align: left;
+}
+
+.room-member-ready {
+    box-sizing: border-box;
+    width: 100px;
+    text-align: center;
+}
+
+.room-member-kick {
+    box-sizing: border-box;
+    width: 50px;
+    height: 20px;
+    line-height: 12px;
+    background-color: #7F7F7FCF;
+    border: 3px outset #7F7F7FCF;
+    text-align: center;
+    color: #DDDDDD;
+    font-weight: bolder;
+    text-shadow: 1px 1px 1px #000;
+    margin-left: 50px;
+}
+
+.room-member-kick:hover {
+    box-shadow: -1px -1px 2px #fff, 1px -1px 2px #fff, -1px 1px 2px #fff, 1px 1px 2px #fff;
+    text-shadow: 1px 1px 1px #000;
+}
+
+.room-member-kick:active {
+    border-style: inset;
+}
+
+.room-member-kick:disabled {
+    border: 3px outset #7F7F7FCF;
+    background-color: #7F7F7FCF;
+    color: #BBBBBB;
+    box-shadow: none;
+    font-weight: bold;
+    text-shadow: none;
 }
 
 #region-minimap {
     position: absolute;
-    width: 200px;
-    height: 200px;
+    width: 300px;
+    height: 300px;
     background-color: #00FFFF;
     right: 20px;
     top: 20px;
@@ -109,7 +147,7 @@
 
 #region-settings {
     position: absolute;
-    width: 534px;
+    width: 634px;
     height: 200px;
     left: 20px;
     top: 250px;
@@ -118,20 +156,9 @@
     border: 5px outset #883333;
 }
 
-#region-mapdesc {
-    position: absolute;
-    width: 400px;
-    height: 150px;
-    right: 20px;
-    top: 250px;
-    box-sizing: content-box;
-    background-color: #0000007F;
-    border: 5px outset #883333;
-}
-
 #region-chat {
     position: absolute;
-    width: 534px;
+    width: 634px;
     height: 150px;
     left: 20px;
     bottom: 120px;
@@ -166,14 +193,14 @@
 
 #region-maplist {
     position: absolute;
-    width: 400px;
-    height: 200px;
+    width: 300px;
+    height: 280px;
     right: 20px;
     bottom: 120px;
     box-sizing: content-box;
     background-color: #0000007F;
     border: 5px outset #883333;
-    font-size: 24px;
+    font-size: 20px;
 }
 
 .map_list_active:hover {
@@ -192,7 +219,6 @@
     right: 20px;
     bottom: 20px;
     box-sizing: content-box;
-    /* background-color: #DD88337F; */
     display: flex;
     flex-direction: row;
     align-items: flex-end;
@@ -218,7 +244,6 @@
 }
 
 .lobby-button:active {
-    /* color: red; */
     border-style: inset;
 }
 
@@ -229,6 +254,18 @@
     box-shadow: none;
     font-weight: bold;
     text-shadow: none;
+}
+
+.lobby-button-placeholder {
+    box-sizing: border-box;
+    width: 200px;
+    height: 75px;
+    background-color: transparent;
+    border: 5px outset transparent;
+    color: transparent;
+    font-weight: bolder;
+    font-size: 1.5em;
+    text-shadow: 1px 1px 1px transparent;
 }
 
 /* #endregion */
@@ -271,8 +308,8 @@
 }
 
 .text-placeholder {
-    color: #00FF00;
-    font-size: 4em;
+    color: #33DD33;
+    font-size: 3em;
     text-align: center;
 }
 

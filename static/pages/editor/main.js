@@ -42,6 +42,8 @@ $(document).ready(async () => {
     InputInit()
     CtrlsInit()
 
+    console.log(MASTER_BlockTypes)
+
     // Define additional setting sliders here:
     new OptionSlider('height', 'Height', 0, 255, 1, 5)
 })
@@ -264,14 +266,10 @@ class Cell {
     }
 
     setup() {
-        switch (this.type) {
-            case 'dirt':
-                this.object.css('backgroundColor', '#338833')
-                break
-            case 'rock':
-                this.object.css('backgroundColor', '#888888')
-                break
-        }
+        let cellInfo = MASTER_BlockTypes[this.type].editor
+
+        this.object.css('backgroundColor', cellInfo.color)
+
         this.object.html(this.height)
     }
 }
