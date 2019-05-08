@@ -285,19 +285,14 @@ function DisplayMainMenu() {
 }
 
 function DisplayRoomInfo() {
+    UpdateRoomInfo()
+
     let overlay = $('#overlay')
     let popup = $('#room-info').removeAttr('style')
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
     $(window).off('keydown')
-
-    /* $(window).on('keydown', e => {
-        let bTarget = $('#bClose')
-        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
-            bTarget.trigger('click')
-        }
-    }) */
 
     popup.dialog({
         closeOnEscape: false,
@@ -321,5 +316,20 @@ function DisplayRoomInfo() {
             }
         ]
     })
+}
+// #endregion
+
+// #region Misc Functions
+async function UpdateRoomInfo() {
+    let rooms = await socket.getRooms()
+    let currentRoom = rooms.find(room => room.clients.find(client => client.id == socket.id))
+
+    $('#socket-room-name').html(currentRoom.name)
+    $('#socket-admin-name').html(currentRoom.admin.name)
+    $('#socket-client-count').html(currentRoom.clients.length + '/' + currentRoom.size)
+}
+
+async function UpdateBottomPanel() {
+    
 }
 // #endregion
