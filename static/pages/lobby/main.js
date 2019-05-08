@@ -66,7 +66,7 @@ socket.on('startGame', () => {
 
 // triggers when someone disconnects from room
 socket.on('user_disconnected', async id => {
-    console.log(`user ${id} has disconnected`);
+    console.log(`user ${id} has disconnected`)
     // >here< place for additional function that will notify the users
 
     // update room admin if someon leaves
@@ -77,13 +77,13 @@ socket.on('user_disconnected', async id => {
 
 // triggers when someone connects to room
 socket.on('user_connected', id => {
-    console.log(`user ${id} has connected`);
+    console.log(`user ${id} has connected`)
     // >here< place for additional function that will notify the users
 })
 
 // triggers when someone in room changes username (optional)
 socket.on('username_change', id => {
-    console.log(`user ${id} chnaged nickname`);
+    console.log(`user ${id} chnaged nickname`)
     // >here< place for additional function that will update list of room members
 })
 
@@ -97,8 +97,22 @@ socket.on('readyState_change', async () => {
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
     let readyList = room.clients.map(client => `${client.name}: ${client.ready ? 'ready' : 'not ready'}`)
-    console.log('list of ready cients');
-    console.log(readyList);
+    console.log('list of ready cients')
+    console.log(readyList)
+    updateRoomMembers()
+
+    if (room.admin.id == socket.id) {
+        let everyone = true
+        for (let client of room.clients) { // checking if everyone is ready
+            if (!client.ready && room.admin.id != client.id) {
+                everyone = false
+            }
+        }
+        if (everyone)
+            $('#button-start').removeAttr('disabled')
+        else
+            $('#button-start').attr('disabled', true)
+    }
 })
 
 // triggers when user is being kicked
@@ -198,12 +212,6 @@ function InitClicks() {
 
             socket.setReadyState(true) // Host is ready when he presses this button (their ready-state wont be displayed anyways)
 
-            for (let client of room.clients) { // checking if everyone is ready
-                if (!client.ready) {
-                    window.alert('Not everyone is ready')
-                    return
-                }
-            }
             socket.emit('start_game')
         } else {
             let client = room.clients.find(client => client.id == socket.id)
@@ -311,10 +319,20 @@ async function UpdateBottomPanel() {
 
     if (room.admin.id == socket.id) {
         $('#button-start').html('Start Game')
-        socket.setReadyState(true)
+
+        let everyone = true
+        for (let client of room.clients) { // checking if everyone is ready
+            if (!client.ready && room.admin.id != client.id) { // except for yourself
+                everyone = false
+            }
+        }
+        if (everyone)
+            $('#button-start').removeAttr('disabled')
+        else
+            $('#button-start').attr('disabled', true)
     } else {
-        socket.setReadyState(false)
-        $('#button-start').html('Not ready')
+        let client = room.clients.find(client => client.id == socket.id)
+        $('#button-start').html(`${client.ready ? 'Ready' : 'Not ready'}`)
     }
 }
 
@@ -322,13 +340,15 @@ async function updateRoomMembers() { // placeholder function triggered by 'rooms
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
 
-    let display = ''
+    $('#socket-players').html('')
+
+    let display = $('<div>')
     socket.roomMembers = room.clients
-    for (let client of room.clients.map(client => client.name)) {
-        display += client + '<br>'
+    for (let i in room.clients) {
+        display.append(new RoomMember(i, room.clients[i].name, room.clients[i].ready))
     }
-    if (display == '') display = '[]'
-    $('#socket-players').html(display)
+    if (display.html() == '') display.html() = '[]'
+    $('#socket-players').append(display)
 
     UpdateBottomPanel()
 }
@@ -349,16 +369,42 @@ class RoomMember {
     constructor(id, name, readyState) {
         let cont = $('<div>')
             .addClass('room-member')
-        
+
         let nameTag = $('<div>')
             .addClass('room-member-name')
             .html(name)
+            .css('color', memberColors[id])
         cont.append(nameTag)
 
-        let ready = $('<div>')
-            .addClass('room-member-ready')
-            .html(readyState ? 'Ready' : 'Not ready')
-        cont.append(ready)
+        if (id != 0) {
+            let ready = $('<div>')
+                .addClass('room-member-ready')
+                .html(readyState ? 'Ready' : 'Not ready')
+                .css('color', readyState ? '#33DD33' : '#DD3333')
+            cont.append(ready)
+
+            let kickButton = $('<button>')
+                .addClass('room-member-kick')
+                .html('Kick')
+                .click(() => {
+                    window.alert('KICK-PLACEHOLDER')
+                })
+            cont.append(kickButton)
+        } else {
+            let ready = $('<div>')
+                .addClass('room-member-ready')
+                .html('Host')
+                .css('color', '#DDDD33')
+            cont.append(ready)
+
+            let kickButton = $('<button>')
+                .addClass('room-member-kick')
+                .html('Kick')
+                .attr('disabled', true)
+            cont.append(kickButton)
+        }
+
+        return cont
     }
 }
 // #endregion

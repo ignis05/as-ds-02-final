@@ -68,8 +68,6 @@
     top: 20px;
     box-sizing: content-box;
     border: 5px outset #883333;
-    /* Temporary color of all players */
-    color: #FF0000;
 }
 
 #socket-players {
@@ -77,7 +75,63 @@
     height: 100%;
     background-color: #0000007F;
     border: 5px inset #0000007F;
-    padding: 5px;
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.room-member {
+    box-sizing: border-box;
+    width: 500px;
+    height: 22px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.room-member-name {
+    box-sizing: border-box;
+    width: 100px;
+    text-align: left;
+}
+
+.room-member-ready {
+    box-sizing: border-box;
+    width: 100px;
+    text-align: center;
+}
+
+.room-member-kick {
+    box-sizing: border-box;
+    width: 50px;
+    height: 20px;
+    line-height: 12px;
+    background-color: #7F7F7FCF;
+    border: 3px outset #7F7F7FCF;
+    text-align: center;
+    color: #DDDDDD;
+    font-weight: bolder;
+    text-shadow: 1px 1px 1px #000;
+    margin-left: 50px;
+}
+
+.room-member-kick:hover {
+    box-shadow: -1px -1px 2px #fff, 1px -1px 2px #fff, -1px 1px 2px #fff, 1px 1px 2px #fff;
+    text-shadow: 1px 1px 1px #000;
+}
+
+.room-member-kick:active {
+    border-style: inset;
+}
+
+.room-member-kick:disabled {
+    border: 3px outset #7F7F7FCF;
+    background-color: #7F7F7FCF;
+    color: #BBBBBB;
+    box-shadow: none;
+    font-weight: bold;
+    text-shadow: none;
 }
 
 #region-minimap {
@@ -155,9 +209,6 @@
     right: 20px;
     bottom: 20px;
     box-sizing: content-box;
-
-    /* background-color: #DD88337F; */
-
     display: flex;
     flex-direction: row;
     align-items: flex-end;
@@ -170,7 +221,6 @@
     height: 75px;
     background-color: #7F7F7FCF;
     border: 5px outset #7F7F7FCF;
-
     color: #DDDDDD;
     font-weight: bolder;
     font-size: 1.5em;
@@ -202,7 +252,6 @@
     height: 75px;
     background-color: transparent;
     border: 5px outset transparent;
-
     color: transparent;
     font-weight: bolder;
     font-size: 1.5em;
@@ -233,6 +282,7 @@
     align-items: center;
     justify-content: space-around;
 }
+
 /* #endregion */
 
 /* #region Placeholders */
