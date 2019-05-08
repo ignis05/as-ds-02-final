@@ -60,6 +60,10 @@ socket.on('chat', msg => {
     updateChat(msg)
 })
 
+socket.on('startGame', () => {
+    window.location = '/game'
+})
+
 // triggers when someone disconnects from room
 socket.on('user_disconnected', async id => {
     console.log(`user ${id} has disconnected`);
@@ -209,8 +213,27 @@ function InitClicks() {
         $('#button-ready').html(`${!client.ready ? 'Ready' : 'Not ready'}`)
     })
 
-    $('#button-start').click(() => {
+    $('#button-start').click(async () => {
+        let rooms = await socket.getRooms()
+        let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
 
+        if (room.size != room.clients.length) { // prevent start if room not full
+            window.alert('Room is not full')
+            return
+        }
+
+        if (room.admin.id != socket.id) {
+            window.alert('Only room admin can start game')
+            return
+        }
+
+        for (let client of room.clients) { // checking if everyone is ready
+            if (!client.ready) {
+                window.alert('Not everyone is ready')
+                return
+            }
+        }
+        socket.emit('start_game')
     })
 }
 
