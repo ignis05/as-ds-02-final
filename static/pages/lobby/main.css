@@ -200,6 +200,16 @@
     box-sizing: content-box;
     background-color: #0000007F;
     border: 5px outset #883333;
+    font-size: 20px;
+}
+
+.map_list_active:hover {
+    background: #ff0000aa;
+    cursor: pointer;
+}
+
+.activeMap {
+    background: #ff0000aa;
 }
 
 #region-buttons {

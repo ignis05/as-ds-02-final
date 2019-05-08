@@ -80,7 +80,7 @@ app.post("/database_create", function (req, res) { // create database in array a
 
     let i = ServerDB.databases.findIndex(entry => entry.filename == data.filename)
     if (i != -1) { // already exists
-        res.send({msg: "OK", id: i});
+        res.send({ msg: "OK", id: i });
     } else {
         let db = new Datastore({
             filename: path.join(__dirname + `/static/database/${data.filename}`),
@@ -92,7 +92,7 @@ app.post("/database_create", function (req, res) { // create database in array a
             filename: data.filename
         })
         let index = ServerDB.databases.length - 1
-        res.send({msg: "OK", id: index});
+        res.send({ msg: "OK", id: index });
     }
 })
 
@@ -105,7 +105,7 @@ app.post("/database_insert", function (req, res) {
     db.insert(data.entry, function (err, entry) {
         console.log("entry added")
         console.log(entry)
-        res.send({msg: "OK"});
+        res.send({ msg: "OK" });
     });
 })
 
@@ -118,7 +118,7 @@ app.post("/database_findOne", function (req, res) {
     db.findOne(data.match, function (err, entry) {
         console.log("entry found")
         console.log(entry)
-        res.send({msg: "OK", entry: entry});
+        res.send({ msg: "OK", entry: entry });
     });
 })
 
@@ -131,7 +131,7 @@ app.post("/database_find", function (req, res) {
     db.find(data.match, function (err, entries) {
         console.log("entries found")
         console.log(entries)
-        res.send({msg: "OK", entries: entries});
+        res.send({ msg: "OK", entries: entries });
     });
 })
 
@@ -143,7 +143,7 @@ app.post("/database_count", function (req, res) {
 
     db.count(data.match, function (err, count) {
         console.log(`${count} entries found`)
-        res.send({msg: "OK", count: count});
+        res.send({ msg: "OK", count: count });
     });
 })
 
@@ -157,7 +157,7 @@ app.post("/database_remove", function (req, res) {
 
     db.remove(data.match, data.params, function (err, count) {
         console.log(`removed ${count} entries`)
-        res.send({msg: "OK", count: count});
+        res.send({ msg: "OK", count: count });
     });
 })
 
@@ -172,7 +172,7 @@ app.post("/database_update", function (req, res) {
         $set: data.entry
     }, {}, function (err, count) {
         console.log("updated " + count)
-        res.send({msg: "OK", count: count});
+        res.send({ msg: "OK", count: count });
     });
 })
 // #endregion ajax - database
@@ -180,7 +180,7 @@ app.post("/database_update", function (req, res) {
 // #region ajax - token
 app.post("/token", function (req, res) {
     getToken(req, res)
-    res.send({msg: "OK"})
+    res.send({ msg: "OK" })
 })
 
 function getToken(req, res) {
@@ -188,7 +188,7 @@ function getToken(req, res) {
     // console.log(cookies);
     let token = (cookies["token"] ? cookies["token"] : Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10))
     let time = 1000 * 60 * 60 * 8 // 8h
-    res.cookie("token", token, {expires: new Date(Date.now() + time), httpOnly: true})
+    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: true })
     console.log("token:", token);
     return token
 }
@@ -210,7 +210,7 @@ app.post("/getTestPages", function (req, res) {
         }
         testPages.push(obj)
     })
-    res.send({msg: "OK", testPages: testPages})
+    res.send({ msg: "OK", testPages: testPages })
 })
 
 app.post("/getModels", function (req, res) {
@@ -228,7 +228,7 @@ app.post("/getModels", function (req, res) {
         }
         models.push(obj)
     })
-    res.send({msg: "OK", models: models})
+    res.send({ msg: "OK", models: models })
 })
 
 app.post("/sendClickedPoint", function (req, res) {
@@ -237,7 +237,7 @@ app.post("/sendClickedPoint", function (req, res) {
     let path = finder.findPath(data.unit.x, data.unit.z, data.click.x, data.click.z, temp_grid)
     console.log(path);
 
-    res.send({msg: "sendClickedPoint-Sent", path: path})
+    res.send({ msg: "sendClickedPoint-Sent", path: path })
 })
 
 app.post("/gameInit", function (req, res) {
@@ -255,7 +255,7 @@ app.post("/gameInit", function (req, res) {
         finder = new PF.AStarFinder()
     })
 
-    res.send({msg: "OK"})
+    res.send({ msg: "OK" })
 })
 // #endregion ajax - Net.js requests
 
@@ -362,6 +362,7 @@ var lobby = {
         } else { // if room not empty after client leave
             if (room.admin == client) { // if user was room admin, choose new admin
                 room.admin = room.clients[0]
+                lobby.io.to(room.name).emit('admin_changed')
             }
         }
 
@@ -388,7 +389,8 @@ var lobby = {
                 ],
                 admin: client,
                 size: room.size,
-                password: room.password
+                password: room.password,
+                map: null,
             }
             lobby.rooms.push(newRoom)
 
@@ -517,11 +519,22 @@ lobby.io.on('connect', socket => {
                 }
                 return _client
             }),
-            mapName: 'placeholder_mapName',
+            mapName: room.map,
             id: Math.random().toString(36).substring(2, 10),
         })
 
         lobby.io.to(room.name).emit('startGame')
+    })
+
+    // select map
+    socket.on('select_map', mapName => {
+        let room = lobby.getRoomByClientId(socket.id)
+        if (!room) {
+            console.error('ERROR: room doesnt exist')
+            return
+        }
+        lobby.io.to(room.name).emit('map_selected', mapName)
+        room.map = mapName
     })
 
     // kick user
@@ -708,6 +721,16 @@ game.io.on('connect', socket => {
             game.sessions.splice(i, 1)
         }
     })
+
+    // #region custom events
+
+    // get selected map
+    socket.on('get_selected_mapName', res => {
+        let session = game.getSessionByClientID(socket.id)
+        res(session.mapName)
+    })
+
+    // #endregion custom events
 })
 // #endregion socket.io - game
 

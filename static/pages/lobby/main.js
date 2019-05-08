@@ -60,6 +60,7 @@ socket.on('chat', msg => {
     updateChat(msg)
 })
 
+// triggers when game is started
 socket.on('startGame', () => {
     window.location = '/game'
 })
@@ -73,6 +74,11 @@ socket.on('user_disconnected', async id => {
     let rooms = await socket.getRooms()
     let currentRoom = rooms.find(room => room.clients.find(client => client.id == socket.id))
     $('#socket-admin-name').html(currentRoom.admin.name)
+})
+
+// triggers when room admin is changed
+socket.on('admin_changed', () => {
+    updateMaplist() // to unlock listeners for new admin
 })
 
 // triggers when someone connects to room
@@ -122,11 +128,27 @@ socket.on('get_kicked', () => {
     window.location = '/'
 })
 
+// triggers when admin changes map
+socket.on('map_selected', mapName => {
+    updateSelectedMap(mapName)
+})
+
 //      #endregion socket events
 
 // #endregion socket.io
 
-// #region Global Values
+// #region global variables
+
+var database
+
+const dtOptions = {
+    year: '2-digit',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit'
+}
+
 const memberColors = [
     '#DD3333',
     '#DD8833',
@@ -137,7 +159,7 @@ const memberColors = [
     '#33DDDD',
     '#33DD33'
 ]
-// #endregion
+// #endregion global variables
 
 $(document).ready(async () => {
     // block of code that cheks if user succesfully joined a room
@@ -179,6 +201,12 @@ $(document).ready(async () => {
 
     // focus chat input on click
     $('#region-chat').click(() => document.getElementById('socket-chat-input').focus())
+
+    // display map list
+    database = new MapDB()
+    await database.create()
+
+    updateMaplist()
 })
 
 
@@ -209,11 +237,16 @@ function InitClicks() {
                 window.alert('Room is not full')
                 return
             }
+            if (!room.map) { // prevent start if map is not selected
+                window.alert('Map not selected')
+                return
+            }
 
             socket.setReadyState(true) // Host is ready when he presses this button (their ready-state wont be displayed anyways)
 
             socket.emit('start_game')
-        } else {
+        }
+        else {
             let client = room.clients.find(client => client.id == socket.id)
             socket.setReadyState(!client.ready)
             $('#button-start').html(`${!client.ready ? 'Ready' : 'Not ready'}`)
@@ -304,6 +337,64 @@ function DisplayRoomInfo() {
 // #endregion
 
 // #region Misc Functions
+
+async function updateRoomMembers() { // placeholder function triggered by 'rooms_updated' event
+    let rooms = await socket.getRooms()
+    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+    let display = ""
+    socket.roomMembers = room.clients
+    for (let client of room.clients.map(client => client.name)) {
+        display += client + '<br>'
+    }
+    if (display == "") display = '[]'
+    $('#socket-players').html(display)
+}
+
+async function updateChat(msg) { // placeholder function triggered by 'chat' event
+    let author = socket.roomMembers.find(client => client.id == msg.author)
+
+    let chat = $('#socket-chat-display').html()
+    chat += `<div style="display: inline; color: #FF0000; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
+    $('#socket-chat-display').html(chat)
+
+    $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
+}
+
+async function updateMaplist() {
+    let rooms = await socket.getRooms()
+    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+
+    let maps = await database.getMaps()
+    let str = ''
+    for (map of maps) {
+        str += `<div class='map_list_entry ${room.admin.id == socket.id ? 'map_list_active' : ''}' mapName='${map.mapName}'> ${map.mapName}  -  ${new Intl.DateTimeFormat('en-GB', dtOptions).format(map.modDate).replace(',', '')} </div> `
+    }
+    $('#region-maplist').html(str)
+
+    // display selected map
+    if (room.map) updateSelectedMap(room.map)
+
+    // update listeners - only for room admin
+    if (room.admin.id != socket.id) return
+
+
+    $('.map_list_entry').click(async function () {
+        // emit map change to all users in room
+        socket.emit('select_map', this.getAttribute('mapName'))
+    })
+
+}
+
+function updateSelectedMap(mapName) {
+    let maplist = Object.values(document.getElementsByClassName('map_list_entry'))
+    for (map of maplist) {
+        map.classList.remove('activeMap')
+        if (map.getAttribute('mapName') == mapName) {
+            map.classList.add('activeMap')
+        }
+    }
+}
+
 async function UpdateRoomInfo() {
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
