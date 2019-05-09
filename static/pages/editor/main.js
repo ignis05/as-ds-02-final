@@ -152,6 +152,8 @@ function createTiles() {
             $('#map').append(cell.object)
         }
     }
+
+    MinimapCalc(pack)
     $('#data').html(JSON.stringify(pack, null, 4))
 }
 
@@ -164,9 +166,9 @@ function cellClick() {
         cell.cell.height = cellSettings.height
         cell.innerHTML = cell.height
 
-        for (let i in pack.level) {
-            let datapack = pack.level[i]
-            if (datapack.id === cell.cell.id) {
+        for (let j in pack.level) {
+            let datapack = pack.level[j]
+            if (datapack.id == cell.cell.id) {
                 datapack.height = cell.cell.height
                 datapack.type = cell.cell.type
                 break
@@ -175,6 +177,7 @@ function cellClick() {
         cell.cell.setup()
     }
 
+    MinimapCalc(pack)
     $('#data').html(JSON.stringify(pack, null, 4))
 
 }
@@ -193,6 +196,8 @@ function loadMap(dataPack) {
             cells[dataPack.id].height = parseInt(dataPack.height)
             cells[dataPack.id].setup()
         }
+
+        MinimapCalc(pack)
         $('#data').html(JSON.stringify(pack, null, 4))
     }
 }
@@ -602,6 +607,22 @@ function sortTable(tableId, cellId) {
                 switching = true
             }
         }
+    }
+}
+
+function MinimapCalc(levelPack) {
+    console.table(levelPack.level)
+    let canvas = $('#minimap-canvas')
+        .attr('width', parseInt(levelPack.size) * 8)
+        .attr('height', parseInt(levelPack.size) * 8)
+
+    let ctx = canvas[0].getContext('2d')
+
+    ctx.scale(8, 8)
+
+    for (let i in levelPack.level) {
+        ctx.fillStyle = MASTER_BlockTypes[levelPack.level[i].type].editor.color
+        ctx.fillRect(parseInt(levelPack.level[i].x), parseInt(levelPack.level[i].z), parseInt(levelPack.level[i].x) + 1, parseInt(levelPack.level[i].z) + 1)
     }
 }
 //#endregion
