@@ -474,13 +474,13 @@ class RoomMember {
             let ready = $('<div>')
                 .addClass('room-member-ready')
                 .html(readyState ? 'Ready' : 'Not ready')
-                .css('color', readyState ? '#33DD33' : '#DD3333')
+                .css('color', readyState ? '#2FCF2F' : '#CF2F2F')
             cont.append(ready)
         } else {
             let ready = $('<div>')
                 .addClass('room-member-ready')
                 .html('Host')
-                .css('color', '#DDDD33')
+                .css('color', '#CFCF2F')
             cont.append(ready)
         }
 
