@@ -16,7 +16,12 @@ class MapDB extends Database {
         return new Promise(async resolve => {
             let maps = await this.getAll()
             let mapNames = maps.map(entry => {
-                return { mapName: entry.mapName, modDate: new Date(entry.modDate) }
+                return {
+                    mapName: entry.mapName,
+                    modDate: new Date(entry.modDate),
+                    mapSize: entry.mapData.size, // Map size needed for Lobby MapList
+                    playerCount: 4 // Temp value
+                }
             })
             resolve(mapNames)
         })

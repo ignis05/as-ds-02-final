@@ -57,7 +57,7 @@ socket.on('error_token', () => {
 // triggers when someone sends message to room
 socket.on('chat', msg => {
     console.log(msg);
-    updateChat(msg)
+    UpdateChat(msg)
 })
 
 // triggers when game is started
@@ -78,7 +78,7 @@ socket.on('user_disconnected', async id => {
 
 // triggers when room admin is changed
 socket.on('admin_changed', () => {
-    updateMaplist() // to unlock listeners for new admin
+    UpdateMaplist() // to unlock listeners for new admin
 })
 
 // triggers when someone connects to room
@@ -95,7 +95,7 @@ socket.on('username_change', id => {
 
 // triggers when someone joins / leaves / creates a room - conveinient to update room list or sth
 socket.on('rooms_updated', () => {
-    updateRoomMembers()
+    UpdateRoomMembers()
 })
 
 // triggers when user in room changes his ready state
@@ -103,9 +103,9 @@ socket.on('readyState_change', async () => {
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
     let readyList = room.clients.map(client => `${client.name}: ${client.ready ? 'ready' : 'not ready'}`)
-    console.log('list of ready cients')
-    console.log(readyList)
-    updateRoomMembers()
+    /* console.log('list of ready cients')
+    console.log(readyList) */
+    UpdateRoomMembers()
 
     if (room.admin.id == socket.id) {
         let everyone = true
@@ -130,7 +130,7 @@ socket.on('get_kicked', () => {
 
 // triggers when admin changes map
 socket.on('map_selected', mapName => {
-    updateSelectedMap(mapName)
+    UpdateSelectedMap(mapName)
 })
 
 //      #endregion socket events
@@ -179,7 +179,7 @@ $(document).ready(async () => {
     $('#socket-client-count').html(currentRoom.clients.length + '/' + currentRoom.size) // fix admin display placeholder
 
 
-    updateRoomMembers() // trigger function displaying members of room manually
+    UpdateRoomMembers() // trigger function displaying members of room manually
     UpdateBottomPanel()
 
     InitClicks() // Initializes bottom panel
@@ -206,7 +206,7 @@ $(document).ready(async () => {
     database = new MapDB()
     await database.create()
 
-    updateMaplist()
+    UpdateMaplist()
 })
 
 
@@ -338,7 +338,7 @@ function DisplayRoomInfo() {
 
 // #region Misc Functions
 
-async function updateRoomMembers() { // placeholder function triggered by 'rooms_updated' event
+async function UpdateRoomMembers() { // placeholder function triggered by 'rooms_updated' event
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
     let display = ""
@@ -350,7 +350,7 @@ async function updateRoomMembers() { // placeholder function triggered by 'rooms
     $('#socket-players').html(display)
 }
 
-async function updateChat(msg) { // placeholder function triggered by 'chat' event
+async function UpdateChat(msg) { // placeholder function triggered by 'chat' event
     let author = socket.roomMembers.find(client => client.id == msg.author)
 
     let chat = $('#socket-chat-display').html()
@@ -360,19 +360,81 @@ async function updateChat(msg) { // placeholder function triggered by 'chat' eve
     $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
 }
 
-async function updateMaplist() {
+async function UpdateMaplist() {
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
 
-    let maps = await database.getMaps()
-    let str = ''
-    for (map of maps) {
-        str += `<div class='map_list_entry ${room.admin.id == socket.id ? 'map_list_active' : ''}' mapName='${map.mapName}'> ${map.mapName}  -  ${new Intl.DateTimeFormat('en-GB', dtOptions).format(map.modDate).replace(',', '')} </div> `
+    let list = await database.getMaps()
+
+    let saveTable = $('<table>')
+        .attr('id', 'map-table')
+        .addClass('lobby-table')
+    let svtScroll = $('<div>')
+        .addClass('saves-cont')
+        .append(saveTable)
+        .css('height', '248px')
+        .css('width', '300px')
+    let svtCont = $('<div>')
+        .addClass('saves-wrap')
+        .css('height', '280px')
+        .append('<table class="lobby-table"><tr><th style="padding-left: 3px; width: 40px" onclick="sortTable(\'map-table\', 0)">Size</th><th style="padding-left: 3px; width: 178px" onclick="sortTable(\'map-table\', 1)">Name</th><th style="padding-left: 3px; width: 80px" onclick="sortTable(\'map-table\', 2)">Players</th></tr></table>')
+        .append(svtScroll)
+        .css('width', '300px')
+    $('#region-maplist')
+        .html('')
+        .removeClass('text-placeholder')
+        .append(svtCont)
+
+    let nor = list.length
+    if (nor < 8) nor = 8
+
+    let rowlist = []
+
+    for (let i = 0; i < nor; i++) {
+        let row = $('<tr>')
+            .addClass('saves-row')
+            .css('height', '31px')
+            .css('line-height', '28px')
+        if (list[i] !== undefined)
+            row.attr('mapName', list[i].mapName)
+        rowlist.push(row)
+
+        let cellSize = $('<td>')
+            .html('')
+            .css('width', '40px')
+            .css('text-align', 'center')
+        if (list[i] !== undefined)
+            cellSize.html(list[i].mapSize)
+        row.append(cellSize)
+
+        let cellName = $('<td>')
+            .html('')
+            .css('width', '178px')
+        if (list[i] !== undefined)
+            cellName.html(list[i].mapName)
+        row.append(cellName)
+
+        let cellPlayers = $('<td>')
+            .html('')
+            .css('width', '61px')
+            .css('text-align', 'center')
+        if (list[i] !== undefined)
+            cellPlayers.html(list[i].playerCount)
+        row.append(cellPlayers)
+
+        saveTable.append(row)
+
+        if (room.admin.id != socket.id) continue
+        row.click(() => {
+            if (cellName.html() != '' && socket.roomMembers.length < parseInt(cellPlayers.html())) {
+                socket.emit('select_map', row.attr('mapName'))
+            }
+
+        })
     }
-    $('#region-maplist').html(str)
 
     // display selected map
-    if (room.map) updateSelectedMap(room.map)
+    if (room.map) UpdateSelectedMap(room.map)
 
     // update listeners - only for room admin
     if (room.admin.id != socket.id) return
@@ -385,12 +447,12 @@ async function updateMaplist() {
 
 }
 
-function updateSelectedMap(mapName) {
-    let maplist = Object.values(document.getElementsByClassName('map_list_entry'))
+function UpdateSelectedMap(mapName) {
+    let maplist = Object.values(document.getElementsByClassName('saves-row'))
     for (map of maplist) {
-        map.classList.remove('activeMap')
+        map.classList.remove('saves-active')
         if (map.getAttribute('mapName') == mapName) {
-            map.classList.add('activeMap')
+            map.classList.add('saves-active')
         }
     }
 }
@@ -427,7 +489,7 @@ async function UpdateBottomPanel() {
     }
 }
 
-async function updateRoomMembers() { // placeholder function triggered by 'rooms_updated' event
+async function UpdateRoomMembers() { // placeholder function triggered by 'rooms_updated' event
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
 
@@ -446,7 +508,7 @@ async function updateRoomMembers() { // placeholder function triggered by 'rooms
     UpdateBottomPanel()
 }
 
-async function updateChat(msg) { // placeholder function triggered by 'chat' event
+async function UpdateChat(msg) { // placeholder function triggered by 'chat' event
     let author = socket.roomMembers.find(client => client.id == msg.author)
     let uid = socket.roomMembers.indexOf(author)
 
@@ -512,3 +574,43 @@ class RoomMember {
     }
 }
 // #endregion
+
+//#region Helper Functions
+function sortTable(tableId, cellId) {
+    let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0
+    table = document.getElementById(tableId)
+    switching = true
+    dir = 'asc'
+    while (switching) {
+        switching = false
+        rows = table.rows
+        for (i = 0; i < (rows.length - 1); i++) {
+            shouldSwitch = false
+            x = rows[i].getElementsByTagName('TD')[cellId]
+            y = rows[i + 1].getElementsByTagName('TD')[cellId]
+            let nameCell = rows[i + 1].getElementsByTagName('TD')[1]
+            if (dir == 'asc') {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase() && nameCell.innerHTML != '') {
+                    shouldSwitch = true
+                    break
+                }
+            } else if (dir == 'desc') {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase() && nameCell.innerHTML != '') {
+                    shouldSwitch = true
+                    break
+                }
+            }
+        }
+        if (shouldSwitch) {
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i])
+            switching = true
+            switchcount++
+        } else {
+            if (switchcount == 0 && dir == 'asc') {
+                dir = 'desc'
+                switching = true
+            }
+        }
+    }
+}
+//#endregion

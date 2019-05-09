@@ -115,9 +115,16 @@ async function DisplayRooms() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    let saveTable = $('<table>').attr('id', 'room-table').addClass('lobby-table')
-    let svtScroll = $('<div>').addClass('saves-cont').append(saveTable)
-    let svtCont = $('<div>').addClass('saves-wrap').append('<table class="lobby-table"><tr><th onclick="sortTable(\'room-table\', 0)">PW</th><th style="width: 300px" onclick="sortTable(\'room-table\', 1)">Room Name</th><th onclick="sortTable(\'room-table\', 2)">Players</th></tr></table>').append(svtScroll)
+    let saveTable = $('<table>')
+        .attr('id', 'room-table')
+        .addClass('lobby-table')
+    let svtScroll = $('<div>')
+        .addClass('saves-cont')
+        .append(saveTable)
+    let svtCont = $('<div>')
+        .addClass('saves-wrap')
+        .append('<table class="lobby-table"><tr><th onclick="sortTable(\'room-table\', 0)">PW</th><th style="width: 300px" onclick="sortTable(\'room-table\', 1)">Room Name</th><th onclick="sortTable(\'room-table\', 2)">Players</th></tr></table>')
+        .append(svtScroll)
     popup.append(svtCont)
 
     let nor = list.length
