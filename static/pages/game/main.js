@@ -1,5 +1,8 @@
 $(document).ready(async () => {
     console.log('document ready');
     let mapName = await socket.getMapName()
-    document.write(`selected map: ${mapName}`)
+
+    var game = new Game('#game') // create game display in '#game' div
+    game.addAxexHelper(500)
+    game.enableOrbitContols()
 })
