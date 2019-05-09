@@ -1,3 +1,4 @@
+// will be heavly integrated with socket.js so i suggest keeping it as local file instead of global class
 class Game {
     constructor(domElement) {
         var scene = new THREE.Scene();
@@ -32,6 +33,7 @@ class Game {
         }
         render()
     }
+
     // #region test functions
     addTestCube(size) {
         var geometry = new THREE.BoxGeometry(size, size, size);
@@ -43,8 +45,8 @@ class Game {
         var axesHelper = new THREE.AxesHelper(size);
         this.scene.add(axesHelper);
     }
-    addAmbientLight() {
-        var light = new THREE.AmbientLight(0xffffff, 2, 1000); // ambient light bc gltf textures always require light
+    addAmbientLight(brightness) {
+        var light = new THREE.AmbientLight(0xffffff, brightness, 100000); // ambient light bc gltf textures always require light
         this.scene.add(light)
     }
     enableOrbitContols() {
