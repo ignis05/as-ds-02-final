@@ -150,14 +150,14 @@ const dtOptions = {
 }
 
 const memberColors = [
-    '#DD3333',
-    '#DD8833',
-    '#DDDD33',
-    '#3333DD',
-    '#333333',
-    '#DD33DD',
-    '#33DDDD',
-    '#33DD33'
+    '#CF2F2F',
+    '#CF7F2F',
+    '#CFCF2F',
+    '#2F2FCF',
+    '#2F2F2F',
+    '#CF2FCF',
+    '#2FCFCF',
+    '#2FCF2F'
 ]
 // #endregion global variables
 
@@ -435,8 +435,10 @@ async function updateRoomMembers() { // placeholder function triggered by 'rooms
 
     let display = $('<div>')
     socket.roomMembers = room.clients
+
+    let amAdmin = socket.id == room.admin.id
     for (let i in room.clients) {
-        display.append(new RoomMember(i, room.clients[i].name, room.clients[i].ready))
+        display.append(new RoomMember(i, room.clients[i].name, room.clients[i].ready, room.clients[i].id == socket.id, amAdmin))
     }
     if (display.html() == '') display.html() = '[]'
     $('#socket-players').append(display)
@@ -446,9 +448,10 @@ async function updateRoomMembers() { // placeholder function triggered by 'rooms
 
 async function updateChat(msg) { // placeholder function triggered by 'chat' event
     let author = socket.roomMembers.find(client => client.id == msg.author)
+    let uid = socket.roomMembers.indexOf(author)
 
     let chat = $('#socket-chat-display').html()
-    chat += `<div style="display: inline; color: #FF0000; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
+    chat += `<div style="display: inline; color: ` + memberColors[uid] + `; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
     $('#socket-chat-display').html(chat)
 
     $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
@@ -457,7 +460,7 @@ async function updateChat(msg) { // placeholder function triggered by 'chat' eve
 
 // #region Classes
 class RoomMember {
-    constructor(id, name, readyState) {
+    constructor(id, name, readyState, isMe, amAdmin) {
         let cont = $('<div>')
             .addClass('room-member')
 
@@ -473,26 +476,36 @@ class RoomMember {
                 .html(readyState ? 'Ready' : 'Not ready')
                 .css('color', readyState ? '#33DD33' : '#DD3333')
             cont.append(ready)
-
-            let kickButton = $('<button>')
-                .addClass('room-member-kick')
-                .html('Kick')
-                .click(() => {
-                    window.alert('KICK-PLACEHOLDER')
-                })
-            cont.append(kickButton)
         } else {
             let ready = $('<div>')
                 .addClass('room-member-ready')
                 .html('Host')
                 .css('color', '#DDDD33')
             cont.append(ready)
+        }
 
-            let kickButton = $('<button>')
-                .addClass('room-member-kick')
-                .html('Kick')
-                .attr('disabled', true)
-            cont.append(kickButton)
+        if (isMe) {
+            let youBadge = $('<div>')
+                .addClass('room-member-you')
+                .html('You')
+            cont.append(youBadge)
+        } else {
+            if (amAdmin) {
+                let kickButton = $('<button>')
+                    .addClass('room-member-kick')
+                    .html('Kick')
+                    .click(() => {
+                        socket.kick(socket.roomMembers[id].id)
+                        console.log('--- LOG THE KICK TO CHAT HERE ---')
+                    })
+                cont.append(kickButton)
+            } else {
+                let clientBadge = $('<button>')
+                    .addClass('room-member-client')
+                    .html('Human') // If i ever get to creating bots (after we make a gameplay component LMAO)
+                    .attr('disabled', true)
+                cont.append(clientBadge)
+            }
         }
 
         return cont
