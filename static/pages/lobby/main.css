@@ -67,7 +67,7 @@
     left: 20px;
     top: 20px;
     box-sizing: content-box;
-    border: 5px outset #883333;
+    border: 5px outset #7F2F2F;
 }
 
 #socket-players {
@@ -110,7 +110,7 @@
     background-color: #7F7F7FCF;
     border: 3px outset #7F7F7FCF;
     text-align: center;
-    color: #DDDDDD;
+    color: #DFDFDF;
     font-weight: bolder;
     text-shadow: 1px 1px 1px #000;
     margin-left: 50px;
@@ -128,10 +128,38 @@
 .room-member-kick:disabled {
     border: 3px outset #7F7F7FCF;
     background-color: #7F7F7FCF;
-    color: #BBBBBB;
+    color: #AFAFAF;
     box-shadow: none;
     font-weight: bold;
     text-shadow: none;
+}
+
+.room-member-you {
+    box-sizing: border-box;
+    width: 50px;
+    height: 20px;
+    line-height: 12px;
+    background-color: #CFCF2fCF;
+    border: 3px outset #CFCF2FCF;
+    text-align: center;
+    color: #DFDFDF;
+    font-weight: bolder;
+    text-shadow: 1px 1px 1px #000;
+    margin-left: 50px;
+}
+
+.room-member-client {
+    box-sizing: border-box;
+    width: 50px;
+    height: 20px;
+    line-height: 12px;
+    background-color: #3FCF2fCF;
+    border: 3px outset #3FCF2FCF;
+    text-align: center;
+    color: #DFDFDF;
+    font-weight: bolder;
+    text-shadow: 1px 1px 1px #000;
+    margin-left: 50px;
 }
 
 #region-minimap {
@@ -142,7 +170,7 @@
     right: 20px;
     top: 20px;
     box-sizing: content-box;
-    border: 5px outset #883333;
+    border: 5px outset #7F2F2F;
 }
 
 #region-settings {
@@ -153,7 +181,7 @@
     top: 250px;
     box-sizing: content-box;
     background-color: #0000007F;
-    border: 5px outset #883333;
+    border: 5px outset #7F2F2F;
 }
 
 #region-chat {
@@ -164,7 +192,7 @@
     bottom: 120px;
     box-sizing: content-box;
     background-color: #0000007F;
-    border: 5px outset #883333;
+    border: 5px outset #7F2F2F;
     display: flex;
     flex-direction: column;
 }
@@ -175,7 +203,7 @@
     overflow: hidden scroll;
     flex: 1;
     padding: 5px;
-    color: #DD8833;
+    color: #2FCF2F;
     text-shadow: 2px 0px 1px #000000;
 }
 
@@ -184,9 +212,9 @@
     bottom: 0;
     width: 100%;
     padding: 5px;
-    caret-color: #338833;
+    caret-color: #2F7F2F;
     background-color: #2222227F;
-    color: #DDDDDD;
+    color: #DFDFDF;
     font-weight: bolder;
     border: none;
 }
@@ -199,18 +227,18 @@
     bottom: 120px;
     box-sizing: content-box;
     background-color: #0000007F;
-    border: 5px outset #883333;
+    border: 5px outset #7F2F2F;
     font-size: 20px;
 }
 
-.map_list_active:hover {
+/* .map_list_active:hover {
     background: #ff0000aa;
     cursor: pointer;
 }
 
 .activeMap {
     background: #ff0000aa;
-}
+} */
 
 #region-buttons {
     position: absolute;
@@ -231,7 +259,7 @@
     height: 75px;
     background-color: #7F7F7FCF;
     border: 5px outset #7F7F7FCF;
-    color: #DDDDDD;
+    color: #DFDFDF;
     font-weight: bolder;
     font-size: 1.5em;
     text-shadow: 1px 1px 1px #000;
@@ -250,7 +278,7 @@
 .lobby-button:disabled {
     border: 5px outset #7F7F7FCF;
     background-color: #7F7F7FCF;
-    color: #BBBBBB;
+    color: #AFAFAF;
     box-shadow: none;
     font-weight: bold;
     text-shadow: none;
@@ -308,7 +336,7 @@
 }
 
 .text-placeholder {
-    color: #33DD33;
+    color: #2FCF2F;
     font-size: 3em;
     text-align: center;
 }

@@ -268,18 +268,18 @@
     background-color: #AF5A5A;
 }
 
-.ui-dialog-content td {
+.saves-wrap td {
     line-height: 28px;
     color: #FFFFFF;
     padding-left: 5px;
 }
 
-.ui-dialog-content th {
+.saves-wrap th {
     line-height: 28px;
     padding-left: 5px;
 }
 
-.ui-dialog-content .lobby-table tr *:first-child {
+.saves-wrap .lobby-table tr *:first-child {
     width: 30px;
 }
 
