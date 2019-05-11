@@ -4,7 +4,7 @@ const MASTER_BlockTypes = {
             color: '#338833',
         },
         game: {
-            color: 0x888888,
+            color: 0x338833,
             walkable: true,
         }
     },
@@ -17,4 +17,8 @@ const MASTER_BlockTypes = {
             walkable: false,
         }
     },
+}
+// additional const for size in game (same for all block types)
+const MASTER_BlockSizeParams = {
+    blockSize: 150,
 }
