@@ -10,9 +10,9 @@
 /*#region Legacy UI*/
 
 .ctrl-block * {
-    background-color: #333333;
-    color: #dddddd;
-    border: 2px solid #dddddd;
+    background-color: #2F2F2F;
+    color: #CFCFCF;
+    border: 2px solid #CFCFCF;
     margin-bottom: 2px;
     padding: 5px;
     text-transform: uppercase;
@@ -20,22 +20,28 @@
 }
 
 .ctrl-block button:hover, #ctrl-create button:hover {
-    color: #dd8833;
-    border-color: #dd8833;
+    color: #CF7F2F;
+    border-color: #CF7F2F;
 }
 
 .ctrl-block button:active, #ctrl-create button:active {
-    color: #88dd33;
-    border-color: #88dd33;
+    color: #7FCF2F;
+    border-color: #7FCF2F;
 }
 
 .ctrl-block .active, #ctrl-create .active, .ctrl-block .active:hover, #ctrl-create .active:hover {
-    border-color: #88dd33;
-    color: #88dd33;
+    border-color: #7FCF2F;
+    color: #7FCF2F;
 }
 
 .size-unstable {
-    color: #883333;
+    color: #CF2F2F;
+}
+.size-warning {
+    color: #CFCF2F;
+}
+.size-developer {
+    color: #2FCF2F;
 }
 
 /*#endregion*/
@@ -74,7 +80,7 @@
     width: 400px;
     height: 100%;
     padding: 5px;
-    background-color: #33333388;
+    background-color: #2F2F2F7F;
 }
 
 #ctrl-create * {
@@ -103,7 +109,7 @@
 .ctrl-slider input[type="number"] {
     display: inline-block;
     width: 30%;
-    background: #dddddd7F;
+    background: #CFCFCF7F;
     border: none;
 }
 
@@ -115,7 +121,7 @@
     width: 200px;
     height: 100%;
     padding: 5px;
-    background-color: #11111188;
+    background-color: #0F0F0F7F;
     overflow: hidden auto;
     color: #ffffff;
     white-space: pre;
@@ -133,7 +139,7 @@
     height: 100vh;
     padding: 30px;
     overflow: auto;
-    background-color: #111111;
+    background-color: #0F0F0F;
 }
 
 .cell {
@@ -149,14 +155,14 @@
     cursor: pointer;
     overflow: visible;
     z-index: 2;
-    background-color: #888888;
+    background-color: #7F7F7F;
     pointer-events: all;
-    border: 1px solid #333333;
+    border: 1px solid #2F2F2F;
 }
 
 .cell-active {
-    background-color: #88dd33 !important;
-    border-color: #55aa00 !important;
+    background-color: #7FCF2F !important;
+    border-color: #50A000 !important;
 }
 
 /*#endregion*/
