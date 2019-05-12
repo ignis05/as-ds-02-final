@@ -47,12 +47,24 @@ $(document).ready(async () => {
 })
 
 //#region Init Functions
-function CtrlsInit() {
-    $('#ctrl-genlvl').on('click', function () {
+async function CtrlsInit() {
+    $('#ctrl-genlvl').on('click', async function () {
         pack.size = $('#ctrl-lvlsize').val()
-        createTiles()
+
+        let working = DisplayWorking('Generating...')
+        setTimeout(async () => { // null-timeout added so dialog displays properly
+            await createTiles()
+            working.dialog('close')
+            $('#overlay').css('display', 'none')
+        }, 0)
     })
-    createTiles()
+
+    let working = DisplayWorking('Generating...')
+    setTimeout(async () => { // null-timeout added so dialog displays properly
+        await createTiles()
+        working.dialog('close')
+        $('#overlay').css('display', 'none')
+    }, 0)
 
     $('#ctrl-brushsize').on('change', function () {
         brushSize = parseInt($('#ctrl-brushsize').val())
@@ -150,20 +162,24 @@ function clearTypes() {
 }
 
 function createTiles() {
-    pack.level = []
-    cells = []
-    $('#map').html('').css('width', pack.size * cellSize + cellSize + 'px').css('height', pack.size * cellSize + cellSize + 'px').css('position', 'relative')
-    for (let i = 0; i < pack.size; i++) {
-        for (let j = 0; j < pack.size; j++) {
-            let cell = new Cell(i * pack.size + j, j, i)
-            cells.push(cell)
-            cell.object.on('click', cellClick)
-            $('#map').append(cell.object)
+    return new Promise((resolve, reject) => {
+        pack.level = []
+        cells = []
+        $('#map').html('').css('width', pack.size * cellSize + cellSize + 'px').css('height', pack.size * cellSize + cellSize + 'px').css('position', 'relative')
+        for (let i = 0; i < pack.size; i++) {
+            for (let j = 0; j < pack.size; j++) {
+                let cell = new Cell(i * pack.size + j, j, i)
+                cells.push(cell)
+                cell.object.on('click', cellClick)
+                $('#map').append(cell.object)
+            }
         }
-    }
 
-    MinimapCalc(pack)
-    $('#data').html(JSON.stringify(pack, null, 4))
+        MinimapCalc(pack)
+        $('#data').html(JSON.stringify(pack, null, 4))
+
+        resolve('End')
+    })
 }
 
 function cellClick() {
