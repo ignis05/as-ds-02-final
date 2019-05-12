@@ -112,6 +112,7 @@ function InputInit() {
         switch (e.which) {
             case 1:
                 input.leftMouse = true
+                cellClick()
                 break
             case 2:
                 input.middleMouse = true
