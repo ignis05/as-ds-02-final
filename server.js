@@ -540,8 +540,10 @@ lobby.io.on('connect', socket => {
     // kick user
     socket.on('kick', userID => {
         let room = lobby.getRoomByClientId(socket.id)
-        if (room.admin.id == socket.id && room.clients.find(client => client.id == userID)) // check if user is room admin and kicked user is in same room
+        if (room.admin.id == socket.id && room.clients.find(client => client.id == userID)) { // check if user is room admin and kicked user is in same room
             lobby.io.to(userID).emit('get_kicked')
+            lobby.io.to(room.name).emit('user_kicked', userID) // notify room
+        }
         else console.error('ERROR: invalid kick triggered')
     })
 
