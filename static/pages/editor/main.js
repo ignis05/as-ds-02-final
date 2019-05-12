@@ -399,14 +399,16 @@ function DisplaySave(list) {
                 disabled: true,
                 text: 'Save',
                 'class': 'ui-dialog-button disabled',
-                click: function () {
+                click: async function () {
                     let saveName = name.val()
                     if (list.some(e => e.mapName == saveName)) {
                         $(this).dialog('close')
                         DisplayOverwrite(saveName)
                     } else {
-                        mapsDB.exportMap(saveName, pack)
                         $(this).dialog('close')
+                        let working = DisplayWorking('Saving...')
+                        await mapsDB.exportMap(saveName, pack)
+                        working.dialog('close')
                         overlay.css('display', 'none')
                     }
                 }
@@ -489,8 +491,10 @@ function DisplayLoad(list) {
                 text: 'Load',
                 'class': 'ui-dialog-button disabled',
                 click: async function () {
-                    loadMap(await mapsDB.importMap(name.val()))
                     $(this).dialog('close')
+                    let working = DisplayWorking('Loading...')
+                    loadMap(await mapsDB.importMap(name.val()))
+                    working.dialog('close')
                     overlay.css('display', 'none')
                 }
             },
@@ -562,9 +566,11 @@ function DisplayOverwrite(savedName) {
             {
                 text: 'Yes',
                 'class': 'ui-dialog-button',
-                click: function () {
-                    mapsDB.exportMap(savedName, pack)
+                click: async function () {
                     $(this).dialog('close')
+                    let working = DisplayWorking('Saving...')
+                    await mapsDB.exportMap(savedName, pack)
+                    working.dialog('close')
                     overlay.css('display', 'none')
                 }
             },
@@ -580,8 +586,29 @@ function DisplayOverwrite(savedName) {
     })
 }
 
-function DisplayWorking() {
+function DisplayWorking(title = 'Please wait...') {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
 
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+    $(window).off('keydown')
+
+    popup.append('<img id=\'popup-working-spinner\' src=\'/static/res/img/flavicon.png\'>')
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-errormsg',
+        width: 500,
+        height: 200,
+        title: title,
+        buttons: []
+    })
+
+    return popup
 }
 //#endregion
 
