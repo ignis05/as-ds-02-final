@@ -24,9 +24,9 @@ var ServerDB = {
     databases: [],
 }
 
-var test_LoadedMap = []
+var loadedMaps = []
 var grid
-var finder
+var finder = new PF.AStarFinder()
 
 // #region pathfinding
 function createMatrix(dbfile) {
@@ -241,21 +241,7 @@ app.post("/sendClickedPoint", function (req, res) {
 })
 
 app.post("/gameInit", function (req, res) {
-    let data = req.body
-
-    let db = new Datastore({
-        filename: path.join(__dirname + `/static/database/maps.db`),
-        autoload: true
-    });
-
-    db.findOne({
-        _id: data.id
-    }, function (err, doc) {
-        grid = new PF.Grid(createMatrix(doc.mapData))
-        finder = new PF.AStarFinder()
-    })
-
-    res.send({ msg: "OK" })
+    
 })
 // #endregion ajax - Net.js requests
 
@@ -508,7 +494,7 @@ lobby.io.on('connect', socket => {
                 return
             }
         }
-
+        let sessionId = Math.random().toString(36).substring(2, 10)
         game.sessions.push({ // push game session to game instance of socket
             clients: room.clients.map(client => {
                 let _client = {
@@ -520,9 +506,23 @@ lobby.io.on('connect', socket => {
                 return _client
             }),
             mapName: room.map,
-            id: Math.random().toString(36).substring(2, 10),
+            id: sessionId
         })
 
+        let db = new Datastore({
+            filename: path.join(__dirname + `/static/database/maps.db`),
+            autoload: true
+        });
+
+        db.findOne({
+            mapName: room.map
+        }, function (err, doc) {
+            loadedMaps.push({ grid: new PF.Grid(createMatrix(doc.mapData)), session: sessionId})
+            console.log("length:" + loadedMaps.length);
+        })
+        //console.log(loadedMaps[loadedMaps.length-1]);
+        
+        
         lobby.io.to(room.name).emit('startGame')
     })
 
@@ -718,6 +718,12 @@ game.io.on('connect', socket => {
         }
         if (empty) {
             let i = game.sessions.indexOf(session)
+            for (let index in loadedMaps){
+                if(loadedMaps[index].session == session.id){
+                    loadedMaps.splice(index, 1)
+                    break
+                }
+            }
             game.sessions.splice(i, 1)
         }
     })
@@ -733,6 +739,47 @@ game.io.on('connect', socket => {
     // #endregion custom events
 })
 // #endregion socket.io - game
+
+// #region socket.io - pathfinding-test
+var pathfindingTest = {
+    io: io.of('/pathfindingTest'), // separate instace for pathfindingTest
+}
+pathfindingTest.io.on('connect', socket => {
+    console.log(`${socket.id} connected`);
+
+    var cookies = cookie.parse(socket.handshake.headers.cookie);
+    var token = cookies["token"]
+    console.log(`user token: ${token}`)
+
+    socket.on('disconnect', () => {
+        for (let index in loadedMaps){
+            if(loadedMaps[index].session == socket.id){
+                loadedMaps.splice(index, 1)
+                break
+            }
+        }
+    })
+
+    // #region custom events
+
+    // get selected map
+    socket.on('load_selected_map', mapName => {
+        let db = new Datastore({
+            filename: path.join(__dirname + `/static/database/maps.db`),
+            autoload: true
+        });
+
+        db.findOne({
+            mapName: mapName
+        }, function (err, doc) {
+            loadedMaps.push({ grid: new PF.Grid(createMatrix(doc.mapData)), session: socket.id})
+            console.log("length (added map from PF):" + loadedMaps.length);
+        })
+    })
+
+    // #endregion custom events
+})
+// #endregion socket.io - pathfindingTest
 
 //nasłuch na określonym porcie
 server.listen(PORT, function () {

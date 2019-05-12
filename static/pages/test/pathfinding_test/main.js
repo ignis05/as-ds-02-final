@@ -27,7 +27,7 @@ $(document).ready(async () => {
     async function loadMap(dataPack) {
         let data = dataPack.mapData
         if (data != null) {
-            Net.gameInit(dataPack._id)
+            socket.loadMapOnServer(dataPack.mapName)
             return data
         }
     }
