@@ -60,21 +60,31 @@ function CtrlsInit() {
         brushSize = parseInt($('#ctrl-brushsize').val())
     })
 
-    $('#ctrl-types').children().on('click', function () {
-        type = this.innerHTML
-        clearTypes()
-        this.className = 'active'
-    })
-
     $('#ctrl-backtomain').on('click', function () {
         DisplayMainMenu()
     })
 
-    $('#ctrl-types').children().on('click', function () {
-        cellSettings.type = (this.innerHTML).toLowerCase()
-        clearTypes()
-        this.className = 'active'
-    })
+    $('#ctrl-types').html('')
+
+    let iter = 0
+    for (let i in MASTER_BlockTypes) {
+        if (MASTER_BlockTypes[i].editor != undefined) {
+            let typeButton = $('<button>')
+                .attr('id', 'ctrl-type' + iter)
+                .html(i)
+                .click(e => {
+                    cellSettings.type = (e.target.innerHTML).toLowerCase()
+                    clearTypes()
+                    e.target.className = 'active'
+                })
+
+            if (iter == 0) typeButton.addClass('active')
+
+            $('#ctrl-types').append(typeButton)
+
+            iter++
+        }
+    }
 
     $('#editor-save').click(async e => {
         if (!e.target.className.includes('disabled')) {
@@ -611,7 +621,7 @@ function sortTable(tableId, cellId) {
 }
 
 function MinimapCalc(levelPack) {
-    console.table(levelPack.level)
+    /* console.table(levelPack.level) */
     let canvas = $('#minimap-canvas')
         .attr('width', parseInt(levelPack.size) * 8)
         .attr('height', parseInt(levelPack.size) * 8)
