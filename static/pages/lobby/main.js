@@ -139,7 +139,7 @@ socket.on('map_selected', mapName => {
 
 // #region global variables
 
-var database
+var mapsDB
 
 const dtOptions = {
     year: '2-digit',
@@ -203,8 +203,8 @@ $(document).ready(async () => {
     $('#region-chat').click(() => document.getElementById('socket-chat-input').focus())
 
     // display map list
-    database = new MapDB()
-    await database.create()
+    mapsDB = new MapDB()
+    await mapsDB.create()
 
     UpdateMaplist()
 })
@@ -364,7 +364,7 @@ async function UpdateMaplist() {
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
 
-    let list = await database.getMaps()
+    let list = await mapsDB.getMaps()
 
     let saveTable = $('<table>')
         .attr('id', 'map-table')
@@ -403,8 +403,9 @@ async function UpdateMaplist() {
             .html('')
             .css('width', '40px')
             .css('text-align', 'center')
-        if (list[i] !== undefined)
+        if (list[i] !== undefined) {
             cellSize.html(list[i].mapSize)
+        }
         row.append(cellSize)
 
         let cellName = $('<td>')
@@ -447,7 +448,7 @@ async function UpdateMaplist() {
 
 }
 
-function UpdateSelectedMap(mapName) {
+async function UpdateSelectedMap(mapName) {
     let maplist = Object.values(document.getElementsByClassName('saves-row'))
     for (map of maplist) {
         map.classList.remove('saves-active')
@@ -455,6 +456,9 @@ function UpdateSelectedMap(mapName) {
             map.classList.add('saves-active')
         }
     }
+
+    let tempMap = await mapsDB.importMap(mapName)
+    MinimapCalc(tempMap.mapData)
 }
 
 async function UpdateRoomInfo() {
@@ -611,6 +615,21 @@ function sortTable(tableId, cellId) {
                 switching = true
             }
         }
+    }
+}
+
+function MinimapCalc(levelPack) {
+    let canvas = $('#minimap-canvas')
+        .attr('width', parseInt(levelPack.size) * 8)
+        .attr('height', parseInt(levelPack.size) * 8)
+
+    let ctx = canvas[0].getContext('2d')
+
+    ctx.scale(8, 8)
+
+    for (let i in levelPack.level) {
+        ctx.fillStyle = MASTER_BlockTypes[levelPack.level[i].type].editor.color
+        ctx.fillRect(parseInt(levelPack.level[i].x), parseInt(levelPack.level[i].z), parseInt(levelPack.level[i].x) + 1, parseInt(levelPack.level[i].z) + 1)
     }
 }
 //#endregion

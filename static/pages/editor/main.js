@@ -42,8 +42,6 @@ $(document).ready(async () => {
     InputInit()
     CtrlsInit()
 
-    console.log(MASTER_BlockTypes)
-
     // Define additional setting sliders here:
     new OptionSlider('height', 'Height', 0, 255, 1, 5)
 })
@@ -581,6 +579,10 @@ function DisplayOverwrite(savedName) {
         ]
     })
 }
+
+function DisplayWorking() {
+
+}
 //#endregion
 
 //#region Helper Functions
@@ -622,7 +624,6 @@ function sortTable(tableId, cellId) {
 }
 
 function MinimapCalc(levelPack) {
-    /* console.table(levelPack.level) */
     let canvas = $('#minimap-canvas')
         .attr('width', parseInt(levelPack.size) * 8)
         .attr('height', parseInt(levelPack.size) * 8)
