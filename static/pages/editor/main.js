@@ -299,6 +299,7 @@ class Cell {
         let cellInfo = MASTER_BlockTypes[this.type].editor
 
         this.object.css('backgroundColor', cellInfo.color)
+        this.object.css('color', cellInfo.fontColor)
 
         this.object.html(this.height)
     }
