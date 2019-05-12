@@ -27,7 +27,13 @@ class Game {
             renderer.setSize($(window).width(), $(window).height())
         })
 
+        var camCtrl = new CameraController(camera)
+        this.camCtrl = camCtrl
+        scene.add(camCtrl.getAnchor())
+
         function render() {
+            camCtrl.update()
+            
             renderer.render(scene, camera)
             requestAnimationFrame(render)
         }

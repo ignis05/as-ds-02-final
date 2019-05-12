@@ -15,7 +15,7 @@ $(document).ready(async () => {
 
     game = new Game('#game') // create game display in '#game' div
     game.addAxexHelper(500)
-    game.enableOrbitContols()
+    /* game.enableOrbitContols() */
     game.addAmbientLight(1)
 
     map = new Map(mapData)
