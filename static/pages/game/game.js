@@ -1,3 +1,9 @@
+const dtOptions = {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+}
+
 // will be heavly integrated with socket.js so i suggest keeping it as local file instead of global class
 class Game {
     constructor(domElement) {
@@ -31,9 +37,11 @@ class Game {
         this.camCtrl = camCtrl
         scene.add(camCtrl.getAnchor())
 
+        this.debug_log('Game initiated')
+
         function render() {
             camCtrl.update()
-            
+
             renderer.render(scene, camera)
             requestAnimationFrame(render)
         }
@@ -47,13 +55,9 @@ class Game {
         var cube = new THREE.Mesh(geometry, material)
         this.scene.add(cube)
     }
-    addAxexHelper(size) {
+    addAxesHelper(size) {
         var axesHelper = new THREE.AxesHelper(size)
         this.scene.add(axesHelper)
-    }
-    addAmbientLight(brightness) {
-        var light = new THREE.AmbientLight(0xffffff, brightness, 100000) // ambient light bc gltf textures always require light
-        this.scene.add(light)
     }
     enableOrbitContols() {
         var orbitControl = new THREE.OrbitControls(this.camera, this.renderer.domElement)
@@ -62,4 +66,31 @@ class Game {
         })
     }
     // #endregion test functions
+
+    // #region DEBUG FUNCTIONS
+    debug_cameraEnable(showAnchor, showTriggerZones) {
+        this.camCtrl.debug_showAnchor(showAnchor)
+        this.camCtrl.debug_showTriggerZones(showTriggerZones)
+    }
+    debug_addAmbientLight(brightness) {
+        var light = new THREE.AmbientLight(0xffffff, brightness, 100000) // ambient light bc gltf textures always require light
+        this.scene.add(light)
+        this.debug_log('Game.addAmbientLight: ' + brightness)
+    }
+    debug_consoleEnable(boolean) {
+        if (boolean) $('#debug-log').removeAttr('style')
+        else $('#debug-log').css('display', 'none')
+    }
+    debug_log(string) {
+        let now = Date.now()
+        let msecs = now % 1000 < 100 ? now % 1000 < 10 ? '00' + now % 1000 : '0' + now % 1000 : now % 1000
+        let msg = $('<p>')
+            .css('color', '#FFFF2F')
+            .css('padding-left', '5px')
+            .html('[' + new Intl.DateTimeFormat('en-GB', dtOptions).format(now) + '.' + msecs + ']: ' + string)
+
+        $('#debug-log').append(msg)
+        $('#debug-log').scrollTop($('#debug-log')[0].scrollHeight)
+    }
+    // #endregion
 }
