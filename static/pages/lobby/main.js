@@ -127,7 +127,7 @@ socket.on('readyState_change', async () => {
                 everyone = false
             }
         }
-        if (everyone && room.clients.length != 1 && room.map) // Checking if user is not alone and if a map is selected
+        if (everyone && room.clients.length != 1 && room.map != null) // Checking if user is not alone and if a map is selected
             $('#button-start').removeAttr('disabled')
         else
             $('#button-start').attr('disabled', true)
@@ -259,10 +259,10 @@ function InitClicks() {
                 window.alert('Room is not full')
                 return
             }
-            if (!room.map) { // prevent start if map is not selected
+            /* if (!room.map) { // prevent start if map is not selected
                 window.alert('Map not selected')
                 return
-            }
+            } */
 
             socket.setReadyState(true) // Host is ready when he presses this button (their ready-state wont be displayed anyways)
 
