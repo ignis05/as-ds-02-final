@@ -153,7 +153,7 @@ class CameraController { // camera controller
             else this.inputMouse.moveDown = false
 
             if (this.inputMouse.rot) {
-                if (this.inputMouse.lastX - e.clientX < 10) {
+                if (this.inputMouse.lastX - e.clientX < -10) {
                     this.inputMouse.rotLeft = true
                     this.inputMouse.rotRight = false
                 }
