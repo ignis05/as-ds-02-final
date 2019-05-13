@@ -105,7 +105,7 @@ socket.on('user_connected', id => {
 
 // triggers when someone in room changes username (optional)
 socket.on('username_change', id => {
-    console.log(`user ${id} chnaged nickname`)
+    console.log(`user ${id} changed nickname`)
     // >here< place for additional function that will update list of room members
 })
 
@@ -213,7 +213,7 @@ $(document).ready(async () => {
             if ($('#socket-chat-input').val() !== '') { // Blocking empty messages
                 let msg = {
                     author: socket.id, // id of current connection - will always be unique
-                    content: $('#socket-chat-input').val()
+                    content: $('#socket-chat-input').val().replace('<', '&lt;').replace('>', '&gt;')  // Sanitization on send, server gets sanitized content
                 }
                 socket.send(msg) // trigger event 'chat' for every user in room (including self) and pass msg obj as data
                 $('#socket-chat-input').val('') // Clear message field to prevent accidental spam
@@ -550,8 +550,10 @@ async function UpdateChat(msg) { // placeholder function triggered by 'chat' eve
         let author = socket.roomMembers.find(client => client.id == msg.author)
         let uid = socket.roomMembers.indexOf(author)
 
+        let msgContent = msg.content.replace('<', '&lt;').replace('>', '&gt;') // Sanitization on recieve (in case someone bypases the send sanitizer)
+
         let chat = $('#socket-chat-display').html()
-        chat += `<div style="display: inline; color: ` + memberColors[uid] + `; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
+        chat += `<div style="display: inline; color: ` + memberColors[uid] + `; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ` + msgContent + `<br>`
         $('#socket-chat-display').html(chat)
     }
 
