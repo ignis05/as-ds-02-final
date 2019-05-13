@@ -66,25 +66,41 @@ socket.on('startGame', () => {
 })
 
 // triggers when someone disconnects from room
-socket.on('user_disconnected', async id => {
+socket.on('user_disconnected', id => {
     console.log(`user ${id} has disconnected`)
-    // >here< place for additional function that will notify the users
+
+    UpdateChat({
+        author: '[SERVER]',
+        user: id,
+        action: 'disconnected',
+    })
+})
+
+// triggers when room admin is changed
+socket.on('admin_changed', async () => {
+    UpdateMaplist() // to unlock listeners for new admin
 
     // update room admin if someon leaves
     let rooms = await socket.getRooms()
     let currentRoom = rooms.find(room => room.clients.find(client => client.id == socket.id))
     $('#socket-admin-name').html(currentRoom.admin.name)
-})
 
-// triggers when room admin is changed
-socket.on('admin_changed', () => {
-    UpdateMaplist() // to unlock listeners for new admin
+    UpdateChat({
+        author: '[SERVER]',
+        user: currentRoom.admin.id,
+        action: 'is new room administrator',
+    })
 })
 
 // triggers when someone connects to room
 socket.on('user_connected', id => {
     console.log(`user ${id} has connected`)
-    // >here< place for additional function that will notify the users
+
+    UpdateChat({
+        author: '[SERVER]',
+        user: id,
+        action: 'connected',
+    })
 })
 
 // triggers when someone in room changes username (optional)
@@ -102,9 +118,6 @@ socket.on('rooms_updated', () => {
 socket.on('readyState_change', async () => {
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
-    let readyList = room.clients.map(client => `${client.name}: ${client.ready ? 'ready' : 'not ready'}`)
-    /* console.log('list of ready cients')
-    console.log(readyList) */
     UpdateRoomMembers()
 
     if (room.admin.id == socket.id) {
@@ -128,6 +141,15 @@ socket.on('get_kicked', () => {
     window.location = '/'
 })
 
+// triggers when room member is being kicked
+socket.on('user_kicked', id => {
+    UpdateChat({
+        author: '[SERVER]',
+        user: id,
+        action: 'has been kicked',
+    })
+})
+
 // triggers when admin changes map
 socket.on('map_selected', mapName => {
     UpdateSelectedMap(mapName)
@@ -139,7 +161,7 @@ socket.on('map_selected', mapName => {
 
 // #region global variables
 
-var database
+var mapsDB
 
 const dtOptions = {
     year: '2-digit',
@@ -203,8 +225,8 @@ $(document).ready(async () => {
     $('#region-chat').click(() => document.getElementById('socket-chat-input').focus())
 
     // display map list
-    database = new MapDB()
-    await database.create()
+    mapsDB = new MapDB()
+    await mapsDB.create()
 
     UpdateMaplist()
 })
@@ -350,21 +372,11 @@ async function UpdateRoomMembers() { // placeholder function triggered by 'rooms
     $('#socket-players').html(display)
 }
 
-async function UpdateChat(msg) { // placeholder function triggered by 'chat' event
-    let author = socket.roomMembers.find(client => client.id == msg.author)
-
-    let chat = $('#socket-chat-display').html()
-    chat += `<div style="display: inline; color: #FF0000; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
-    $('#socket-chat-display').html(chat)
-
-    $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
-}
-
 async function UpdateMaplist() {
     let rooms = await socket.getRooms()
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
 
-    let list = await database.getMaps()
+    let list = await mapsDB.getMaps()
 
     let saveTable = $('<table>')
         .attr('id', 'map-table')
@@ -403,8 +415,9 @@ async function UpdateMaplist() {
             .html('')
             .css('width', '40px')
             .css('text-align', 'center')
-        if (list[i] !== undefined)
+        if (list[i] !== undefined) {
             cellSize.html(list[i].mapSize)
+        }
         row.append(cellSize)
 
         let cellName = $('<td>')
@@ -447,7 +460,7 @@ async function UpdateMaplist() {
 
 }
 
-function UpdateSelectedMap(mapName) {
+async function UpdateSelectedMap(mapName) {
     let maplist = Object.values(document.getElementsByClassName('saves-row'))
     for (map of maplist) {
         map.classList.remove('saves-active')
@@ -455,6 +468,9 @@ function UpdateSelectedMap(mapName) {
             map.classList.add('saves-active')
         }
     }
+
+    let tempMap = await mapsDB.importMap(mapName)
+    MinimapCalc(tempMap.mapData)
 }
 
 async function UpdateRoomInfo() {
@@ -490,31 +506,54 @@ async function UpdateBottomPanel() {
 }
 
 async function UpdateRoomMembers() { // placeholder function triggered by 'rooms_updated' event
-    let rooms = await socket.getRooms()
-    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+    return new Promise(async res => {
 
-    $('#socket-players').html('')
+        let rooms = await socket.getRooms()
+        let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
 
-    let display = $('<div>')
-    socket.roomMembers = room.clients
+        $('#socket-players').html('')
 
-    let amAdmin = socket.id == room.admin.id
-    for (let i in room.clients) {
-        display.append(new RoomMember(i, room.clients[i].name, room.clients[i].ready, room.clients[i].id == socket.id, amAdmin))
-    }
-    if (display.html() == '') display.html() = '[]'
-    $('#socket-players').append(display)
+        let display = $('<div>')
+        socket.roomMembers = room.clients
 
-    UpdateBottomPanel()
+        let amAdmin = socket.id == room.admin.id
+        for (let i in room.clients) {
+            display.append(new RoomMember(i, room.clients[i].name, room.clients[i].ready, room.clients[i].id == socket.id, amAdmin))
+        }
+        if (display.html() == '') display.html() = '[]'
+        $('#socket-players').append(display)
+
+        UpdateBottomPanel()
+
+        res()
+    })
 }
 
 async function UpdateChat(msg) { // placeholder function triggered by 'chat' event
-    let author = socket.roomMembers.find(client => client.id == msg.author)
-    let uid = socket.roomMembers.indexOf(author)
 
-    let chat = $('#socket-chat-display').html()
-    chat += `<div style="display: inline; color: ` + memberColors[uid] + `; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
-    $('#socket-chat-display').html(chat)
+    if (msg.author == '[SERVER]') { // server msg
+        let user = socket.roomMembers.find(client => client.id == msg.user)
+
+        if (!user || msg.action == 'is new room administrator') { // if not found - list of clients is not updated yet
+            await UpdateRoomMembers()
+        }
+
+        user = socket.roomMembers.find(client => client.id == msg.user)
+
+        let uid = socket.roomMembers.indexOf(user)
+
+        let chat = $('#socket-chat-display').html()
+        chat += `<div style="display: inline; color: ` + '#ff0000' + `; text-shadow: 2px 0px 1px #000000;">[SERVER]</div>: User <span style='color:${memberColors[uid]}'>${user.name}</span> ${msg.action} <br>`
+        $('#socket-chat-display').html(chat)
+    }
+    else { // normal msg
+        let author = socket.roomMembers.find(client => client.id == msg.author)
+        let uid = socket.roomMembers.indexOf(author)
+
+        let chat = $('#socket-chat-display').html()
+        chat += `<div style="display: inline; color: ` + memberColors[uid] + `; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
+        $('#socket-chat-display').html(chat)
+    }
 
     $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
 }
@@ -611,6 +650,21 @@ function sortTable(tableId, cellId) {
                 switching = true
             }
         }
+    }
+}
+
+function MinimapCalc(levelPack) {
+    let canvas = $('#minimap-canvas')
+        .attr('width', parseInt(levelPack.size) * 8)
+        .attr('height', parseInt(levelPack.size) * 8)
+
+    let ctx = canvas[0].getContext('2d')
+
+    ctx.scale(8, 8)
+
+    for (let i in levelPack.level) {
+        ctx.fillStyle = MASTER_BlockTypes[levelPack.level[i].type].editor.color
+        ctx.fillRect(parseInt(levelPack.level[i].x), parseInt(levelPack.level[i].z), parseInt(levelPack.level[i].x) + 1, parseInt(levelPack.level[i].z) + 1)
     }
 }
 //#endregion

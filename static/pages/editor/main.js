@@ -42,39 +42,59 @@ $(document).ready(async () => {
     InputInit()
     CtrlsInit()
 
-    console.log(MASTER_BlockTypes)
-
     // Define additional setting sliders here:
     new OptionSlider('height', 'Height', 0, 255, 1, 5)
 })
 
 //#region Init Functions
-function CtrlsInit() {
-    $('#ctrl-genlvl').on('click', function () {
+async function CtrlsInit() {
+    $('#ctrl-genlvl').on('click', async function () {
         pack.size = $('#ctrl-lvlsize').val()
-        createTiles()
+
+        let working = DisplayWorking('Generating...')
+        setTimeout(async () => { // null-timeout added so dialog displays properly
+            await createTiles()
+            working.dialog('close')
+            $('#overlay').css('display', 'none')
+        }, 0)
     })
-    createTiles()
+
+    let working = DisplayWorking('Generating...')
+    setTimeout(async () => { // null-timeout added so dialog displays properly
+        await createTiles()
+        working.dialog('close')
+        $('#overlay').css('display', 'none')
+    }, 0)
 
     $('#ctrl-brushsize').on('change', function () {
         brushSize = parseInt($('#ctrl-brushsize').val())
-    })
-
-    $('#ctrl-types').children().on('click', function () {
-        type = this.innerHTML
-        clearTypes()
-        this.className = 'active'
     })
 
     $('#ctrl-backtomain').on('click', function () {
         DisplayMainMenu()
     })
 
-    $('#ctrl-types').children().on('click', function () {
-        cellSettings.type = (this.innerHTML).toLowerCase()
-        clearTypes()
-        this.className = 'active'
-    })
+    $('#ctrl-types').html('')
+
+    let iter = 0
+    for (let i in MASTER_BlockTypes) {
+        if (MASTER_BlockTypes[i].editor != undefined) {
+            let typeButton = $('<button>')
+                .attr('id', 'ctrl-type' + iter)
+                .html(i)
+                .click(e => {
+                    cellSettings.type = (e.target.innerHTML).toLowerCase()
+                    clearTypes()
+                    e.target.className = 'active'
+                })
+
+            if (iter == 0) typeButton.addClass('active')
+
+            $('#ctrl-types').append(typeButton)
+
+            iter++
+        }
+    }
 
     $('#editor-save').click(async e => {
         if (!e.target.className.includes('disabled')) {
@@ -102,6 +122,7 @@ function InputInit() {
         switch (e.which) {
             case 1:
                 input.leftMouse = true
+                cellClick()
                 break
             case 2:
                 input.middleMouse = true
@@ -141,18 +162,24 @@ function clearTypes() {
 }
 
 function createTiles() {
-    pack.level = []
-    cells = []
-    $('#map').html('').css('width', pack.size * cellSize + cellSize + 'px').css('height', pack.size * cellSize + cellSize + 'px').css('position', 'relative')
-    for (let i = 0; i < pack.size; i++) {
-        for (let j = 0; j < pack.size; j++) {
-            let cell = new Cell(i * pack.size + j, j, i)
-            cells.push(cell)
-            cell.object.on('click', cellClick)
-            $('#map').append(cell.object)
+    return new Promise((resolve, reject) => {
+        pack.level = []
+        cells = []
+        $('#map').html('').css('width', pack.size * cellSize + cellSize + 'px').css('height', pack.size * cellSize + cellSize + 'px').css('position', 'relative')
+        for (let i = 0; i < pack.size; i++) {
+            for (let j = 0; j < pack.size; j++) {
+                let cell = new Cell(i * pack.size + j, j, i)
+                cells.push(cell)
+                cell.object.on('click', cellClick)
+                $('#map').append(cell.object)
+            }
         }
-    }
-    $('#data').html(JSON.stringify(pack, null, 4))
+
+        MinimapCalc(pack)
+        $('#data').html(JSON.stringify(pack, null, 4))
+
+        resolve('End')
+    })
 }
 
 function cellClick() {
@@ -164,9 +191,9 @@ function cellClick() {
         cell.cell.height = cellSettings.height
         cell.innerHTML = cell.height
 
-        for (let i in pack.level) {
-            let datapack = pack.level[i]
-            if (datapack.id === cell.cell.id) {
+        for (let j in pack.level) {
+            let datapack = pack.level[j]
+            if (datapack.id == cell.cell.id) {
                 datapack.height = cell.cell.height
                 datapack.type = cell.cell.type
                 break
@@ -175,6 +202,7 @@ function cellClick() {
         cell.cell.setup()
     }
 
+    MinimapCalc(pack)
     $('#data').html(JSON.stringify(pack, null, 4))
 
 }
@@ -193,6 +221,8 @@ function loadMap(dataPack) {
             cells[dataPack.id].height = parseInt(dataPack.height)
             cells[dataPack.id].setup()
         }
+
+        MinimapCalc(pack)
         $('#data').html(JSON.stringify(pack, null, 4))
     }
 }
@@ -269,6 +299,7 @@ class Cell {
         let cellInfo = MASTER_BlockTypes[this.type].editor
 
         this.object.css('backgroundColor', cellInfo.color)
+        this.object.css('color', cellInfo.fontColor)
 
         this.object.html(this.height)
     }
@@ -385,14 +416,16 @@ function DisplaySave(list) {
                 disabled: true,
                 text: 'Save',
                 'class': 'ui-dialog-button disabled',
-                click: function () {
+                click: async function () {
                     let saveName = name.val()
                     if (list.some(e => e.mapName == saveName)) {
                         $(this).dialog('close')
                         DisplayOverwrite(saveName)
                     } else {
-                        mapsDB.exportMap(saveName, pack)
                         $(this).dialog('close')
+                        let working = DisplayWorking('Saving...')
+                        await mapsDB.exportMap(saveName, pack)
+                        working.dialog('close')
                         overlay.css('display', 'none')
                     }
                 }
@@ -475,8 +508,10 @@ function DisplayLoad(list) {
                 text: 'Load',
                 'class': 'ui-dialog-button disabled',
                 click: async function () {
-                    loadMap(await mapsDB.importMap(name.val()))
                     $(this).dialog('close')
+                    let working = DisplayWorking('Loading...')
+                    loadMap(await mapsDB.importMap(name.val()))
+                    working.dialog('close')
                     overlay.css('display', 'none')
                 }
             },
@@ -548,9 +583,11 @@ function DisplayOverwrite(savedName) {
             {
                 text: 'Yes',
                 'class': 'ui-dialog-button',
-                click: function () {
-                    mapsDB.exportMap(savedName, pack)
+                click: async function () {
                     $(this).dialog('close')
+                    let working = DisplayWorking('Saving...')
+                    await mapsDB.exportMap(savedName, pack)
+                    working.dialog('close')
                     overlay.css('display', 'none')
                 }
             },
@@ -564,6 +601,31 @@ function DisplayOverwrite(savedName) {
             }
         ]
     })
+}
+
+function DisplayWorking(title = 'Please wait...') {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+    $(window).off('keydown')
+
+    popup.append('<img id=\'popup-working-spinner\' src=\'/static/res/img/flavicon.png\'>')
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-errormsg',
+        width: 500,
+        height: 200,
+        title: title,
+        buttons: []
+    })
+
+    return popup
 }
 //#endregion
 
@@ -602,6 +664,21 @@ function sortTable(tableId, cellId) {
                 switching = true
             }
         }
+    }
+}
+
+function MinimapCalc(levelPack) {
+    let canvas = $('#minimap-canvas')
+        .attr('width', parseInt(levelPack.size) * 8)
+        .attr('height', parseInt(levelPack.size) * 8)
+
+    let ctx = canvas[0].getContext('2d')
+
+    ctx.scale(8, 8)
+
+    for (let i in levelPack.level) {
+        ctx.fillStyle = MASTER_BlockTypes[levelPack.level[i].type].editor.color
+        ctx.fillRect(parseInt(levelPack.level[i].x), parseInt(levelPack.level[i].z), parseInt(levelPack.level[i].x) + 1, parseInt(levelPack.level[i].z) + 1)
     }
 }
 //#endregion

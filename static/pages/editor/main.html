@@ -30,12 +30,10 @@
         <div id="ctrls">
             <div id="ctrl-create" class="ctrl-block">
                 <select id="ctrl-lvlsize">
-                    <option value="2">2</option>
-                    <option value="4">4</option>
-                    <option value="8">8</option>
-                    <option value="16">16</option>
+                    <option value="8" class="size-developer">8</option>
+                    <option value="16" class="size-developer">16</option>
                     <option value="32" selected>32</option>
-                    <option value="64">64</option>
+                    <option value="64" class="size-warning">64</option>
                     <option value="128" class="size-unstable">128</option>
                     <option value="256" class="size-unstable">256</option>
                 </select>
@@ -66,6 +64,11 @@
             <div class="ctrl-block">
                 <button id="ctrl-backtomain">Exit to Main Menu</button>
             </div>
+            
+            <div class="ctrl-block">
+                <canvas id="minimap-canvas" style="width: 300px; height: 300px; background-color: red; border: 2px solid white"></canvas>
+            </div>
+            
         </div>
         <div id="data">
         </div>
@@ -74,15 +77,6 @@
     <div id="overlay" style="display: none">
         <div id="backdrop"></div>
         <div id="dialog"></div>
-        <!-- <div id="window">
-            <div id="header">Header</div>
-            <div id="container">
-
-            </div>
-            <div id="win-footer">
-                <div id="win-bBack" class="window-button">Back</div>
-            </div>
-        </div> -->
     </div>
 </body>
 
