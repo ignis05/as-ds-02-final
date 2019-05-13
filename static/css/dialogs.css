@@ -77,6 +77,27 @@
     font-size: 1.5em;
 }
 
+#popup-working-spinner {
+    display: block;
+    width: 50px;
+    height: 50px;
+    animation-name: popup-working-spinner;
+    animation-duration: 2s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes popup-working-spinner {
+    0% {
+        transform: rotate(0deg);
+    }
+    50% {
+        transform: rotate(180deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
 /* #endregion */
 
 /* #region Multiple Buttons */

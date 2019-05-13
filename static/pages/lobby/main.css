@@ -166,11 +166,21 @@
     position: absolute;
     width: 300px;
     height: 300px;
-    background-color: #00FFFF;
+    /* background-color: #00FFFF; */
     right: 20px;
     top: 20px;
     box-sizing: content-box;
     border: 5px outset #7F2F2F;
+}
+
+#minimap-canvas {
+    width: 300px;
+    height: 300px;
+    background-color: transparent;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
 #region-settings {
@@ -231,15 +241,6 @@
     font-size: 20px;
 }
 
-/* .map_list_active:hover {
-    background: #ff0000aa;
-    cursor: pointer;
-}
-
-.activeMap {
-    background: #ff0000aa;
-} */
-
 #region-buttons {
     position: absolute;
     width: 974px;
@@ -284,18 +285,6 @@
     text-shadow: none;
 }
 
-.lobby-button-placeholder {
-    box-sizing: border-box;
-    width: 200px;
-    height: 75px;
-    background-color: transparent;
-    border: 5px outset transparent;
-    color: transparent;
-    font-weight: bolder;
-    font-size: 1.5em;
-    text-shadow: 1px 1px 1px transparent;
-}
-
 /* #endregion */
 
 /* #region BACKGROUND */
@@ -325,7 +314,23 @@
 
 /* #region Placeholders */
 
+.lobby-button-placeholder {
+    box-sizing: border-box;
+    width: 200px;
+    height: 75px;
+    background-color: transparent;
+    border: 5px outset transparent;
+    color: transparent;
+    font-weight: bolder;
+    font-size: 1.5em;
+    text-shadow: 1px 1px 1px transparent;
+}
+
 .map-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+
     background-image: url(https://i.kym-cdn.com/entries/icons/original/000/017/280/e29.jpg);
     background-size: contain;
     background-position: center;
