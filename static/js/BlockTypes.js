@@ -1,7 +1,8 @@
 const MASTER_BlockTypes = {
     dirt: {
         editor: {
-            color: '#338833',
+            color: '#2F7F2F',
+            fontColor: '#000000',
         },
         game: {
             color: '#2F7F2F',
@@ -10,7 +11,8 @@ const MASTER_BlockTypes = {
     },
     rock: {
         editor: {
-            color: '#888888',
+            color: '#7F7F7F',
+            fontColor: '#000000',
         },
         game: {
             color: '#7F7F7F',
