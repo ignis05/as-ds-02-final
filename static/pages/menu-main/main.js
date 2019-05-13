@@ -41,6 +41,12 @@ function InitCookies() {
 
     if (Cookies.get('settings-spcVol') === '')
         Cookies.set('settings-spcVol', 75, 7)
+
+    if (Cookies.get('settings-aaOn') === '')
+        Cookies.set('settings-aaOn', true, 7)
+
+    if (Cookies.get('settings-resScale') === '')
+        Cookies.set('settings-resScale', 1, 7)
 }
 
 function InitName() {
@@ -339,6 +345,7 @@ async function DisplayTests() {
 
 function DisplayOptions() {
     let list = [
+        { name: 'Game Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsGame()' },
         { name: 'Video Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsVideo()' },
         { name: 'Sound Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsSound()' },
         { name: 'Setup Identity', action: '$(\'#dialog\').dialog(\'close\'); OptionsIdentity()' },
@@ -446,7 +453,7 @@ function OptionsIdentity(firstCall) {
         $('#bApply').attr('disabled', false).removeClass('disabled')
 }
 
-function OptionsVideo() {
+function OptionsGame() {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
 
@@ -474,7 +481,7 @@ function OptionsVideo() {
         dialogClass: 'no-close ui-dialog-confirm',
         width: 600,
         height: 400,
-        title: 'Video Options',
+        title: 'Game Options',
         buttons: [
             {
                 id: 'bApply',
@@ -482,7 +489,7 @@ function OptionsVideo() {
                 text: 'Apply',
                 'class': 'ui-dialog-button disabled',
                 click: function () {
-                    ApplyVideo()
+                    ApplyGame()
                     $(this).dialog('close')
                     overlay.css('display', 'none')
                 }
@@ -493,6 +500,107 @@ function OptionsVideo() {
                 click: function () {
                     popup.removeAttr('style') // TEMPORARY OPTION
 
+                    $(this).dialog('close')
+                    DisplayOptions()
+                }
+            }
+        ]
+    })
+}
+
+function OptionsVideo() {
+    let overlay = $('#overlay')
+    let popup = $('#dialog').html('')
+
+    if (overlay.css('display') == 'none')
+        overlay.removeAttr('style')
+    $(window).off('keydown')
+
+    let aaCookie = (Cookies.get('settings-aaOn') === 'true') // Convert from string to boolean ¯\_(ツ)_/¯
+    let resCookie = Cookies.get('settings-resScale')
+
+    //================
+    //AntiAliasOn Checkbox
+    let cont = $('<div>').attr('id', 'aaOn')
+        .addClass('info-block')
+    $('#dialog').append(cont)
+
+    let lbl = $('<div>')
+        .html('Anti-Aliasing')
+        .addClass('ui-dialog-button')
+        .addClass('info-label')
+    cont.append(lbl)
+
+    lbl.click(() => {
+        chk.click()
+        if ($('#aaOn').find('#chk').prop('checked'))
+            chkText.html('Yes')
+        else
+            chkText.html('No')
+    })
+
+    let ctrlCont = $('<div>')
+        .addClass('info-elem')
+    cont.append(ctrlCont)
+
+    let chk = $('<input>')
+        .attr('id', 'chk')
+        .attr('type', 'checkbox')
+        .prop('checked', aaCookie)
+        .css('display', 'none')
+    ctrlCont.append(chk)
+
+    let chkText = $('<div>')
+    ctrlCont.append(chkText)
+
+    if (aaCookie)
+        chkText.html('Yes')
+    else
+        chkText.html('No')
+    //AntiAliasOn Checkbox
+    //================
+
+    let resVals = [0.5, 0.75, 1, 1.25, 1.5, 1.75, 2]
+    let resLbls = ['50%', '75%', '100%', '125%', '150%', '175%', '200%']
+    console.log(resCookie)
+    console.log(resVals.indexOf(parseFloat(resCookie)))
+    let resIndex = resVals.indexOf(parseFloat(resCookie)) != -1 ? resVals.indexOf(parseFloat(resCookie)) : 2
+    console.log(resIndex)
+    new VideoOption('resScale', 'Resolution Scale', resLbls, resVals, resIndex)
+
+    $(window).on('keydown', e => {
+        let bTarget = $('#bApply')
+        if (e.originalEvent.code == 'Enter' && !bTarget.prop('disabled')) {
+            bTarget.trigger('click')
+        }
+    })
+
+    popup.dialog({
+        closeOnEscape: false,
+        modal: true,
+        draggable: false,
+        resizable: false,
+        dialogClass: 'no-close ui-dialog-confirm',
+        width: 600,
+        height: 300,
+        title: 'Video Options',
+        buttons: [
+            {
+                id: 'bApply',
+                text: 'Apply',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    Cookies.set('settings-aaOn', $('#aaOn').find('#chk').prop('checked'), 7)
+                    Cookies.set('settings-resScale', $('#resScale').find('#sel').val(), 7)
+                    ApplyVideo()
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            },
+            {
+                text: 'Back',
+                'class': 'ui-dialog-button',
+                click: function () {
                     $(this).dialog('close')
                     DisplayOptions()
                 }
@@ -857,6 +965,39 @@ class SoundOption {
         })
     }
 }
+
+class VideoOption {
+    constructor(id, selectLabel, optionLabels, optionValues, initValIndex) {
+        console.log(initValIndex)
+        let cont = $('<div>')
+            .attr('id', id)
+            .addClass('info-block')
+        $('#dialog').append(cont)
+
+        let lbl = $('<div>')
+            .html(selectLabel)
+            .addClass('info-label')
+        cont.append(lbl)
+
+        let ctrlCont = $('<div>')
+            .attr('id', 'ctrlCont')
+            .addClass('info-elem')
+        cont.append(ctrlCont)
+
+        let sel = $('<select>')
+            .attr('id', 'sel')
+            .addClass('info-select')
+        ctrlCont.append(sel)
+
+        for (let i in optionLabels) {
+            let option = $('<option>')
+                .html(optionLabels[i])
+                .attr('value', optionValues[i])
+            if (i == initValIndex) option.attr('selected', true)
+            sel.append(option)
+        }
+    }
+}
 //#endregion
 
 //#region Exec Setting Changes
@@ -866,6 +1007,10 @@ function ApplySound() {
 
 function ApplyVideo() {
     console.warn('ApplyVideo not implemented!')
+}
+
+function ApplyGame() {
+    console.warn('ApplyGame not implemented!')
 }
 
 function ApplyIdentity() {

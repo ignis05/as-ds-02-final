@@ -10,8 +10,15 @@ class Game {
         var scene = new THREE.Scene()
         this.scene = scene
 
-        var renderer = new THREE.WebGLRenderer({ antialias: true })
+        let aaOn = Cookies.get('settings-aaOn') === 'true'
+        let resScale = Cookies.get('settings-resScale')
+        this.debug_log('Renderer.antialias: ' + aaOn)
+        this.debug_log('Renderer.resScale: ' + resScale)
+
+        var renderer = new THREE.WebGLRenderer({ antialias: aaOn })
         this.renderer = renderer
+
+        renderer.setPixelRatio(resScale) // Resolution scale :)
 
         renderer.setClearColor(0xffffff)
         renderer.setSize($(window).width(), $(window).height())
@@ -37,7 +44,7 @@ class Game {
         this.camCtrl = camCtrl
         scene.add(camCtrl.getAnchor())
 
-        this.debug_log('Game initiated')
+        this.debug_log('Renderer.init: Success')
 
         function render() {
             camCtrl.update()
@@ -80,6 +87,7 @@ class Game {
     debug_consoleEnable(boolean) {
         if (boolean) $('#debug-log').removeAttr('style')
         else $('#debug-log').css('display', 'none')
+        this.debug_log('Game.consoleEnable: ' + true)
     }
     debug_log(string) {
         let now = Date.now()
