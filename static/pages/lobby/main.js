@@ -127,7 +127,7 @@ socket.on('readyState_change', async () => {
                 everyone = false
             }
         }
-        if (everyone && room.clients.length != 1) // Checking if user is not alone
+        if (everyone && room.clients.length != 1 && room.map) // Checking if user is not alone and if a map is selected
             $('#button-start').removeAttr('disabled')
         else
             $('#button-start').attr('disabled', true)
