@@ -14,7 +14,7 @@ class Map {
 
             // import const values
             var size = MASTER_BlockSizeParams.blockSize
-            var color = '#' + MASTER_BlockTypes[cell.type].game.color.toString(16)
+            var color = MASTER_BlockTypes[cell.type].game.color
             var walkable = MASTER_BlockTypes[cell.type].game.walkable
 
 
