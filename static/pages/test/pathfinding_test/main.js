@@ -6,13 +6,6 @@ $(document).ready(async () => {
     pack.size = 0
     pack.level = []
 
-    const dtOptions = {
-        year: '2-digit',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit'
-    }
 
     class Cell {
         constructor(id, x, z) {
@@ -61,7 +54,7 @@ $(document).ready(async () => {
 
             let cell1 = $('<td>').html('')
             if (list[i] !== undefined)
-                cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
+                cell1.html(list[i].modDate.getCustomFormat())
             row.append(cell1)
 
             saveTable.append(row)
@@ -92,24 +85,24 @@ $(document).ready(async () => {
             height: 540,
             title: 'Load',
             buttons: [{
-                    id: 'bLoad',
-                    disabled: true,
-                    text: 'Load',
-                    'class': 'ui-dialog-button disabled',
-                    click: async function () {
-                        startGame(await loadMap(await mapsDB.importMap(name.val())))
-                        $(this).dialog('close')
-                        overlay.css('display', 'none')
-                    }
-                },
-                {
-                    text: 'Back',
-                    'class': 'ui-dialog-button',
-                    click: function () {
-                        $(this).dialog('close')
-                        overlay.css('display', 'none')
-                    }
+                id: 'bLoad',
+                disabled: true,
+                text: 'Load',
+                'class': 'ui-dialog-button disabled',
+                click: async function () {
+                    startGame(await loadMap(await mapsDB.importMap(name.val())))
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
                 }
+            },
+            {
+                text: 'Back',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            }
             ]
         })
     }
@@ -161,11 +154,11 @@ async function startGame(map) {
     grid.addTo(scene)
 
     var gridMatrix = grid.matrix
-    
-    for(object in grid.map){
+
+    for (object in grid.map) {
         console.log(grid.map[object].type);
-        
-        if(grid.map[object].type == "dirt"){
+
+        if (grid.map[object].type == "dirt") {
             selectedUnitPoint.x = grid.map[object].x
             selectedUnitPoint.z = grid.map[object].z
             selectedUnitPoint.height = grid.map[object].height
@@ -173,7 +166,7 @@ async function startGame(map) {
         }
     }
     console.log(selectedUnitPoint);
-    
+
 
     var rayClick = () => {
         mouseVector.x = (event.clientX / $(window).width()) * 2 - 1;

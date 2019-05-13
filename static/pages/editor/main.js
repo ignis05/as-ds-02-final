@@ -9,13 +9,6 @@ let input
 let mapsDB
 
 const cellSize = 50
-const dtOptions = {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-}
 //#endregion 
 
 /* ===================================================== *
@@ -384,7 +377,7 @@ function DisplaySave(list) {
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
+            cell1.html(list[i].modDate.getCustomFormat())
         row.append(cell1)
 
         saveTable.append(row)
@@ -471,7 +464,7 @@ function DisplayLoad(list) {
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html(new Intl.DateTimeFormat('en-GB', dtOptions).format(list[i].modDate).replace(',', ''))
+            cell1.html(list[i].modDate.getCustomFormat())
         row.append(cell1)
 
         saveTable.append(row)
