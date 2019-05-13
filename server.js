@@ -232,16 +232,10 @@ app.post("/getModels", function (req, res) {
 })
 
 app.post("/sendClickedPoint", function (req, res) {
-    let data = req.body
-    let temp_grid = grid.clone() //after finding path pathfinder modifies grid, so backup bois    
-    let path = finder.findPath(data.unit.x, data.unit.z, data.click.x, data.click.z, temp_grid)
-    console.log(path);
-
-    res.send({ msg: "sendClickedPoint-Sent", path: path })
+    res.send({ msg: "sendClickedPoint-Sent"})
 })
 
 app.post("/gameInit", function (req, res) {
-    
 })
 // #endregion ajax - Net.js requests
 
@@ -762,7 +756,7 @@ pathfindingTest.io.on('connect', socket => {
 
     // #region custom events
 
-    // get selected map
+    // load selected map
     socket.on('load_selected_map', mapName => {
         let db = new Datastore({
             filename: path.join(__dirname + `/static/database/maps.db`),
@@ -776,6 +770,23 @@ pathfindingTest.io.on('connect', socket => {
             console.log("length (added map from PF):" + loadedMaps.length);
         })
     })
+
+    socket.on('send_PF_Data', function(data, res) {
+        let grid
+        for(maps in loadedMaps){
+            if(loadedMaps[maps].session == socket.id){
+                grid = loadedMaps[maps].grid.clone()
+                break
+            }
+        }
+        console.log(grid);
+        
+        console.log(socket.id)        
+        console.log("Eto je res", data)
+        data = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
+        res(data)
+        //socket.emit('get_PF_Data', res)
+    }) 
 
     // #endregion custom events
 })

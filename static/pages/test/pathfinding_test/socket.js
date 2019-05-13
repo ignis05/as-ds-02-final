@@ -7,7 +7,21 @@ socket.loadMapOnServer = async (mapName) => {
     })
 }
 
+socket.sendPFData = async (positions) => {
+    return new Promise(resolve => {
+        socket.emit('send_PF_Data', positions, res => {
+            let data = res
+            console.log("data for PF:", data);
+            resolve(res)
+        })
+    })
+}
+
 // #region socket triggers
+// socket.on('get_PF_Data', (data) => {
+//     console.log(data);
+// })
+
 socket.on('error_token', () => { // token error
     window.alert('You are already connected from this browser. If you want do connect another client try incognito mode or other browsers')
     window.location = '/'

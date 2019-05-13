@@ -191,9 +191,12 @@ async function startGame(map) {
                     z: clickedPosition.userData.z
                 }
                 //clickedPosition.material.color.set(0xff0000)
-                Net.sendClickedPoint(finishPoint, selectedUnitPoint).then(function (result) {
+                socket.sendPFData({x: selectedUnitPoint.x, z: selectedUnitPoint.z, xn: finishPoint.x, zn: finishPoint.z}).then(function (result) {
                     Pathfinder.moveTiles(result, gridMatrix, selectedUnitPoint, testmodel)
                     console.log(selectedUnitPoint);
+                // Net.sendClickedPoint(finishPoint, selectedUnitPoint).then(function (result) {
+                //     Pathfinder.moveTiles(result, gridMatrix, selectedUnitPoint, testmodel)
+                //     console.log(selectedUnitPoint);
                 })
             }
         }
