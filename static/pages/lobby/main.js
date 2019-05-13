@@ -127,7 +127,7 @@ socket.on('readyState_change', async () => {
                 everyone = false
             }
         }
-        if (everyone)
+        if (everyone && room.clients.length != 1) // Checking if user is not alone
             $('#button-start').removeAttr('disabled')
         else
             $('#button-start').attr('disabled', true)
