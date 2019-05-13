@@ -495,7 +495,7 @@ async function UpdateBottomPanel() {
                 everyone = false
             }
         }
-        if (everyone)
+        if (everyone && room.clients.length != 1 && room.map != null)
             $('#button-start').removeAttr('disabled')
         else
             $('#button-start').attr('disabled', true)
