@@ -5,7 +5,7 @@ const MASTER_BlockTypes = {
             fontColor: '#000000',
         },
         game: {
-            color: 0x2F7F2F,
+            color: '#2F7F2F',
             walkable: true,
         }
     },
@@ -15,7 +15,7 @@ const MASTER_BlockTypes = {
             fontColor: '#000000',
         },
         game: {
-            color: 0x7F7F7F,
+            color: '#7F7F7F',
             walkable: false,
         }
     },
