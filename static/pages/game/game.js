@@ -18,8 +18,8 @@ class Game {
             10000000 // maxymalna renderowana odległość od kamery 
         )
         this.camera = camera
-        camera.position.set(500, 500, 500)
-        camera.lookAt(scene.position)
+        /* camera.position.set(500, 500, 500)
+        camera.lookAt(scene.position) */
 
         $(window).on("resize", () => {
             camera.aspect = $(window).width() / $(window).height()

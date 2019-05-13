@@ -427,7 +427,7 @@ async function UpdateMaplist() {
 
         if (room.admin.id != socket.id) continue
         row.click(() => {
-            if (cellName.html() != '' && socket.roomMembers.length < parseInt(cellPlayers.html())) {
+            if (cellName.html() != '' && socket.roomMembers.length <= parseInt(cellPlayers.html())) {
                 socket.emit('select_map', row.attr('mapName'))
             }
 

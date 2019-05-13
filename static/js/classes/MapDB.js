@@ -20,7 +20,7 @@ class MapDB extends Database {
                     mapName: entry.mapName,
                     modDate: new Date(entry.modDate),
                     mapSize: entry.mapData.size, // Map size needed for Lobby MapList
-                    playerCount: 4 // Temp value
+                    playerCount: 8 // Temp value
                 }
             })
             resolve(mapNames)
