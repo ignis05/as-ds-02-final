@@ -14,9 +14,12 @@ $(document).ready(async () => {
     mapData = (await database.importMap(mapName)).mapData
 
     game = new Game('#game') // create game display in '#game' div
-    game.addAxexHelper(500)
-    game.enableOrbitContols()
-    game.addAmbientLight(1)
+    /* game.addAxexHelper(500) */
+    /* game.enableOrbitContols() */
+    game.debug_addAmbientLight(1)
+
+    game.debug_cameraEnable(true, true)
+    game.debug_consoleEnable(true)
 
     map = new Map(mapData)
     map.generateMap(game.scene)

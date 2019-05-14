@@ -24,7 +24,7 @@
     font-family: serif;
     font-size: 3em;
     background-color: #883333CF;
-    border: var(--bdrWidth) solid #DDDDDD;
+    border: var(--bdrWidth) solid #CFCFCF;
 }
 
 .ui-dialog-content {
@@ -146,8 +146,8 @@
     width: 80%;
     height: 40px;
     line-height: 36px;
-    border: 2px outset #444444CF;
-    background-color: #444444CF;
+    border: 2px outset #3F3F3FCF;
+    background-color: #3F3F3FCF;
     text-align: center;
 }
 
@@ -158,13 +158,13 @@
 }
 
 .ui-dialog-button:active {
-    color: #FFFF88;
+    color: #FFFF3F;
 }
 
 .ui-dialog-button.disabled {
-    border: 2px outset #444444CF;
-    background-color: #444444CF;
-    color: #BBBBBB;
+    border: 2px outset #3F3F3FCF;
+    background-color: #3F3F3FCF;
+    color: #AFAFAF;
     box-shadow: none;
     font-weight: bold;
     text-shadow: none;
@@ -189,15 +189,15 @@
     font-weight: bold;
     color: #FFFFFF;
     line-height: 36px;
-    border: 2px outset #444444CF;
-    background-color: #444444CF;
+    border: 2px outset #3F3F3FCF;
+    background-color: #3F3F3FCF;
     text-align: center;
     min-width: initial;
     min-height: initial;
 }
 
 .info-elem {
-    width: 300px;
+    width: 240px;
     height: 40px;
 
     font-weight: bold;
@@ -212,7 +212,23 @@
 }
 
 .info-elem input[type='range'] {
-    width: 240px;
+    width: 180px;
+}
+
+.info-elem select {
+    width: 200px;
+    height: 40px;
+    text-align: center;
+    background-color: #3F3F3FCF;
+    color: #FFFFFF;
+    font-weight: bold;
+    border: 2px inset #3F3F3FCF;
+}
+
+.info-elem option {
+    background-color: #3F3F3F;
+    color: #FFFFFF;
+    border: none;
 }
 
 .info-nudBox {
@@ -250,7 +266,7 @@
 .saves-wrap>table tr {
     width: 100%;
     height: 30px;
-    background-color: #550000;
+    background-color: #4F0000;
     border: 2px solid #FFFFFF;
     color: #FFFFFF;
     text-align: left;
@@ -273,20 +289,20 @@
 
 .saves-row {
     padding: 2px;
-    background-color: #772222;
+    background-color: #6F1F1F;
     height: 30px;
 }
 
 .saves-row:nth-child(2n) {
-    background-color: #550000;
+    background-color: #500000;
 }
 
 .saves-row:hover, .saves-row:nth-child(2n):hover {
-    background-color: #994444;
+    background-color: #8F3F3F;
 }
 
 .saves-row.saves-active, .saves-row:nth-child(2n).saves-active {
-    background-color: #AF5A5A;
+    background-color: #9F4F4F;
 }
 
 .saves-wrap td {
@@ -316,7 +332,7 @@
     box-sizing: border-box;
     caret-color: #338833;
     background-color: #1111117F;
-    color: #DDDDDD;
+    color: #CFCFCF;
     font-weight: bolder;
     border: none;
     border-radius: 15px;
@@ -330,7 +346,7 @@
     box-sizing: border-box;
     caret-color: #338833;
     background-color: #1111117F;
-    color: #DDDDDD;
+    color: #CFCFCF;
     font-weight: bolder;
     border: none;
     border-radius: 15px;
@@ -359,9 +375,9 @@ input[type=range].info-slider::-webkit-slider-runnable-track {
     width: 100%;
     height: 40px;
     cursor: pointer;
-    background: #444444CF;
+    background: #3F3F3FCF;
     border-radius: 0px;
-    border: 2px inset #444444CF;
+    border: 2px inset #3F3F3FCF;
 }
 
 input[type=range].info-slider::-webkit-slider-thumb {
@@ -369,7 +385,7 @@ input[type=range].info-slider::-webkit-slider-thumb {
     border-radius: 0;
     height: 40px;
     width: 30px;
-    color: #DDDDDDCF;
+    color: #CFCFCFCF;
     cursor: pointer;
 }
 
@@ -379,7 +395,7 @@ input[type=range].info-slider::-webkit-slider-thumb:active {
 }
 
 input[type=range].info-slider:focus::-webkit-slider-runnable-track {
-    background: #444444CF;
+    background: #3F3F3FCF;
 }
 
 /* ^^^^^^^^^^^^^^^^^^^^^^^^^^ *
@@ -391,9 +407,9 @@ input[type=range].info-slider::-moz-range-track {
     width: 100%;
     height: 40px;
     cursor: pointer;
-    background: #444444CF;
+    background: #3F3F3FCF;
     border-radius: 0px;
-    border: 2px inset #444444CF;
+    border: 2px inset #3F3F3FCF;
 }
 
 input[type=range].info-slider::-moz-range-thumb {
@@ -401,7 +417,7 @@ input[type=range].info-slider::-moz-range-thumb {
     border-radius: 0;
     height: 40px;
     width: 30px;
-    color: #DDDDDDCF;
+    color: #CFCFCFCF;
     cursor: pointer;
 }
 
