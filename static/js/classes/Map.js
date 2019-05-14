@@ -5,7 +5,7 @@ class Map {
         this.level = mapData.level
     }
     // generates 3D display of map (and if scene is given adds it to scene)
-    generateMap(scene) {
+    renderMap(scene) {
 
         var group = new THREE.Group() // subclass of Object3D optimized for working as invisible container
 
@@ -36,7 +36,7 @@ class Map {
             group.add(cube);
         }
 
-        this.generatedMap = group
+        this.group = group
 
         if (scene) scene.add(group) // if scene given as parameter add generated content to scene
     }
