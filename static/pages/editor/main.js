@@ -377,7 +377,7 @@ function DisplaySave(list) {
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html(list[i].modDate.getCustomFormat())
+            cell1.html(list[i].modDate.getMapFormat())
         row.append(cell1)
 
         saveTable.append(row)
@@ -464,7 +464,7 @@ function DisplayLoad(list) {
 
         let cell1 = $('<td>').html('')
         if (list[i] !== undefined)
-            cell1.html(list[i].modDate.getCustomFormat())
+            cell1.html(list[i].modDate.getMapFormat())
         row.append(cell1)
 
         saveTable.append(row)

@@ -1,6 +1,6 @@
 // changes in Date prototype for easier date formatting
 
-Date.prototype.getCustomFormat = function () {
+Date.prototype.getMapFormat = function () {
     let val = new Intl.DateTimeFormat('en-GB', {
         year: '2-digit',
         month: '2-digit',
@@ -12,4 +12,4 @@ Date.prototype.getCustomFormat = function () {
     return val
 }
 
-// just load file to html and use .getCustomFormat() method
+// just load file to html and use .getMapFormat() method
