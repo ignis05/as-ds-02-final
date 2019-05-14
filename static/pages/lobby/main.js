@@ -163,14 +163,6 @@ socket.on('map_selected', mapName => {
 
 var mapsDB
 
-const dtOptions = {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-}
-
 const memberColors = [
     '#CF2F2F',
     '#CF7F2F',
