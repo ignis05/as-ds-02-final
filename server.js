@@ -526,6 +526,7 @@ lobby.io.on('connect', socket => {
             mapData: map.mapData, // whole game will be saved here
             turn: null, // who is making move now
             inProgress: false, // if session is already in progress
+            movesList: [] // list of changes to map since start of the game
         })
         console.log('-->> MAPDATA:');
         console.log(game.sessions[game.sessions.length - 1].mapData);
@@ -715,12 +716,22 @@ game.io.on('connect', socket => {
     socket.join(session.id)
     game.io.to(session.id).emit('player_connected', socket.id)
 
+    // check if reconnecting to ongoing game
+    if (session.inProgress) {
+        socket.emit('reconnecting', session.movesList) // send changes made in game since start
+
+        if (session.turn.id == socket.id) { // if it's reconnected player's turn
+            game.io.to(session.turn.id).emit('my_turn')
+        }
+    }
+
     // check if all players connected
     let readyCount = 0
     for (player of session.clients) {
         if (player.connected) readyCount++
     }
     if (readyCount == session.clients.length) {
+        session.inProgress = true
         // notify players
         game.io.to(session.id).emit('all_players_connected')
         session.turn = session.clients[0]
@@ -767,8 +778,10 @@ game.io.on('connect', socket => {
         let session = game.getSessionByClientID(socket.id)
 
         // ---
-        // function that will validate changes & save them in session.mapData
+        // function that will validate changes
         // ---
+
+        session.movesList = session.movesList.concat(data) // add moves to the end of movesList array
 
         socket.to(session.id).emit('turn_ended', data) // !!! this will NOT be sent to player who triggered event - changes on his map should be rendered live as he makes moves
 

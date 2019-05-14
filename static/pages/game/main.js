@@ -1,6 +1,7 @@
 var game
 var moves = []
 var token = Cookies.get('token')
+
 $(document).ready(async () => {
     console.log('document ready');
     var mapName = await socket.getMapName()

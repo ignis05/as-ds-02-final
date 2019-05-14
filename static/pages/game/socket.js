@@ -22,6 +22,18 @@ socket.endTurn = async data => { // end turn and send moves & stuff as single da
 }
 
 // #region socket triggers
+
+socket.on('reconnecting', moves => { // triggers when user is reconencing to ongoing game
+    // if game object doen't exist yet, check every .5 sec
+    let x = setInterval(() => {
+        if (game && game.map) {
+            game.renderMoves(moves)
+            clearInterval(x)
+        }
+    }, 500)
+
+})
+
 socket.on('turn_ended', data => {
     // someone ended their turn, local map needs to be updated with changes in 'data' object
     console.log('turn ended');
