@@ -108,6 +108,17 @@ class Game {
         this.map.renderMap(this.scene)
     }
     renderMoves(moves) {
+        // list of moves: - in case any new moves are possible to be sent, they should be added to this list
+        /*
+            {
+            action: 'spawn',
+            unitData: {
+                name: '_name_of_unit',
+                owner: _owner's_token,
+                },
+            tileID: _id_of_tile_unit_should_be_spawned_on
+            }
+        */
         console.log('renering moves:');
         console.log(moves);
         for (let move of moves) {
