@@ -28,7 +28,7 @@ $(document).ready(async () => {
 
     cells = []
     cellSettings = {
-        height: 5,
+        height: 15,
         type: 'dirt',
     }
 
@@ -36,7 +36,7 @@ $(document).ready(async () => {
     CtrlsInit()
 
     // Define additional setting sliders here:
-    new OptionSlider('height', 'Height', 0, 255, 1, 5)
+    new OptionSlider('height', 'Height', 0, 255, 1, cellSettings.height)
 })
 
 //#region Init Functions
@@ -81,7 +81,7 @@ async function CtrlsInit() {
                     e.target.className = 'active'
                 })
 
-            if (iter == 0) typeButton.addClass('active')
+            if (i == cellSettings.type) typeButton.addClass('active')
 
             $('#ctrl-types').append(typeButton)
 
@@ -158,7 +158,11 @@ function createTiles() {
     return new Promise((resolve, reject) => {
         pack.level = []
         cells = []
-        $('#map').html('').css('width', pack.size * cellSize + cellSize + 'px').css('height', pack.size * cellSize + cellSize + 'px').css('position', 'relative')
+        $('#map')
+            .html('')
+            .css('width', pack.size * cellSize + cellSize + 'px')
+            .css('height', pack.size * cellSize + cellSize + 'px')
+            .css('position', 'relative')
         for (let i = 0; i < pack.size; i++) {
             for (let j = 0; j < pack.size; j++) {
                 let cell = new Cell(i * pack.size + j, j, i)
@@ -227,8 +231,8 @@ class Cell {
         this.id = id
         this.x = x
         this.z = z
-        this.height = 5
-        this.type = 'dirt'
+        this.height = cellSettings.height
+        this.type = cellSettings.type
 
         this.create()
         this.object
