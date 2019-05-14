@@ -76,7 +76,7 @@ app.use(express.static("."))
 // #region ajax - database
 app.post("/database_create", function (req, res) { // create database in array and return index
     let data = req.body
-    console.log("/database_create: ", data)
+    // console.log("/database_create: ", data)
 
     let i = ServerDB.databases.findIndex(entry => entry.filename == data.filename)
     if (i != -1) { // already exists
@@ -98,72 +98,72 @@ app.post("/database_create", function (req, res) { // create database in array a
 
 app.post("/database_insert", function (req, res) {
     let data = req.body
-    console.log("/database_insert: ", data)
+    // console.log("/database_insert: ", data)
 
     let db = ServerDB.databases[data.id].db
 
     db.insert(data.entry, function (err, entry) {
-        console.log("entry added")
-        console.log(entry)
+        // console.log("entry added")
+        // console.log(entry)
         res.send({ msg: "OK" });
     });
 })
 
 app.post("/database_findOne", function (req, res) {
     let data = req.body
-    console.log("/database_findOne: ", data)
+    // console.log("/database_findOne: ", data)
 
     let db = ServerDB.databases[data.id].db
 
     db.findOne(data.match, function (err, entry) {
-        console.log("entry found")
-        console.log(entry)
+        // console.log("entry found")
+        // console.log(entry)
         res.send({ msg: "OK", entry: entry });
     });
 })
 
 app.post("/database_find", function (req, res) {
     let data = req.body
-    console.log("/database_find: ", data)
+    // console.log("/database_find: ", data)
 
     let db = ServerDB.databases[data.id].db
 
     db.find(data.match, function (err, entries) {
-        console.log("entries found")
-        console.log(entries)
+        // console.log("entries found")
+        // console.log(entries)
         res.send({ msg: "OK", entries: entries });
     });
 })
 
 app.post("/database_count", function (req, res) {
     let data = req.body
-    console.log("/database_count: ", data)
+    // console.log("/database_count: ", data)
 
     let db = ServerDB.databases[data.id].db
 
     db.count(data.match, function (err, count) {
-        console.log(`${count} entries found`)
+        // console.log(`${count} entries found`)
         res.send({ msg: "OK", count: count });
     });
 })
 
 app.post("/database_remove", function (req, res) {
     let data = req.body
-    console.log("/database_remove: ", data)
+    // console.log("/database_remove: ", data)
     if (!data.match) data.match = {}
     if (!data.params) data.params = {}
 
     let db = ServerDB.databases[data.id].db
 
     db.remove(data.match, data.params, function (err, count) {
-        console.log(`removed ${count} entries`)
+        // console.log(`removed ${count} entries`)
         res.send({ msg: "OK", count: count });
     });
 })
 
 app.post("/database_update", function (req, res) {
     let data = req.body
-    console.log("/database_update: ", data)
+    // console.log("/database_update: ", data)
     if (!data.params) data.params = {}
 
     let db = ServerDB.databases[data.id].db
@@ -171,7 +171,7 @@ app.post("/database_update", function (req, res) {
     db.update(data.match, {
         $set: data.entry
     }, {}, function (err, count) {
-        console.log("updated " + count)
+        // console.log("updated " + count)
         res.send({ msg: "OK", count: count });
     });
 })
@@ -188,7 +188,7 @@ function getToken(req, res) {
     // console.log(cookies);
     let token = (cookies["token"] ? cookies["token"] : Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10))
     let time = 1000 * 60 * 60 * 8 // 8h
-    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: true })
+    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: false })
     console.log("token:", token);
     return token
 }
@@ -496,7 +496,7 @@ lobby.io.on('connect', socket => {
     // #region custom events
 
     // start game
-    socket.on('start_game', () => {
+    socket.on('start_game', async () => {
         let room = lobby.getRoomByClientId(socket.id)
         if (!room) {
             console.log('ERROR: room doesn\'t exist');
@@ -509,6 +509,8 @@ lobby.io.on('connect', socket => {
             }
         }
 
+        let map = await mapDataBase.getMapByName(room.map)
+
         game.sessions.push({ // push game session to game instance of socket
             clients: room.clients.map(client => {
                 let _client = {
@@ -519,9 +521,15 @@ lobby.io.on('connect', socket => {
                 }
                 return _client
             }),
-            mapName: room.map,
-            id: Math.random().toString(36).substring(2, 10),
+            mapName: room.map, // name of map
+            id: Math.random().toString(36).substring(2, 10), // used as roomName
+            mapData: map.mapData, // whole game will be saved here
+            turn: null, // who is making move now
+            inProgress: false, // if session is already in progress
+            movesList: [] // list of changes to map since start of the game
         })
+        console.log('-->> MAPDATA:');
+        console.log(game.sessions[game.sessions.length - 1].mapData);
 
         lobby.io.to(room.name).emit('startGame')
     })
@@ -641,6 +649,19 @@ lobby.io.on('connect', socket => {
 })
 // #endregion socket.io - lobby
 
+let mapDataBase = new Datastore({
+    filename: path.join(__dirname + `/static/database/maps.db`),
+    autoload: true
+});
+
+mapDataBase.getMapByName = function (name) {
+    return new Promise(res => {
+        this.findOne({ mapName: name }, function (err, entry) {
+            res(entry)
+        });
+    })
+}
+
 // #region socket.io - game
 var game = {
     io: io.of('/game'), // separate instace for game
@@ -660,6 +681,8 @@ var game = {
 }
 game.io.on('connect', socket => {
     console.log(`${socket.id} connected`);
+
+    // #region initial
 
     var cookies = cookie.parse(socket.handshake.headers.cookie);
     var token = cookies["token"]
@@ -693,13 +716,26 @@ game.io.on('connect', socket => {
     socket.join(session.id)
     game.io.to(session.id).emit('player_connected', socket.id)
 
+    // check if reconnecting to ongoing game
+    if (session.inProgress) {
+        socket.emit('reconnecting', session.movesList) // send changes made in game since start
+
+        if (session.turn.id == socket.id) { // if it's reconnected player's turn
+            game.io.to(session.turn.id).emit('my_turn')
+        }
+    }
+
     // check if all players connected
     let readyCount = 0
     for (player of session.clients) {
         if (player.connected) readyCount++
     }
     if (readyCount == session.clients.length) {
+        session.inProgress = true
+        // notify players
         game.io.to(session.id).emit('all_players_connected')
+        session.turn = session.clients[0]
+        game.io.to(session.turn.id).emit('my_turn')
     }
 
     // built in disconnect event :
@@ -723,14 +759,45 @@ game.io.on('connect', socket => {
             game.sessions.splice(i, 1)
         }
     })
+    // #endregion initial
 
     // #region custom events
 
     // get selected map
-    socket.on('get_selected_mapName', res => {
+    socket.on('get_mapName', res => {
         let session = game.getSessionByClientID(socket.id)
         res(session.mapName)
     })
+
+    socket.on('get_mapData', res => {
+        let session = game.getSessionByClientID(socket.id)
+        res(session.mapData)
+    })
+
+    socket.on('end_turn', data => {
+        let session = game.getSessionByClientID(socket.id)
+
+        // ---
+        // function that will validate changes
+        // ---
+
+        session.movesList = session.movesList.concat(data) // add moves to the end of movesList array
+
+        socket.to(session.id).emit('turn_ended', data) // !!! this will NOT be sent to player who triggered event - changes on his map should be rendered live as he makes moves
+
+        // notify next player about their turn
+        let i = session.clients.indexOf(session.turn)
+        if (i == -1) {
+            console.error('invalid data in turn')
+            return
+        }
+        if (i == session.clients.length - 1) i = 0
+        else i++
+        session.turn = session.clients[i]
+        game.io.to(session.turn.id).emit('my_turn')
+    })
+
+
 
     // #endregion custom events
 })
