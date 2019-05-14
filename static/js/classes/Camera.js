@@ -140,7 +140,7 @@ class CameraController { // camera controller
         }
 
         document.onmousemove = e => {
-            if (e.clientX < 20) this.inputMouse.moveLeft = true
+            /* if (e.clientX < 20) this.inputMouse.moveLeft = true
             else this.inputMouse.moveLeft = false
 
             if (window.innerWidth - e.clientX < 20) this.inputMouse.moveRight = true
@@ -150,7 +150,7 @@ class CameraController { // camera controller
             else this.inputMouse.moveUp = false
 
             if (window.innerHeight - e.clientY < 20) this.inputMouse.moveDown = true
-            else this.inputMouse.moveDown = false
+            else this.inputMouse.moveDown = false */
 
             if (this.inputMouse.rot) {
                 if (this.inputMouse.lastX - e.clientX < -10) {

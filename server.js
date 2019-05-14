@@ -188,7 +188,7 @@ function getToken(req, res) {
     // console.log(cookies);
     let token = (cookies["token"] ? cookies["token"] : Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 10))
     let time = 1000 * 60 * 60 * 8 // 8h
-    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: true })
+    res.cookie("token", token, { expires: new Date(Date.now() + time), httpOnly: false })
     console.log("token:", token);
     return token
 }
@@ -765,9 +765,12 @@ game.io.on('connect', socket => {
 
     socket.on('end_turn', data => {
         let session = game.getSessionByClientID(socket.id)
-        // function that will validate changes & save them in session.mapData
 
-        game.io.to(session.id).emit('turn_ended', data)
+        // ---
+        // function that will validate changes & save them in session.mapData
+        // ---
+
+        socket.to(session.id).emit('turn_ended', data) // !!! this will NOT be sent to player who triggered event - changes on his map should be rendered live as he makes moves
 
         // notify next player about their turn
         let i = session.clients.indexOf(session.turn)

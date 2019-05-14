@@ -27,6 +27,7 @@
 
     <script src="/static/js/Token.js"></script>
     <script src="/static/js/BlockTypes.js"></script>
+    <script src="/static/js/UnitsDB.js"></script>
 
     <script src="/socket.io/socket.io.js"></script>
 
@@ -35,6 +36,7 @@
     <script src="/static/js/classes/Database.js"></script>
     <script src="/static/js/classes/MapDB.js"></script>
     <script src="/static/js/classes/Map.js"></script>
+    <script src="/static/js/classes/Unit.js"></script>
 
     <script src="/static/pages/game/socket.js"></script>
     <script src="/static/pages/game/game.js"></script>
@@ -53,8 +55,8 @@
     </div>
     <div id="overlay"></div>
     <div id="ui">
-        <button id='button-end-turn' disabled=true style='position: absolute;left:100px;top:100px;z-index:999999;'>END
-            TURN</button> <!-- placeholder -->
+        <button id='button-end-turn' disabled=true style='position: absolute;left:100px;top:100px;z-index:999999;'>END TURN</button> <!-- placeholder -->
+        <button id='button-test-addTestUnit' style='position: absolute;left:100px;top:200px;z-index:999999;'>SPAWN RANDOM UNIT</button> <!-- test - to be completely removed -->
     </div>
     <div id="game"></div>
 </body>

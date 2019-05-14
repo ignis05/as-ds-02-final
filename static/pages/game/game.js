@@ -105,7 +105,27 @@ class Game {
     // #region functions
     loadMap(mapData) {
         this.map = new Map(mapData)
-        this.map.generateMap(this.scene)
+        this.map.renderMap(this.scene)
+    }
+    renderMoves(moves) {
+        console.log('renering moves:');
+        console.log(moves);
+        for (let move of moves) {
+            if (move.action == 'spawn') {
+                this.spawnUnit(move.tileID, new Unit(move.unitData.name, move.unitData.owner))
+            }
+        }
+    }
+    spawnUnit(tileID, unit) {
+        let size = MASTER_BlockSizeParams.blockSize
+        let tile = this.map.level.find(tile => tile.id == tileID)
+        if (tile.unit) { // something is already spawned there
+            console.error(`Attempted to spawn unit ${unit} on taken tile ${tile}`);
+            return
+        }
+        tile.unit = unit
+        unit.addTo(this.scene)
+        unit.position.set(size * tile.x, parseInt(tile.height) / 2, size * tile.z)
     }
     // #endregion functions
 }

@@ -25,6 +25,7 @@ socket.endTurn = async data => { // end turn and send moves & stuff as single da
 socket.on('turn_ended', data => {
     // someone ended their turn, local map needs to be updated with changes in 'data' object
     console.log('turn ended');
+    game.renderMoves(data)
 })
 
 socket.on('my_turn', () => {
