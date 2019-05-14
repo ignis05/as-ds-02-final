@@ -23,4 +23,12 @@ $(document).ready(async () => {
 
     map = new Map(mapData)
     map.generateMap(game.scene)
+
+    // #region ui listeners
+    $('#button-end-turn').click(() => {
+        console.log('click - end turn');
+        socket.endTurn({ xd: 'xd' })
+        $("#button-end-turn").attr("disabled", true);
+    })
+    // #endregion ui listeners
 })

@@ -519,8 +519,10 @@ lobby.io.on('connect', socket => {
                 }
                 return _client
             }),
-            mapName: room.map,
-            id: Math.random().toString(36).substring(2, 10),
+            mapName: room.map, // name of map
+            id: Math.random().toString(36).substring(2, 10), // used as roomName
+            mapData: {}, // whole game will be saved here
+            turn: null, // who is making move now
         })
 
         lobby.io.to(room.name).emit('startGame')
@@ -661,6 +663,8 @@ var game = {
 game.io.on('connect', socket => {
     console.log(`${socket.id} connected`);
 
+    // #region initial
+
     var cookies = cookie.parse(socket.handshake.headers.cookie);
     var token = cookies["token"]
     console.log(`user token: ${token}`)
@@ -700,6 +704,8 @@ game.io.on('connect', socket => {
     }
     if (readyCount == session.clients.length) {
         game.io.to(session.id).emit('all_players_connected')
+        session.turn = session.clients[0]
+        game.io.to(session.turn.id).emit('my_turn')
     }
 
     // built in disconnect event :
@@ -723,6 +729,7 @@ game.io.on('connect', socket => {
             game.sessions.splice(i, 1)
         }
     })
+    // #endregion initial
 
     // #region custom events
 
@@ -731,6 +738,26 @@ game.io.on('connect', socket => {
         let session = game.getSessionByClientID(socket.id)
         res(session.mapName)
     })
+
+    socket.on('end_turn', data => {
+        let session = game.getSessionByClientID(socket.id)
+        // function that will validate changes & save them in session.mapData
+
+        game.io.to(session.id).emit('turn_ended', data)
+
+        // notify next player about their turn
+        let i = session.clients.indexOf(session.turn)
+        if (i == -1) {
+            console.error('invalid data in turn')
+            return
+        }
+        if (i == session.clients.length - 1) i = 0
+        else i++
+        session.turn = session.clients[i]
+        game.io.to(session.turn.id).emit('my_turn')
+    })
+
+
 
     // #endregion custom events
 })
