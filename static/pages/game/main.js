@@ -1,18 +1,17 @@
 var game
-var database
 var mapName
 var mapData
-var map
 $(document).ready(async () => {
     console.log('document ready');
     mapName = await socket.getMapName()
 
     console.log(`Selected map: ${mapName}`);
 
-    database = new MapDB()
-    await database.create()
-    mapData = (await database.importMap(mapName)).mapData
+    $('#game').html(`<div id='loading-info'>Loading map...<img src='https://ui-ex.com/images/transparent-background-loading.gif'></div>`)
 
+    mapData = await socket.getMapData() // load map from session instead of database
+
+    $('#game').html('')
     game = new Game('#game') // create game display in '#game' div
     /* game.addAxexHelper(500) */
     /* game.enableOrbitContols() */
@@ -21,8 +20,7 @@ $(document).ready(async () => {
     game.debug_cameraEnable(true, true)
     game.debug_consoleEnable(true)
 
-    map = new Map(mapData)
-    map.generateMap(game.scene)
+    game.loadMap(mapData)
 
     // #region ui listeners
     $('#button-end-turn').click(() => {

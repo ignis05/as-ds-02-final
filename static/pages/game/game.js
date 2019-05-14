@@ -101,4 +101,11 @@ class Game {
         $('#debug-log').scrollTop($('#debug-log')[0].scrollHeight)
     }
     // #endregion
+
+    // #region functions
+    loadMap(mapData) {
+        this.map = new Map(mapData)
+        this.map.generateMap(this.scene)
+    }
+    // #endregion functions
 }

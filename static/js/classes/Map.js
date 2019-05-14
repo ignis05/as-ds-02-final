@@ -36,7 +36,7 @@ class Map {
             group.add(cube);
         }
 
-        this.generatedMap = group
+        this.group = group
 
         if (scene) scene.add(group) // if scene given as parameter add generated content to scene
     }

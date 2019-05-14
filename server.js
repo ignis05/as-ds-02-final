@@ -753,9 +753,14 @@ game.io.on('connect', socket => {
     // #region custom events
 
     // get selected map
-    socket.on('get_selected_mapName', res => {
+    socket.on('get_mapName', res => {
         let session = game.getSessionByClientID(socket.id)
         res(session.mapName)
+    })
+
+    socket.on('get_mapData', res => {
+        let session = game.getSessionByClientID(socket.id)
+        res(session.mapData)
     })
 
     socket.on('end_turn', data => {

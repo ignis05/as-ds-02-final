@@ -3,7 +3,15 @@ var socket = io('/game')
 
 socket.getMapName = async () => {
     return new Promise(resolve => {
-        socket.emit('get_selected_mapName', res => {
+        socket.emit('get_mapName', res => {
+            resolve(res)
+        })
+    })
+}
+
+socket.getMapData = async () => { // load map directly from session
+    return new Promise(resolve => {
+        socket.emit('get_mapData', res => {
             resolve(res)
         })
     })
