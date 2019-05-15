@@ -780,12 +780,10 @@ pathfindingTest.io.on('connect', socket => {
                 grid = loadedMaps[maps].grid.clone()
                 break
             }
-        }
-        console.log(grid);
-        
-        console.log(socket.id)        
-        console.log("Eto je res", data)
+        }      
         data = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
+        console.log(data.length);
+        
         res(data)
         //socket.emit('get_PF_Data', res)
     }) 
