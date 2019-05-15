@@ -10,7 +10,7 @@
     <link rel="shortcut icon" href="/static/res/img/flavicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/static/css/reset.css">
     <!-- <link rel="stylesheet" href="/static/css/dialogs.css"> -->
-    <!-- <link rel="stylesheet" href="/static/pages/game/main.css"> -->
+    <link rel="stylesheet" href="/static/pages/game/main.css">
 
     <script src="/libs/jquery-3.3.1.js"></script>
     <!-- <script src="/libs/jquery-ui.js"></script> -->
@@ -23,14 +23,20 @@
     <!-- temp -->
     <script src="/libs/OrbitControls.js"></script>
 
+    <script src="/static/js/classes/Camera.js"></script>
+
     <script src="/static/js/Token.js"></script>
     <script src="/static/js/BlockTypes.js"></script>
+    <script src="/static/js/UnitsDB.js"></script>
+
     <script src="/socket.io/socket.io.js"></script>
+
     <script src="/static/js/classes/Cookies.js"></script>
     <script src="/static/js/classes/Net.js"></script>
     <script src="/static/js/classes/Database.js"></script>
     <script src="/static/js/classes/MapDB.js"></script>
     <script src="/static/js/classes/Map.js"></script>
+    <script src="/static/js/classes/Unit.js"></script>
 
     <script src="/static/pages/game/socket.js"></script>
     <script src="/static/pages/game/game.js"></script>
@@ -38,8 +44,21 @@
 </head>
 
 <body>
-    <div id='UI'></div>
-    <div id='game'></div>
+    <div id="debug">
+        <div id="camera-debug-triggers" style="display: none">
+            <div id="trig-cam-moveleft" class="trigger">trig-cam-moveleft</div>
+            <div id="trig-cam-moveright" class="trigger">trig-cam-moveright</div>
+            <div id="trig-cam-moveup" class="trigger">trig-cam-moveup</div>
+            <div id="trig-cam-movedown" class="trigger">trig-cam-movedown</div>
+        </div>
+        <div id="debug-log" style="display: none"></div>
+    </div>
+    <div id="overlay"></div>
+    <div id="ui">
+        <button id='button-end-turn' disabled=true style='position: absolute;left:100px;top:100px;z-index:999999;'>END TURN</button> <!-- placeholder -->
+        <button id='button-test-addTestUnit' style='position: absolute;left:100px;top:200px;z-index:999999;'>SPAWN RANDOM UNIT</button> <!-- test - to be completely removed -->
+    </div>
+    <div id="game"></div>
 </body>
 
 </html>

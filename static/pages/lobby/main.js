@@ -105,7 +105,7 @@ socket.on('user_connected', id => {
 
 // triggers when someone in room changes username (optional)
 socket.on('username_change', id => {
-    console.log(`user ${id} chnaged nickname`)
+    console.log(`user ${id} changed nickname`)
     // >here< place for additional function that will update list of room members
 })
 
@@ -127,7 +127,7 @@ socket.on('readyState_change', async () => {
                 everyone = false
             }
         }
-        if (everyone)
+        if (everyone && room.clients.length != 1 && room.map != null) // Checking if user is not alone and if a map is selected
             $('#button-start').removeAttr('disabled')
         else
             $('#button-start').attr('disabled', true)
@@ -162,14 +162,6 @@ socket.on('map_selected', mapName => {
 // #region global variables
 
 var mapsDB
-
-const dtOptions = {
-    year: '2-digit',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit'
-}
 
 const memberColors = [
     '#CF2F2F',
@@ -213,7 +205,7 @@ $(document).ready(async () => {
             if ($('#socket-chat-input').val() !== '') { // Blocking empty messages
                 let msg = {
                     author: socket.id, // id of current connection - will always be unique
-                    content: $('#socket-chat-input').val()
+                    content: $('#socket-chat-input').val().replace('<', '&lt;').replace('>', '&gt;')  // Sanitization on send, server gets sanitized content
                 }
                 socket.send(msg) // trigger event 'chat' for every user in room (including self) and pass msg obj as data
                 $('#socket-chat-input').val('') // Clear message field to prevent accidental spam
@@ -259,10 +251,10 @@ function InitClicks() {
                 window.alert('Room is not full')
                 return
             }
-            if (!room.map) { // prevent start if map is not selected
+            /* if (!room.map) { // prevent start if map is not selected
                 window.alert('Map not selected')
                 return
-            }
+            } */
 
             socket.setReadyState(true) // Host is ready when he presses this button (their ready-state wont be displayed anyways)
 
@@ -439,7 +431,7 @@ async function UpdateMaplist() {
 
         if (room.admin.id != socket.id) continue
         row.click(() => {
-            if (cellName.html() != '' && socket.roomMembers.length < parseInt(cellPlayers.html())) {
+            if (cellName.html() != '' && socket.roomMembers.length <= parseInt(cellPlayers.html())) {
                 socket.emit('select_map', row.attr('mapName'))
             }
 
@@ -495,7 +487,7 @@ async function UpdateBottomPanel() {
                 everyone = false
             }
         }
-        if (everyone)
+        if (everyone && room.clients.length != 1 && room.map != null)
             $('#button-start').removeAttr('disabled')
         else
             $('#button-start').attr('disabled', true)
@@ -550,8 +542,10 @@ async function UpdateChat(msg) { // placeholder function triggered by 'chat' eve
         let author = socket.roomMembers.find(client => client.id == msg.author)
         let uid = socket.roomMembers.indexOf(author)
 
+        let msgContent = msg.content.replace('<', '&lt;').replace('>', '&gt;') // Sanitization on recieve (in case someone bypases the send sanitizer)
+
         let chat = $('#socket-chat-display').html()
-        chat += `<div style="display: inline; color: ` + memberColors[uid] + `; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ${msg.content} <br>`
+        chat += `<div style="display: inline; color: ` + memberColors[uid] + `; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ` + msgContent + `<br>`
         $('#socket-chat-display').html(chat)
     }
 
