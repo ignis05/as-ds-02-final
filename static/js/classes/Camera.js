@@ -165,7 +165,8 @@ class CameraController { // camera controller
         }
 
         document.onwheel = e => {
-            this.distance += this.zoomSpeed * e.deltaY
+            if (e.deltaY > 0) this.distance += this.zoomSpeed * 5
+            else this.distance -= this.zoomSpeed * 5
         }
 
         document.onmousedown = e => {
