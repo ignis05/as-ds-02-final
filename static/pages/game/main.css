@@ -259,11 +259,17 @@ body {
     color: #CFCFCF;
 }
 
-.ui-build-cat.selected {
+.ui-build-cat.selected, .ui-build-cat.selected:hover {
     background-color: #3F3F3F;
     color: #DFDFDF;
     border-color: #CFCFCF;
     border-bottom: none;
+}
+
+.ui-build-cat:hover {
+    color: #CFCF2F;
+    border-color: #BFBF2F;
+    border-bottom-color: #BFBFBF;
 }
 
 #ui-build-tabs {
