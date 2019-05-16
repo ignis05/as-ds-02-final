@@ -13,6 +13,8 @@ body {
 #game {
     width: 100vw;
     height: 100vh;
+    color: #FFFFFF;
+    background-color: #000000;
 }
 
 /* #region OVERLAY */
@@ -135,10 +137,10 @@ body {
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    font-size: 40px;
+    font-size: 4em;
 }
 
-/* #region UI */
+/* #region UI Containers */
 
 #ui {
     position: absolute;
@@ -162,51 +164,157 @@ body {
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 200px;
+    height: 300px;
     display: flex;
     flex-direction: row;
     align-content: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
-#ui-bottom-panel {
-    height: 200px;
-    width: 1024px;
-    background-color: #7F7F7F;
-    color: #2F7F2F;
+#ui-top-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 300px;
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    justify-content: space-between;
+}
 
+/* #endregion */
+
+/* #region UI BOTTOM PANEL */
+
+#ui-bottom-panel {
+    height: 300px;
+    width: 1024px;
+    background-color: transparent;
+    color: #2F7F2F;
     font-size: 3em;
     text-align: center;
     line-height: 200px;
-    
     display: flex;
     flex-direction: row;
-    align-content: center;
-    justify-content: center;
-}
-
-#ui-command {
-    width: 674px;
-    height: 200px;
-    background-color: #2FCFCF;
-}
-
-#ui-placeholder {
-    width: 150px;
-    height: 200px;
-    background-color: #CF2FCF;
+    align-items: flex-end;
+    justify-content: flex-start;
 }
 
 #ui-minimap {
-    width: 200px;
-    height: 200px;
-    border: 5px outset #7F2F2F;
+    width: 300px;
+    height: 300px;
+    border: 5px outset #9F9F4F;
+    padding: 5px;
+    background-color: #8F8F3F;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 #minimap-canvas {
     width: 100%;
     height: 100%;
     background-color: transparent;
+    border: 5px inset #7F7F2F;
+    background-color: #000000;
+}
+
+#ui-main {
+    height: 200px;
+    width: 500px;
+    /* border: 2px outset #9F4F4F;
+    border-left: none;
+    border-bottom: none; */
+    /* padding: 2px;
+    padding-left: 0;
+    padding-bottom: 0; */
+    /* background-color: #8F3F3F; */
+    display: flex;
+    flex-direction: column;
+}
+
+#ui-build-cats {
+    /* border: 2px inset #7F2F2F; */
+    border-left: none;
+    border-bottom: none;
+    height: 40px;
+    width: 100%;
+    background-color: transparent;
+    font-size: initial;
+    line-height: initial;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.ui-build-cat {
+    width: 100px;
+    height: 40px;
+    line-height: 36px;
+    border: 2px outset #BFBFBF;
+    background-color: #2F2F2F;
+    border-radius: 10px 10px 0 0;
+    color: #CFCFCF;
+}
+
+.ui-build-cat.selected {
+    background-color: #3F3F3F;
+    color: #DFDFDF;
+    border-color: #CFCFCF;
+    border-bottom: none;
+}
+
+#ui-build-tabs {
+    border: 2px outset #CFCFCF;
+    border-top: none;
+    height: 160px;
+    line-height: 158px;
+    width: 100%;
+    background-color: #3F3F3F
+}
+
+#ui-units-cont {
+    width: 574px;
+    height: 200px;
+    background-color: #2FCFCF;
+}
+
+/* #endregion */
+
+/* UI TOP LEFT PANNEL */
+
+#ui-top-left-panel {
+    height: 300px;
+    width: 512px;
+    background-color: #7F2F2F7F;
+    color: #2F7F2F;
+    font-size: 3em;
+    text-align: center;
+    line-height: 200px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+/* #endregion */
+
+/* UI TOP RIGHT PANNEL */
+
+#ui-top-right-panel {
+    height: 300px;
+    width: 512px;
+    background-color: #2F2F7F7F;
+    color: #2F7F2F;
+    font-size: 3em;
+    text-align: center;
+    line-height: 200px;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
 }
 
 /* #endregion */

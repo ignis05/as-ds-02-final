@@ -20,7 +20,7 @@ class Game {
 
         renderer.setPixelRatio(resScale) // Resolution scale :)
 
-        renderer.setClearColor(0xffffff)
+        renderer.setClearColor(0x00CFFF)
         renderer.setSize($(window).width(), $(window).height())
         $(domElement).append(renderer.domElement)
 

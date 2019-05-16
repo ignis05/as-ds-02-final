@@ -1,6 +1,9 @@
 class UI {
     constructor() {
-        // Nothing here for now
+        $('#ui').removeAttr('style')
+
+        this.buildCategories = Array.from($('.ui-build-cat'))
+        this.buildTabs = Array.from($('.ui-build-tab'))
     }
 
     MinimapCalc(levelPack) {

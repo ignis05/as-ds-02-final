@@ -4,12 +4,15 @@ var moves = []
 var token = Cookies.get('token')
 
 $(document).ready(async () => {
-    console.log('document ready');
+    console.log('document ready')
+
+    $('#game').html(`<div id='loading-info'>Loading session data...</div>`)
+
     var mapName = await socket.getMapName()
 
-    console.log(`Selected map: ${mapName}`);
+    console.log(`Selected map: ${mapName}`)
 
-    $('#game').html(`<div id='loading-info'>Loading map...<img src='https://ui-ex.com/images/transparent-background-loading.gif'></div>`)
+    $('#game').html(`<div id='loading-info'>Loading map: ${mapName}</div>`)
 
     var mapData = await socket.getMapData() // load map from session instead of database
 
@@ -22,17 +25,17 @@ $(document).ready(async () => {
     /* game.enableOrbitContols() */
     game.debug_addAmbientLight(1)
 
-    game.debug_cameraEnable(true, true)
-    game.debug_consoleEnable(true)
+    game.debug_cameraEnable(false, false)
+    game.debug_consoleEnable(false)
 
     game.loadMap(mapData)
 
     // #region ui listeners
     $('#button-end-turn').click(() => {
-        console.log('click - end turn');
+        console.log('click - end turn')
         socket.endTurn(moves) // send array of made moves
         moves = [] // reset array of moves
-        $("#button-end-turn").attr("disabled", true);
+        $("#button-end-turn").attr("disabled", true)
     })
 
     $('#button-test-addTestUnit').click(() => { // button to test moves - spawns testunit on radom tile
@@ -42,7 +45,7 @@ $(document).ready(async () => {
             tile = game.map.level[Math.floor(Math.random() * game.map.level.length)]
         } while (tile.unit)
 
-        console.log(`adding random unit to tile ${tile.id}`);
+        console.log(`adding random unit to tile ${tile.id}`)
 
         // add spawning unit to moves array - to be sent with turn end
         moves.push({

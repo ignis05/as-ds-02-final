@@ -55,22 +55,45 @@
         <div id="debug-log" style="display: none"></div>
     </div>
     <div id="overlay"></div>
-    <div id="ui">
-        <button id="button-end-turn" disabled="true" style="position: absolute;left:100px;top:100px;z-index:999999;">END TURN</button> <!-- placeholder -->
-        <button id="button-test-addTestUnit" style="position: absolute;left:100px;top:200px;z-index:999999;">SPAWN RANDOM UNIT</button> <!-- test - to be completely removed -->
+    <div id="ui" style="display: none;">
+        <button id="button-end-turn" disabled="true" style="position: absolute;left:100px;top:100px;z-index:999999;">END
+            TURN</button> <!-- placeholder -->
+        <button id="button-test-addTestUnit" style="position: absolute;left:100px;top:200px;z-index:999999;">SPAWN
+            RANDOM UNIT</button> <!-- test - to be completely removed -->
+        <div id="ui-top-container">
+            <div id="ui-top-right-panel">
+            </div>
+            <div id="ui-top-left-panel">
+            </div>
+        </div>
+
         <div id="ui-bottom-container">
             <div id="ui-bottom-panel">
-                <div id="ui-command">
-                    -- PLACEHOLDER --
-                    <div id="ui-buildmenu">
-                        <div id="ui-buildmenu-tabs"></div>
-                    </div>
-                </div>
-                <div id="ui-placeholder"></div>
                 <div id="ui-minimap">
                     <canvas id="minimap-canvas"></canvas>
                 </div>
-            </div> <!-- I'll add UI here, later -->
+                <div id="ui-main">
+                    <div id="ui-build-cont">
+                        <div id="ui-build-cats">
+                            <div id="ui-build-cat0" class="ui-build-cat selected">EMPTY<!-- Industry --></div>
+                            <div id="ui-build-cat1" class="ui-build-cat">LOCKED<!-- Food --></div>
+                            <div id="ui-build-cat2" class="ui-build-cat">LOCKED<!-- Civilian --></div>
+                            <div id="ui-build-cat3" class="ui-build-cat">LOCKED<!-- Military --></div>
+                            <div id="ui-build-cat4" class="ui-build-cat">LOCKED<!-- Castle --></div>
+                        </div>
+                        <div id="ui-build-tabs">
+                            <div id="ui-build-tab0" class="ui-build-tab"><!-- ui-build-tab0 --></div>
+                            <div id="ui-build-tab1" class="ui-build-tab" style="display: none">ui-build-tab1</div>
+                            <div id="ui-build-tab2" class="ui-build-tab" style="display: none">ui-build-tab2</div>
+                            <div id="ui-build-tab3" class="ui-build-tab" style="display: none">ui-build-tab3</div>
+                            <div id="ui-build-tab4" class="ui-build-tab" style="display: none">ui-build-tab4</div>
+                        </div>
+                    </div>
+                    <div id="ui-units-cont" style="display: none;">
+                        #ui-units-cont
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div id="game"></div>
