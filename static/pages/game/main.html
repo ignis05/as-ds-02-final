@@ -39,6 +39,7 @@
     <script src="/static/js/classes/Unit.js"></script>
 
     <script src="/static/pages/game/socket.js"></script>
+    <script src="/static/pages/game/ui.js"></script>
     <script src="/static/pages/game/game.js"></script>
     <script src="/static/pages/game/main.js"></script>
 </head>
@@ -55,8 +56,22 @@
     </div>
     <div id="overlay"></div>
     <div id="ui">
-        <button id='button-end-turn' disabled=true style='position: absolute;left:100px;top:100px;z-index:999999;'>END TURN</button> <!-- placeholder -->
-        <button id='button-test-addTestUnit' style='position: absolute;left:100px;top:200px;z-index:999999;'>SPAWN RANDOM UNIT</button> <!-- test - to be completely removed -->
+        <button id="button-end-turn" disabled="true" style="position: absolute;left:100px;top:100px;z-index:999999;">END TURN</button> <!-- placeholder -->
+        <button id="button-test-addTestUnit" style="position: absolute;left:100px;top:200px;z-index:999999;">SPAWN RANDOM UNIT</button> <!-- test - to be completely removed -->
+        <div id="ui-bottom-container">
+            <div id="ui-bottom-panel">
+                <div id="ui-command">
+                    -- PLACEHOLDER --
+                    <div id="ui-buildmenu">
+                        <div id="ui-buildmenu-tabs"></div>
+                    </div>
+                </div>
+                <div id="ui-placeholder"></div>
+                <div id="ui-minimap">
+                    <canvas id="minimap-canvas"></canvas>
+                </div>
+            </div> <!-- I'll add UI here, later -->
+        </div>
     </div>
     <div id="game"></div>
 </body>

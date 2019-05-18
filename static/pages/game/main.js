@@ -1,4 +1,5 @@
 var game
+var ui
 var moves = []
 var token = Cookies.get('token')
 
@@ -11,6 +12,9 @@ $(document).ready(async () => {
     $('#game').html(`<div id='loading-info'>Loading map...<img src='https://ui-ex.com/images/transparent-background-loading.gif'></div>`)
 
     var mapData = await socket.getMapData() // load map from session instead of database
+
+    ui = new UI()
+    ui.MinimapCalc(mapData) // initial minimap calculation
 
     $('#game').html('')
     game = new Game('#game') // create game display in '#game' div

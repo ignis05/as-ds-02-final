@@ -137,3 +137,76 @@ body {
     flex-direction: column;
     font-size: 40px;
 }
+
+/* #region UI */
+
+#ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+#ui * {
+    pointer-events: all;
+}
+
+#ui-bottom-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 200px;
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+}
+
+#ui-bottom-panel {
+    height: 200px;
+    width: 1024px;
+    background-color: #7F7F7F;
+    color: #2F7F2F;
+
+    font-size: 3em;
+    text-align: center;
+    line-height: 200px;
+    
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+}
+
+#ui-command {
+    width: 674px;
+    height: 200px;
+    background-color: #2FCFCF;
+}
+
+#ui-placeholder {
+    width: 150px;
+    height: 200px;
+    background-color: #CF2FCF;
+}
+
+#ui-minimap {
+    width: 200px;
+    height: 200px;
+    border: 5px outset #7F2F2F;
+}
+
+#minimap-canvas {
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+}
+
+/* #endregion */
