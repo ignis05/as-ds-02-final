@@ -272,13 +272,19 @@ body {
     border-bottom-color: #BFBFBF;
 }
 
+.ui-build-cat.disabled, .ui-build-cat.disabled:hover {
+    background-color: #2F2F2F;
+    color: #AFAFAF;
+    border-color: #CFCFCF;
+}
+
 #ui-build-tabs {
     border: 2px outset #CFCFCF;
     border-top: none;
     height: 160px;
     line-height: 158px;
     width: 100%;
-    background-color: #3F3F3F
+    background-color: #3F3F3F;
 }
 
 #ui-units-cont {
