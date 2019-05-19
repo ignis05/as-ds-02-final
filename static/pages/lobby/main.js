@@ -79,6 +79,7 @@ socket.on('user_disconnected', id => {
 // triggers when room admin is changed
 socket.on('admin_changed', async () => {
     UpdateMaplist() // to unlock listeners for new admin
+    UpdateBottomPanel()
 
     // update room admin if someon leaves
     let rooms = await socket.getRooms()
@@ -433,6 +434,7 @@ async function UpdateMaplist() {
         row.click(() => {
             if (cellName.html() != '' && socket.roomMembers.length <= parseInt(cellPlayers.html())) {
                 socket.emit('select_map', row.attr('mapName'))
+                UpdateBottomPanel()
             }
 
         })
