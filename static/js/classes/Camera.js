@@ -231,14 +231,26 @@ class CameraController { // camera controller
 
     debug_showAnchor(boolean) {
         this.marker.visible = boolean
-        game.debug_log('CameraController.debug_showAnchor: ' + boolean)
+        game.debug_log('CameraController.debug_showAnchor: ' + boolean, 1)
     }
 
     debug_showTriggerZones(boolean) {
-        game.debug_log('CameraController.debug_showTriggerZones: ' + boolean)
+        game.debug_log('CameraController.debug_showTriggerZones: ' + boolean, 1)
         if (boolean)
             $('#camera-debug-triggers').removeAttr('style')
         else
             $('#camera-debug-triggers').css('display', 'none')
+    }
+
+    debug_disableTriggers(boolean) {
+        game.debug_log('CameraController.debug_disableTriggers: ' + boolean, 2)
+        if (boolean) {
+            document.onmousemove = null
+            document.onwheel = null
+            document.onmousedown = null
+            document.onmouseup = null
+        } else {
+            this.initMouseTriggers()
+        }
     }
 }

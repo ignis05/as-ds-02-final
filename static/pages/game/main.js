@@ -3,32 +3,36 @@ var ui
 var moves = []
 var token = Cookies.get('token')
 
+// ============================================================= //
+//  TODO: Move debug to external file (loaded first, universal)  //
+// ============================================================= //
+
 $(document).ready(async () => {
     console.log('document ready')
 
-    $('#game').html(`<div id='loading-info'>Loading session data...</div>`)
+    $('#loading').html(`<div id='loading-info'>Loading session data...</div>`)
 
     var mapName = await socket.getMapName()
 
-    console.log(`Selected map: ${mapName}`)
-
-    $('#game').html(`<div id='loading-info'>Loading map: ${mapName}</div>`)
+    $('#loading').html(`<div id='loading-info'>Loading map: ${mapName}</div>`)
 
     var mapData = await socket.getMapData() // load map from session instead of database
 
     ui = new UI()
-    ui.MinimapCalc(mapData) // initial minimap calculation
+    ui.UpdateMinimap(mapData) // initial minimap calculation
 
-    $('#game').html('')
+
     game = new Game('#game') // create game display in '#game' div
-    /* game.addAxexHelper(500) */
-    /* game.enableOrbitContols() */
-    game.debug_addAmbientLight(1)
-
-    game.debug_cameraEnable(false, false)
-    game.debug_consoleEnable(false)
 
     game.loadMap(mapData)
+
+    $('#loading').html('').css('display', 'none')
+
+    game.debug_addAmbientLight(1)
+    game.debug_cameraEnable(false, false, true)
+    game.debug_consoleEnable(true)
+    ui.debug_uiDisable(false)
+
 
     // #region ui listeners
     $('#button-end-turn').click(() => {

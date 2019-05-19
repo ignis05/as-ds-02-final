@@ -14,7 +14,27 @@ body {
     width: 100vw;
     height: 100vh;
     color: #FFFFFF;
+}
+
+#loading {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    color: #FFFFFF;
     background-color: #000000;
+    pointer-events: all;
+}
+
+#loading-info {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 4em;
 }
 
 /* #region OVERLAY */
@@ -126,19 +146,27 @@ body {
     max-height: 330px;
     overflow: hidden auto;
     background-color: #0000007F;
+    font-family: monospace;
+    padding: 5px;
+}
+
+#debug-log p {
+    color: #DFDF7F;
+}
+
+#debug-fps {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    width: 610px;
+    max-width: 610px;
+    height: 330px;
+    max-height: 330px;
+    overflow: hidden auto;
+    background-color: #0000007F;
 }
 
 /* #endregion */
-
-#loading-info {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    font-size: 4em;
-}
 
 /* #region UI Containers */
 
@@ -163,12 +191,13 @@ body {
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%;
-    height: 300px;
+    width: 800px;
+    height: 330px;
     display: flex;
     flex-direction: row;
-    align-content: center;
+    align-items: flex-end;
     justify-content: flex-start;
+    /* background-color: #0000007F; */
 }
 
 #ui-top-container {
@@ -199,6 +228,25 @@ body {
     flex-direction: row;
     align-items: flex-end;
     justify-content: flex-start;
+}
+
+#ui-chat-open {
+    position: absolute;
+    text-align: center;
+    top: 0;
+    left: 0;
+    margin-left: 10px;
+    width: 50px;
+    height: 20px;
+    line-height: 20px;
+    background-color: #2F2F2F4F;
+    color: #DFDFDF4F;
+    transition: color 0.1s linear, background-color 0.1s linear;
+}
+
+#ui-chat-open:hover {
+    background-color: #2F2F2FDF;
+    color: #DFDFDFDF;
 }
 
 #ui-minimap {
@@ -295,7 +343,7 @@ body {
 
 /* #endregion */
 
-/* UI TOP LEFT PANNEL */
+/* #region UI TOP LEFT PANNEL */
 
 #ui-top-left-panel {
     height: 300px;
@@ -313,7 +361,7 @@ body {
 
 /* #endregion */
 
-/* UI TOP RIGHT PANNEL */
+/* #region UI TOP RIGHT PANNEL */
 
 #ui-top-right-panel {
     height: 300px;

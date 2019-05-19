@@ -53,7 +53,9 @@
             <div id="trig-cam-movedown" class="trigger">trig-cam-movedown</div>
         </div>
         <div id="debug-log" style="display: none"></div>
+        <div id="debug-fps" style="display: none"></div>
     </div>
+    <div id="loading"></div>
     <div id="overlay"></div>
     <div id="ui" style="display: none;">
         <button id="button-end-turn" disabled="true" style="position: absolute;left:100px;top:100px;z-index:999999;">END
@@ -62,13 +64,17 @@
             RANDOM UNIT</button> <!-- test - to be completely removed -->
         <div id="ui-top-container">
             <div id="ui-top-left-panel">
-                
+
             </div>
             <div id="ui-top-right-panel">
+
             </div>
         </div>
 
         <div id="ui-bottom-container">
+            <div id="ui-chat-open">
+                CHAT
+            </div>
             <div id="ui-bottom-panel">
                 <div id="ui-minimap">
                     <canvas id="minimap-canvas"></canvas>

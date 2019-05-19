@@ -12,8 +12,8 @@ class Game {
 
         let aaOn = Cookies.get('settings-aaOn') === 'true'
         let resScale = Cookies.get('settings-resScale')
-        this.debug_log('Renderer.antialias: ' + aaOn)
-        this.debug_log('Renderer.resScale: ' + resScale)
+        this.debug_log('Renderer.antialias: ' + aaOn, 0)
+        this.debug_log('Renderer.resScale: ' + resScale, 0)
 
         var renderer = new THREE.WebGLRenderer({ antialias: aaOn })
         this.renderer = renderer
@@ -44,7 +44,7 @@ class Game {
         this.camCtrl = camCtrl
         scene.add(camCtrl.getAnchor())
 
-        this.debug_log('Renderer.init: Success')
+        this.debug_log('Renderer.init: Success', 0)
 
         function render() {
             camCtrl.update()
@@ -75,37 +75,77 @@ class Game {
     // #endregion test functions
 
     // #region DEBUG FUNCTIONS
-    debug_cameraEnable(showAnchor, showTriggerZones) {
+    debug_cameraEnable(showAnchor, showTriggerZones, disableTriggers) {
         this.camCtrl.debug_showAnchor(showAnchor)
         this.camCtrl.debug_showTriggerZones(showTriggerZones)
+        this.camCtrl.debug_disableTriggers(disableTriggers)
     }
     debug_addAmbientLight(brightness) {
         var light = new THREE.AmbientLight(0xffffff, brightness, 100000) // ambient light bc gltf textures always require light
         this.scene.add(light)
-        this.debug_log('Game.addAmbientLight: ' + brightness)
+        this.debug_log('Game.debug_addAmbientLight: ' + brightness, 1)
     }
     debug_consoleEnable(boolean) {
         if (boolean) $('#debug-log').removeAttr('style')
         else $('#debug-log').css('display', 'none')
-        this.debug_log('Game.consoleEnable: ' + true)
+        this.debug_log('Game.consoleEnable: ' + true, 1)
     }
-    debug_log(string) {
+    debug_log(string, type) {
+        if (type === null || type === undefined) {
+            console.error('Bad debug message, no type! [' + string + ']')
+            type = 3
+        }
+
         let now = Date.now()
         let msecs = now % 1000 < 100 ? now % 1000 < 10 ? '00' + now % 1000 : '0' + now % 1000 : now % 1000
+        let timestamp = '[' + new Intl.DateTimeFormat('en-GB', dtOptions).format(now) + '.' + msecs + ']'
+
+        let logcolor = ''
+        let logtype = $('<div>').css('display', 'inline')
+        if (type == 0) {
+            logtype.html('INF')
+            logcolor = '#FFFFFF'
+        } else if (type == 1) {
+            logtype.html('WRN')
+            logcolor = '#FFFF2F'
+        } else if (type == 2) {
+            logtype.html('ERR')
+            logcolor = '#FF2F2F'
+        } else {
+            logtype.html('BAD')
+            logcolor = '#2FFFFF'
+        }
+
         let msg = $('<p>')
-            .css('color', '#FFFF2F')
-            .css('padding-left', '5px')
-            .html('[' + new Intl.DateTimeFormat('en-GB', dtOptions).format(now) + '.' + msecs + ']: ' + string)
+            .html('[')
+            .append(logtype)
+            .append(']' + timestamp + ': ' + string)
+            .css('color', logcolor)
 
         $('#debug-log').append(msg)
         $('#debug-log').scrollTop($('#debug-log')[0].scrollHeight)
+    }
+    debug_drawFPS(mode) {
+
+        if (mode == 0) {
+            
+        } else if (mode == 1) {
+
+        } else if (mode == 2) {
+            
+        } else if (mode == 3) {
+
+        }
     }
     // #endregion
 
     // #region functions
     loadMap(mapData) {
-        this.map = new Map(mapData)
-        this.map.renderMap(this.scene)
+        return new Promise((resolve, reject) => {
+            this.map = new Map(mapData)
+            this.map.renderMap(this.scene)
+            resolve('End')
+        })
     }
     renderMoves(moves) {
         // list of moves: - in case any new moves are possible to be sent, they should be added to this list
