@@ -5,6 +5,11 @@ const dtOptions = {
 }
 
 // will be heavly integrated with socket.js so i suggest keeping it as local file instead of global class
+
+// ======================================================================= //
+//  Debug will be moved (mostly intact) to a global class at a later date  //
+// ======================================================================= //
+
 class Game {
     constructor(domElement) {
         var scene = new THREE.Scene()
@@ -46,6 +51,8 @@ class Game {
 
         this.debug_log('Renderer.init: Success', 0)
 
+        this.initDebugKeyListener()
+
         function render() {
             camCtrl.update()
 
@@ -75,6 +82,17 @@ class Game {
     // #endregion test functions
 
     // #region DEBUG FUNCTIONS
+    initDebugKeyListener() {
+        document.onkeydown = e => {
+            if (e.code == 'Backquote') {
+                if ($('#debug-log').css('display') == 'none')
+                    this.debug_consoleEnable(true)
+                else
+                    this.debug_consoleEnable(false)
+            }
+        }
+    }
+
     debug_cameraEnable(showAnchor, showTriggerZones, disableTriggers) {
         this.camCtrl.debug_showAnchor(showAnchor)
         this.camCtrl.debug_showTriggerZones(showTriggerZones)
@@ -128,11 +146,11 @@ class Game {
     debug_drawFPS(mode) {
 
         if (mode == 0) {
-            
+
         } else if (mode == 1) {
 
         } else if (mode == 2) {
-            
+
         } else if (mode == 3) {
 
         }
