@@ -230,13 +230,6 @@ app.post("/getModels", function (req, res) {
     })
     res.send({ msg: "OK", models: models })
 })
-
-app.post("/sendClickedPoint", function (req, res) {
-    res.send({ msg: "sendClickedPoint-Sent"})
-})
-
-app.post("/gameInit", function (req, res) {
-})
 // #endregion ajax - Net.js requests
 
 // #region socket.io - test

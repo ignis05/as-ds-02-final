@@ -85,24 +85,24 @@ $(document).ready(async () => {
             height: 540,
             title: 'Load',
             buttons: [{
-                id: 'bLoad',
-                disabled: true,
-                text: 'Load',
-                'class': 'ui-dialog-button disabled',
-                click: async function () {
-                    startGame(await loadMap(await mapsDB.importMap(name.val())))
-                    $(this).dialog('close')
-                    overlay.css('display', 'none')
+                    id: 'bLoad',
+                    disabled: true,
+                    text: 'Load',
+                    'class': 'ui-dialog-button disabled',
+                    click: async function () {
+                        startGame(await loadMap(await mapsDB.importMap(name.val())))
+                        $(this).dialog('close')
+                        overlay.css('display', 'none')
+                    }
+                },
+                {
+                    text: 'Back',
+                    'class': 'ui-dialog-button',
+                    click: function () {
+                        $(this).dialog('close')
+                        overlay.css('display', 'none')
+                    }
                 }
-            },
-            {
-                text: 'Back',
-                'class': 'ui-dialog-button',
-                click: function () {
-                    $(this).dialog('close')
-                    overlay.css('display', 'none')
-                }
-            }
             ]
         })
     }
@@ -167,7 +167,6 @@ async function startGame(map) {
     }
     console.log(selectedUnitPoint);
 
-
     var rayClick = () => {
         mouseVector.x = (event.clientX / $(window).width()) * 2 - 1;
         mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1;
@@ -177,19 +176,23 @@ async function startGame(map) {
         if (intersects.length > 0) {
             let clickedPosition = intersects[0].object
             //console.log(clickedPosition.userData);
-
             if (clickedPosition.userData.name == "floor" && clickedPosition.userData.type != "rock") {
                 finishPoint = {
                     x: clickedPosition.userData.x,
                     z: clickedPosition.userData.z
                 }
                 //clickedPosition.material.color.set(0xff0000)
-                socket.sendPFData({x: selectedUnitPoint.x, z: selectedUnitPoint.z, xn: finishPoint.x, zn: finishPoint.z}).then(function (result) {
+                socket.sendPFData({
+                    x: selectedUnitPoint.x,
+                    z: selectedUnitPoint.z,
+                    xn: finishPoint.x,
+                    zn: finishPoint.z
+                }).then(function (result) {
                     Pathfinder.moveTiles(result, gridMatrix, selectedUnitPoint, testmodel)
                     console.log(selectedUnitPoint);
-                // Net.sendClickedPoint(finishPoint, selectedUnitPoint).then(function (result) {
-                //     Pathfinder.moveTiles(result, gridMatrix, selectedUnitPoint, testmodel)
-                //     console.log(selectedUnitPoint);
+                    // Net.sendClickedPoint(finishPoint, selectedUnitPoint).then(function (result) {
+                    //     Pathfinder.moveTiles(result, gridMatrix, selectedUnitPoint, testmodel)
+                    //     console.log(selectedUnitPoint);
                 })
             }
         }
@@ -205,7 +208,6 @@ async function startGame(map) {
 
     var testmodel = null;
 
-    //      !!! model select
     var currentModel = null
     let models = await Net.getModels()
     console.log(models);
@@ -233,7 +235,7 @@ async function startGame(map) {
                 e.target.style.color = "blue"
                 currentModel = e.target.innerText
 
-                if (testmodel) scene.remove(testmodel.mesh)
+                //if (testmodel) scene.remove(testmodel.mesh)
                 // adding model
                 testmodel = new Model(`/static/res/models/${model.path}`, model.name)
                 await testmodel.load()
@@ -246,12 +248,16 @@ async function startGame(map) {
                 // removing model
                 $("#animationDisplayButtonsContainer").remove()
                 if (testmodel) scene.remove(testmodel.mesh)
+                let index = unitsTab.indexOf(testmodel.mesh)
+                unitsTab.splice(index, 1)
+                console.log(unitsTab);
+
                 testmodel = null
             }
         })
         $(container).append(button)
+        $("#root").on("click", rayClick)
     })
-    $("#root").on("click", rayClick)
 
     function render() {
 
