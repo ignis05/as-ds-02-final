@@ -176,7 +176,7 @@ async function startGame(map) {
         if (intersects.length > 0) {
             let clickedPosition = intersects[0].object
             //console.log(clickedPosition.userData);
-            if (clickedPosition.userData.name == "floor" && clickedPosition.userData.type != "rock") {
+            if (clickedPosition.userData.name == "floor" && (clickedPosition.userData.type != "rock" || clickedPosition.userData.type != "sea" || clickedPosition.userData.type != "river")) {
                 finishPoint = {
                     x: clickedPosition.userData.x,
                     z: clickedPosition.userData.z

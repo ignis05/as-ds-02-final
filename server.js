@@ -38,12 +38,40 @@ function createMatrix(dbfile) {
             matrix.push([])
         }
         switch (map[cell].type) {
-            case "dirt":
+            case "road":
                 matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
                 break
 
+            case "land":
+                matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
+                break
+
+            case "dirt":
+                matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
+                break
+        
             case "rock":
                 matrix[matrix.length - 1].push([1, parseInt(map[cell].height)])
+                break
+
+            case "river":
+                matrix[matrix.length - 1].push([1, parseInt(map[cell].height)])
+                break
+                
+            case "ford":
+                matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
+                break
+
+            case "sea":
+                matrix[matrix.length - 1].push([1, parseInt(map[cell].height)])
+                break
+
+            case "marsh":
+                matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
+                break
+                
+            case "oil":
+                matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
                 break
         }
 

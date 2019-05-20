@@ -10,28 +10,101 @@ class Grid {
     }
     init() {
         for (var cell in this.map) {
-            let floor = new THREE.BoxGeometry(this.cellSize, this.cellSize, this.map[cell].height * 10 );
+            let floor = new THREE.BoxGeometry(this.cellSize, this.cellSize, this.map[cell].height * 10);
             let singleCell
             switch (this.map[cell].type) {
-                case "dirt":
-                    var materialDirt = new THREE.MeshBasicMaterial({
+                case "road":
+                    var material = new THREE.MeshBasicMaterial({
                         side: THREE.DoubleSide,
-                        color: "#22ff22",
+                        color: "#7F2F00",
                         wireframe: this.wireframe
                     })
-                    singleCell = new THREE.Mesh(floor, materialDirt)
+                    singleCell = new THREE.Mesh(floor, material)
+                    singleCell.userData.type = "road"
+                    break
+
+                case "land":
+                    var material = new THREE.MeshPhongMaterial({
+                        side: THREE.DoubleSide,
+                        color: "#2F7F2F",
+                        //wireframe: this.wireframe
+                    })
+                    singleCell = new THREE.Mesh(floor, material)
+                    singleCell.userData.type = "land"
+                    break
+
+                case "dirt":
+                    var material = new THREE.MeshBasicMaterial({
+                        side: THREE.DoubleSide,
+                        color: "#CFCF2F",
+                        wireframe: this.wireframe
+                    })
+                    singleCell = new THREE.Mesh(floor, material)
                     singleCell.userData.type = "dirt"
                     break
 
                 case "rock":
-                    var materialRock = new THREE.MeshPhongMaterial({
+                    var material = new THREE.MeshPhongMaterial({
                         side: THREE.DoubleSide,
-                        color: "#666666",
+                        color: "#7F7F7F",
                         //wireframe: this.wireframe
                     })
-                    singleCell = new THREE.Mesh(floor, materialRock)
+                    singleCell = new THREE.Mesh(floor, material)
                     singleCell.userData.type = "rock"
                     break
+
+                case "river":
+                    var material = new THREE.MeshBasicMaterial({
+                        side: THREE.DoubleSide,
+                        color: "#2F7FCF",
+                        wireframe: this.wireframe
+                    })
+                    singleCell = new THREE.Mesh(floor, material)
+                    singleCell.userData.type = "river"
+                    break
+
+                case "ford":
+                    var material = new THREE.MeshPhongMaterial({
+                        side: THREE.DoubleSide,
+                        color: "#2F2FCF",
+                        //wireframe: this.wireframe
+                    })
+                    singleCell = new THREE.Mesh(floor, material)
+                    singleCell.userData.type = "ford"
+                    break
+
+                case "sea":
+                    var material = new THREE.MeshBasicMaterial({
+                        side: THREE.DoubleSide,
+                        color: "#2FCFCF",
+                        wireframe: this.wireframe
+                    })
+                    singleCell = new THREE.Mesh(floor, material)
+                    singleCell.userData.type = "sea"
+                    break
+
+                case "marsh":
+                    var material = new THREE.MeshPhongMaterial({
+                        side: THREE.DoubleSide,
+                        color: "#2F007F",
+                        //wireframe: this.wireframe
+                    })
+                    singleCell = new THREE.Mesh(floor, material)
+                    singleCell.userData.type = "marsh"
+                    break
+
+                case "oil":
+                    var material = new THREE.MeshBasicMaterial({
+                        side: THREE.DoubleSide,
+                        color: "#500050",
+                        wireframe: this.wireframe
+                    })
+                    singleCell = new THREE.Mesh(floor, material)
+                    singleCell.userData.type = "oil"
+                    break
+
+
+
             }
 
             if (cell % this.size == 0) {
