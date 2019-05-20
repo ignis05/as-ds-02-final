@@ -47,7 +47,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden auto;
+    overflow: hidden;
     border-left: 2px outset #333333CF;
     border-bottom: 2px outset #333333CF;
     border-right: 2px outset #333333CF;
