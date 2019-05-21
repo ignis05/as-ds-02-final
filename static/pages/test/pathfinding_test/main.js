@@ -176,7 +176,8 @@ async function startGame(map) {
         if (intersects.length > 0) {
             let clickedPosition = intersects[0].object
             //console.log(clickedPosition.userData);
-            if (clickedPosition.userData.name == "floor" && (clickedPosition.userData.type != "rock" || clickedPosition.userData.type != "sea" || clickedPosition.userData.type != "river")) {
+            if (clickedPosition.userData.name == "floor" && clickedPosition.userData.type != "rock" && clickedPosition.userData.type != "sea" && clickedPosition.userData.type != "river" && testmodel != null) {
+                $("#root").off("click", rayClick)
                 finishPoint = {
                     x: clickedPosition.userData.x,
                     z: clickedPosition.userData.z
@@ -188,7 +189,7 @@ async function startGame(map) {
                     xn: finishPoint.x,
                     zn: finishPoint.z
                 }).then(function (result) {
-                    Pathfinder.moveTiles(result, gridMatrix, selectedUnitPoint, testmodel)
+                    Pathfinder.moveTiles(result, gridMatrix, selectedUnitPoint, testmodel, rayClick)
                     console.log(selectedUnitPoint);
                     // Net.sendClickedPoint(finishPoint, selectedUnitPoint).then(function (result) {
                     //     Pathfinder.moveTiles(result, gridMatrix, selectedUnitPoint, testmodel)

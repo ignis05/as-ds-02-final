@@ -24,7 +24,7 @@ class Pathfinder {
         return matrix
     }
 
-    static moveTiles(result, matrix, unitPosition, unit) {
+    static moveTiles(result, matrix, unitPosition, unit, fn) {
         if (result.length > 1) {
             var movePath = result
             //movePath.shift()
@@ -37,6 +37,7 @@ class Pathfinder {
                 matrix[unitPosition.z][unitPosition.x].material.color.set(0xff0000)
                 move++
                 if (move > movePath.length - 1) {
+                    $("#root").on("click", fn)
                     window.clearInterval(moveInterval)
                     setTimeout(() => {
                         for (let move in movePath) {
