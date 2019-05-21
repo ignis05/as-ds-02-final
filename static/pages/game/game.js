@@ -23,7 +23,7 @@ class Game {
         var renderer = new THREE.WebGLRenderer({ antialias: aaOn })
         this.renderer = renderer
 
-        renderer.setPixelRatio(resScale) // Resolution scale :)
+        renderer.setPixelRatio(resScale) // Resolution scale
 
         renderer.setClearColor(0x00CFFF)
         renderer.setSize($(window).width(), $(window).height())
@@ -106,7 +106,8 @@ class Game {
     debug_consoleEnable(boolean) {
         if (boolean) $('#debug-log').removeAttr('style')
         else $('#debug-log').css('display', 'none')
-        this.debug_log('Game.consoleEnable: ' + true, 1)
+        
+        //this.debug_log('Game.consoleEnable: ' + boolean, 1)
     }
     debug_log(string, type) {
         if (type === null || type === undefined) {

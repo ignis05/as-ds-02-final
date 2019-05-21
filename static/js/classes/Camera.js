@@ -9,6 +9,11 @@ class CameraController { // camera controller
 
         this.camera = cameraObject
 
+        this.camMouseMove
+        this.camMouseZoom
+        this.camMouseRotateStart
+        this.camMouseRotateStop
+
         this.initInput()
         this.initDebugMarker()
         this.initMouseTriggers()
@@ -139,51 +144,54 @@ class CameraController { // camera controller
             moveDown: false,
         }
 
-        document.onmousemove = e => {
-            if (e.clientX < 20) this.inputMouse.moveLeft = true
-            else this.inputMouse.moveLeft = false
+        let camClass = this // No better idea rn, gotta fix it
 
-            if (window.innerWidth - e.clientX < 20) this.inputMouse.moveRight = true
-            else this.inputMouse.moveRight = false
+        document.addEventListener('mousemove', this.camMouseMove = function (e) {
+            if (e.clientX < 20) camClass.inputMouse.moveLeft = true
+            else camClass.inputMouse.moveLeft = false
 
-            if (e.clientY < 20) this.inputMouse.moveUp = true
-            else this.inputMouse.moveUp = false
+            if (window.innerWidth - e.clientX < 20) camClass.inputMouse.moveRight = true
+            else camClass.inputMouse.moveRight = false
 
-            if (window.innerHeight - e.clientY < 20) this.inputMouse.moveDown = true
-            else this.inputMouse.moveDown = false
+            if (e.clientY < 20) camClass.inputMouse.moveUp = true
+            else camClass.inputMouse.moveUp = false
 
-            if (this.inputMouse.rot) {
-                if (this.inputMouse.lastX - e.clientX < -10) {
-                    this.inputMouse.rotLeft = false
-                    this.inputMouse.rotRight = true
+            if (window.innerHeight - e.clientY < 20) camClass.inputMouse.moveDown = true
+            else camClass.inputMouse.moveDown = false
+
+            if (camClass.inputMouse.rot) {
+                if (camClass.inputMouse.lastX - e.clientX < -10) {
+                    camClass.inputMouse.rotLeft = false
+                    camClass.inputMouse.rotRight = true
                 }
-                if (this.inputMouse.lastX - e.clientX > 10) {
-                    this.inputMouse.rotRight = false
-                    this.inputMouse.rotLeft = true
+                if (camClass.inputMouse.lastX - e.clientX > 10) {
+                    camClass.inputMouse.rotRight = false
+                    camClass.inputMouse.rotLeft = true
                 }
             }
-        }
+        })
 
-        document.onwheel = e => {
-            if (e.deltaY > 0) this.distance += this.zoomSpeed * 5
-            else this.distance -= this.zoomSpeed * 5
-        }
+        document.addEventListener('wheel', this.camMouseZoom = e => {
+            if (e.deltaY > 0) camClass.distance += camClass.zoomSpeed * 5
+            else camClass.distance -= camClass.zoomSpeed * 5
+        })
 
-        document.onmousedown = e => {
+        document.addEventListener('mousedown', this.camMouseRotateStart = e => {
             if (e.which == 2) {
                 e.preventDefault()
-                this.inputMouse.rot = true
-                this.inputMouse.lastX = e.clientX
+                camClass.inputMouse.rot = true
+                camClass.inputMouse.lastX = e.clientX
             }
-        }
-        document.onmouseup = e => {
+        })
+
+        document.addEventListener('mouseup', this.camMouseRotateStop = e => {
             if (e.which == 2) {
                 e.preventDefault()
-                this.inputMouse.rot = false
-                this.inputMouse.rotLeft = false
-                this.inputMouse.rotRight = false
+                camClass.inputMouse.rot = false
+                camClass.inputMouse.rotLeft = false
+                camClass.inputMouse.rotRight = false
             }
-        }
+        })
     }
 
     update() {
@@ -245,10 +253,10 @@ class CameraController { // camera controller
     debug_disableTriggers(boolean) {
         game.debug_log('CameraController.debug_disableTriggers: ' + boolean, 2)
         if (boolean) {
-            document.onmousemove = null
-            document.onwheel = null
-            document.onmousedown = null
-            document.onmouseup = null
+            document.removeEventListener('mousemove', this.camMouseMove)
+            document.removeEventListener('wheel', this.camMouseZoom)
+            document.removeEventListener('mousedown', this.camMouseRotateStart)
+            document.removeEventListener('mouseup', this.camMouseRotateStop)
         } else {
             this.initMouseTriggers()
         }

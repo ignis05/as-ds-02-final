@@ -30,7 +30,6 @@ $(document).ready(async () => {
 
     game.debug_addAmbientLight(1)
     game.debug_cameraEnable(false, false, true)
-    /* game.debug_consoleEnable(true) */
     ui.debug_uiDisable(false)
 
 
