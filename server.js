@@ -532,21 +532,8 @@ lobby.io.on('connect', socket => {
         })
         console.log('-->> MAPDATA:');
         console.log(game.sessions[game.sessions.length - 1].mapData);
-
-        let db = new Datastore({
-            filename: path.join(__dirname + `/static/database/maps.db`),
-            autoload: true
-        });
-
-        db.findOne({
-            mapName: room.map
-        }, function (err, doc) {
-            loadedMaps.push({ grid: new PF.Grid(createMatrix(doc.mapData)), session: sessionId})
-            console.log("length:" + loadedMaps.length);
-        })
-        //console.log(loadedMaps[loadedMaps.length-1]);
         
-        
+        loadedMaps.push({ grid: new PF.Grid(createMatrix(map.mapData)), session: sessionId})
         lobby.io.to(room.name).emit('startGame')
     })
 
