@@ -83,14 +83,14 @@ class Game {
 
     // #region DEBUG FUNCTIONS
     initDebugKeyListener() {
-        document.onkeydown = e => {
+        document.addEventListener('keydown', e => {
             if (e.code == 'Backquote') {
                 if ($('#debug-log').css('display') == 'none')
                     this.debug_consoleEnable(true)
                 else
                     this.debug_consoleEnable(false)
             }
-        }
+        })
     }
 
     debug_cameraEnable(showAnchor, showTriggerZones, disableTriggers) {

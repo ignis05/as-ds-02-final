@@ -45,7 +45,7 @@ class CameraController { // camera controller
         this.zoomSpeed = 25
 
         // #region Input Listeners
-        document.onkeydown = e => {
+        document.addEventListener('keydown', e => {
             let keys = this.inputKeys
             let input = this.input
             switch (e.code) {
@@ -76,9 +76,9 @@ class CameraController { // camera controller
                     input.moveDown = true
                     break
             }
-        }
+        })
 
-        document.onkeyup = e => {
+        document.addEventListener('keyup', e => {
             let keys = this.inputKeys
             let input = this.input
             switch (e.code) {
@@ -109,7 +109,7 @@ class CameraController { // camera controller
                     input.moveDown = false
                     break
             }
-        }
+        })
         // #endregion
     }
 
@@ -186,7 +186,7 @@ class CameraController { // camera controller
         }
     }
 
-    update() {        
+    update() {
         if (this.input.rotLeft || (this.inputMouse.rotLeft && this.inputMouse.rot)) this.angle -= 0.05
         if (this.input.rotRight || (this.inputMouse.rotRight && this.inputMouse.rot)) this.angle += 0.05
 
