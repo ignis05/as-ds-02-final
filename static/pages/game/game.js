@@ -168,6 +168,9 @@ class Game {
                     let model = new Model(MASTER_Units[name].modelURL, name)
                     await model.load()
 
+                    if (model.gltf) { // for gltf
+                        this.models[name] = model.gltf
+                    }
                     this.models[name] = model.mesh
                 }
             }

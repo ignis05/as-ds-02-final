@@ -13,7 +13,13 @@ class Model {
             console.log('creating from data');
             console.log(path_or_data);
 
-            this.mesh = path_or_data.clone()
+            if (path_or_data.scene) { // for gltf
+                this.gltf = path_or_data.clone()
+                this.mesh = this.gltf.scene
+            }
+            else {
+                this.mesh = path_or_data.clone()
+            }
             this.animations = this.mesh.animations
             this.mixer = new THREE.AnimationMixer(this.mesh);
         }
