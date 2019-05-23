@@ -168,10 +168,7 @@ class Game {
                     let model = new Model(MASTER_Units[name].modelURL, name)
                     await model.load()
 
-                    this.models[name] = {
-                        mesh: model.mesh,
-                        animations: model.animations
-                    }
+                    this.models[name] = model.mesh
                 }
             }
             resolve('End')

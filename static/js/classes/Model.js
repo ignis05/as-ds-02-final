@@ -13,8 +13,8 @@ class Model {
             console.log('creating from data');
             console.log(path_or_data);
 
-            this.mesh = path_or_data.mesh.clone()
-            this.animations = path_or_data.animations
+            this.mesh = path_or_data.clone()
+            this.animations = this.mesh.animations
             this.mixer = new THREE.AnimationMixer(this.mesh);
         }
     }
@@ -106,10 +106,10 @@ class Model {
             loader.load(this.path, gltf => {
                 // console.log(gltf);
                 this.gltf = gltf
-                this.mesh = gltf.scene
+                this.mesh = this.gltf.scene
                 this.mesh.name = this.name
 
-                this.animations = gltf.animations
+                this.animations = this.gltf.animations
                 this.mixer = new THREE.AnimationMixer(this.mesh);
                 resolve()
             },

@@ -7,8 +7,7 @@ class Unit {
 
         if (unitData.modelURL) {
             console.log(game.models[unitName]);
-            let data = game.models[unitName]
-            this.model = new Model(data, unitName) // i suggest to load all models to single array and just take them from here
+            this.model = new Model(game.models[unitName], unitName) // i suggest to load all models to single array and just take them from here
             this.container.add(this.model.mesh)
         }
         else {
