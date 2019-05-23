@@ -15,6 +15,8 @@ class Game {
         var scene = new THREE.Scene()
         this.scene = scene
 
+        this.models = {} // all models meshes will be loaded here when game is started
+
         let aaOn = Cookies.get('settings-aaOn') === 'true'
         let resScale = Cookies.get('settings-resScale')
         this.debug_log('Renderer.antialias: ' + aaOn, 0)
@@ -106,7 +108,7 @@ class Game {
     debug_consoleEnable(boolean) {
         if (boolean) $('#debug-log').removeAttr('style')
         else $('#debug-log').css('display', 'none')
-        
+
         //this.debug_log('Game.consoleEnable: ' + boolean, 1)
     }
     debug_log(string, type) {
@@ -159,9 +161,25 @@ class Game {
     // #endregion
 
     // #region functions
+    loadModels() { // load all model meshes to single array
+        return new Promise(async resolve => {
+            for (let name in MASTER_Units) {
+                if (MASTER_Units[name].modelURL != null) {
+                    let model = new Model(MASTER_Units[name].modelURL, name)
+                    await model.load()
+
+                    this.models[name] = {
+                        mesh: model.mesh,
+                        animations: model.animations
+                    }
+                }
+            }
+            resolve('End')
+        })
+    }
     loadMap(mapData) {
         return new Promise((resolve, reject) => {
-            this.map = new Map(mapData)
+            this.map = new MapDisplay(mapData)
             this.map.renderMap(this.scene)
             resolve('End')
         })

@@ -1,12 +1,22 @@
 class Model {
-    constructor(path, name) { // path to file & optional mesh name
-        this.path = path
+    constructor(path_or_data, name) { // path to file & optional mesh name
         this.name = name
         this.mesh = null
         this.animations = null
         this.mixer = null
         this.currentAnimation = null
         this.clock = new THREE.Clock();
+        if (typeof (path_or_data) === "string") {
+            this.path = path_or_data
+        }
+        else {
+            console.log('creating from data');
+            console.log(path_or_data);
+
+            this.mesh = path_or_data.mesh.clone()
+            this.animations = path_or_data.animations
+            this.mixer = new THREE.AnimationMixer(this.mesh);
+        }
     }
 
     load() { // recognizes extention and loads model, always call with `await` or `.then()`

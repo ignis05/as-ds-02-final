@@ -1,5 +1,5 @@
 // class for generating maps
-class Map {
+class MapDisplay {
     constructor(mapData) {
         this.size = mapData.size
         this.level = mapData.level
