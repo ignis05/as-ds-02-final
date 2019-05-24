@@ -9,8 +9,8 @@ const MASTER_Units = {
             range: 1
         },
     },
-    raptoid: {
-        modelURL: '/static/res/models/drone/drone.fbx',
+    spider: {
+        modelURL: '/static/res/models/spider/spider.fbx',
         stats: {
             mobility: 5,
             health: 10,

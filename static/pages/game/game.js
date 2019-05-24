@@ -161,19 +161,18 @@ class Game {
     // #endregion
 
     // #region functions
-    loadModels() { // load all model meshes to single array
+    loadModels() { // load all models to single array
         return new Promise(async resolve => {
-            for (let name in MASTER_Units) {
-                if (MASTER_Units[name].modelURL != null) {
-                    let model = new Model(MASTER_Units[name].modelURL, name)
-                    await model.load()
+            let session = await socket.getSession()
 
-                    if (model.gltf) { // for gltf
-                        this.models[name] = model.gltf
-                    }
-                    this.models[name] = model.mesh
-                }
+            // placeholder that loads single spider for each player
+            this.models['spider'] = []
+            for (let i in session.clients) {
+                let model = new Model(MASTER_Units['spider'].modelURL, 'spider')
+                await model.load()
+                this.models['spider'].push(model)
             }
+
             resolve('End')
         })
     }
@@ -204,16 +203,27 @@ class Game {
             }
         }
     }
-    spawnUnit(tileID, unit) {
+    spawnUnit(tileID, unit, addToMoves) {
         let size = MASTER_BlockSizeParams.blockSize
         let tile = this.map.level.find(tile => tile.id == tileID)
         if (tile.unit) { // something is already spawned there
-            console.error(`Attempted to spawn unit ${unit} on taken tile ${tile}`);
+            console.error(`Attempted to spawn unit ${unit.name} on taken tile ${tile}`);
             return
         }
         tile.unit = unit
         unit.addTo(this.scene)
         unit.position.set(size * tile.x, parseInt(tile.height) / 2, size * tile.z)
+
+        if (addToMoves) { // add spawning unit to moves array - to be sent with turn end
+            moves.push({
+                action: 'spawn',
+                unitData: {
+                    name: unit.name,
+                    owner: token,
+                },
+                tileID: tile.id
+            })
+        }
     }
     // #endregion functions
 }

@@ -6,22 +6,24 @@ class Unit {
         this.container = new THREE.Object3D()
 
         if (unitData.modelURL) {
-            console.log(game.models[unitName]);
-            this.model = new Model(game.models[unitName], unitName) // i suggest to load all models to single array and just take them from here
-            this.container.add(this.model.mesh)
+            console.log(game.models[unitName])
+            this.model = game.models[unitName].pop() // pops model from array of loaded models
         }
-        else {
-            let geometry = new THREE.BoxGeometry(100, 100, 100);
-            let material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-            this.model = new THREE.Mesh(geometry, material);
-            this.container.add(this.model)
+        else { // if no model url use cube as model
+            let geometry = new THREE.BoxGeometry(100, 100, 100)
+            let material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
+            this.model = {
+                mesh: new THREE.Mesh(geometry, material)
+            }
         }
+        this.container.add(this.model.mesh)
 
         // statistics
         this.mobility = unitData.stats.mobility
         this.damage = unitData.stats.damage
         this.health = unitData.stats.health
         this.range = unitData.stats.range
+        this.name = unitName
 
         this.owner = ownerToken
     }

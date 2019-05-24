@@ -17,6 +17,14 @@ socket.getMapData = async () => { // load map directly from session
     })
 }
 
+socket.getSession = async () => { // get session information (without map)
+    return new Promise(resolve => {
+        socket.emit('get_session', res => {
+            resolve(res)
+        })
+    })
+}
+
 socket.endTurn = async data => { // end turn and send moves & stuff as single data object
     socket.emit('end_turn', data)
 }

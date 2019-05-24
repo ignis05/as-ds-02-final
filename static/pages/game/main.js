@@ -54,19 +54,11 @@ $(document).ready(async () => {
 
         console.log(`adding random unit to tile ${tile.id}`)
 
-        // add spawning unit to moves array - to be sent with turn end
-        moves.push({
-            action: 'spawn',
-            unitData: {
-                name: 'raptoid',
-                owner: token,
-            },
-            tileID: tile.id
-        })
+
 
         // spawn unit client-sided
-        let unit = new Unit('raptoid', token)
-        game.spawnUnit(tile.id, unit)
+        let unit = new Unit('spider', token)
+        game.spawnUnit(tile.id, unit, true)
     })
     // #endregion ui listeners
 })
