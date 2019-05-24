@@ -55,6 +55,8 @@ class Game {
 
         this.initDebugKeyListener()
 
+        this.initRaycaster_units()
+
         function render() {
             camCtrl.update()
 
@@ -161,6 +163,25 @@ class Game {
     // #endregion
 
     // #region functions
+    initRaycaster_units() {
+        var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
+        this.raycaster_units = raycaster
+        this.debug_log(`Raycaster.initialized`, 0)
+
+        $('#game').click(() => {
+            var mouseVector = new THREE.Vector2()
+            mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
+            mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
+            raycaster.setFromCamera(mouseVector, this.camera);
+
+            var intersects = raycaster.intersectObjects(this.scene.children, true);
+
+            if (intersects.length > 0) {
+                let obj = intersects[0].object
+                console.log(obj);
+            }
+        })
+    }
     loadModels() { // load all models to single array
         return new Promise(async resolve => {
             let session = await socket.getSession()
