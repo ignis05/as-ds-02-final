@@ -21,7 +21,3 @@ const MASTER_Units = {
         },
     },
 }
-
-if (typeof window == undefined) { // for server - used when creating room
-    module.exports.MASTER_Units = MASTER_Units
-}
