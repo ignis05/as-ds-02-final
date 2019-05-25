@@ -1,9 +1,11 @@
-let cameraLimits = { // Private variable through scoping (at least i attempted this)
-    maxDist: 1500,
-    minDist: 250,
-}
-
 class CameraController { // camera controller
+    static cameraLimits() {
+        return {
+            maxDist: 1500,
+            minDist: 250,
+        }
+    }
+
     constructor(cameraObject) { // Takes camera as a parameter, i'd prefer spawning it inside the class, but whatever
         this.anchor = new THREE.Object3D()
 
@@ -233,8 +235,8 @@ class CameraController { // camera controller
             if (this.anchor.position.x > mapData.size * blockSize - blockSize / 2) this.anchor.position.x = mapData.size * blockSize - blockSize / 2
             if (this.anchor.position.z > mapData.size * blockSize - blockSize / 2) this.anchor.position.z = mapData.size * blockSize - blockSize / 2
 
-            if (this.distance < cameraLimits.minDist) this.distance = cameraLimits.minDist
-            if (this.distance > cameraLimits.maxDist) this.distance = cameraLimits.maxDist
+            if (this.distance < CameraController.cameraLimits().minDist) this.distance = CameraController.cameraLimits().minDist
+            if (this.distance > CameraController.cameraLimits().maxDist) this.distance = CameraController.cameraLimits().maxDist
 
             this.camera.position.x = this.anchor.position.x + this.distance * Math.sin(this.angle)
             this.camera.position.z = this.anchor.position.z + this.distance * Math.cos(this.angle)
