@@ -22,8 +22,8 @@ $(document).ready(async () => {
     ui = new UI()
     ui.UpdateMinimap(mapData) // initial minimap calculation
 
-
     game = new Game('#game') // create game display in '#game' div
+    ui.debug_uiDisable(true)
 
     await game.loadMap(mapData)
 
@@ -32,6 +32,8 @@ $(document).ready(async () => {
     await game.loadModels()
 
     $('#loading').html('').css('display', 'none')
+
+    game.camCtrl.initCamera()
 
     game.debug_addAmbientLight(1)
     game.debug_cameraEnable(false, false, true) // [BUG] This is executed too late

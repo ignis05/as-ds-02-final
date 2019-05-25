@@ -14,9 +14,16 @@ class CameraController { // camera controller
         this.camMouseRotateStart
         this.camMouseRotateStop
 
+        this.initCalled = false
+        // Cam is created but control initialization is delayed till `initCamera()` is called
+    }
+
+    initCamera() {
         this.initInput()
         this.initDebugMarker()
         this.initMouseTriggers()
+
+        this.initCalled = true
     }
 
     initInput() {
@@ -195,43 +202,45 @@ class CameraController { // camera controller
     }
 
     update() {
-        if (this.input.rotLeft || (this.inputMouse.rotLeft && this.inputMouse.rot)) this.angle -= 0.05
-        if (this.input.rotRight || (this.inputMouse.rotRight && this.inputMouse.rot)) this.angle += 0.05
+        if (this.initCalled) {
+            if (this.input.rotLeft || (this.inputMouse.rotLeft && this.inputMouse.rot)) this.angle -= 0.05
+            if (this.input.rotRight || (this.inputMouse.rotRight && this.inputMouse.rot)) this.angle += 0.05
 
-        if (this.input.zoomIn) this.distance -= this.zoomSpeed
-        if (this.input.zoomOut) this.distance += this.zoomSpeed
+            if (this.input.zoomIn) this.distance -= this.zoomSpeed
+            if (this.input.zoomOut) this.distance += this.zoomSpeed
 
-        if (this.input.moveLeft || this.inputMouse.moveLeft) {
-            this.anchor.position.x -= Math.cos(-this.angle) * this.moveSpeed
-            this.anchor.position.z -= Math.sin(-this.angle) * this.moveSpeed
+            if (this.input.moveLeft || this.inputMouse.moveLeft) {
+                this.anchor.position.x -= Math.cos(-this.angle) * this.moveSpeed
+                this.anchor.position.z -= Math.sin(-this.angle) * this.moveSpeed
+            }
+            if (this.input.moveRight || this.inputMouse.moveRight) {
+                this.anchor.position.x += Math.cos(-this.angle) * this.moveSpeed
+                this.anchor.position.z += Math.sin(-this.angle) * this.moveSpeed
+            }
+            if (this.input.moveUp || this.inputMouse.moveUp && anchorWorldPos.z > - MASTER_BlockSizeParams.blockSize / 2) {
+                this.anchor.position.x -= Math.sin(this.angle) * this.moveSpeed
+                this.anchor.position.z -= Math.cos(this.angle) * this.moveSpeed
+            }
+            if (this.input.moveDown || this.inputMouse.moveDown) {
+                this.anchor.position.x += Math.sin(this.angle) * this.moveSpeed
+                this.anchor.position.z += Math.cos(this.angle) * this.moveSpeed
+            }
+
+            let blockSize = MASTER_BlockSizeParams.blockSize
+            let anchorWorldPos = this.anchor.getWorldPosition(new THREE.Vector3(0, 0, 0))
+            if (this.anchor.position.x < - blockSize / 2) this.anchor.position.x = - blockSize / 2
+            if (this.anchor.position.z < - blockSize / 2) this.anchor.position.z = - blockSize / 2
+            if (this.anchor.position.x > mapData.size * blockSize - blockSize / 2) this.anchor.position.x = mapData.size * blockSize - blockSize / 2
+            if (this.anchor.position.z > mapData.size * blockSize - blockSize / 2) this.anchor.position.z = mapData.size * blockSize - blockSize / 2
+
+            if (this.distance < cameraLimits.minDist) this.distance = cameraLimits.minDist
+            if (this.distance > cameraLimits.maxDist) this.distance = cameraLimits.maxDist
+
+            this.camera.position.x = this.anchor.position.x + this.distance * Math.sin(this.angle)
+            this.camera.position.z = this.anchor.position.z + this.distance * Math.cos(this.angle)
+            this.camera.position.y = this.distance
+            this.camera.lookAt(this.anchor.position)
         }
-        if (this.input.moveRight || this.inputMouse.moveRight) {
-            this.anchor.position.x += Math.cos(-this.angle) * this.moveSpeed
-            this.anchor.position.z += Math.sin(-this.angle) * this.moveSpeed
-        }
-        if (this.input.moveUp || this.inputMouse.moveUp && anchorWorldPos.z > - MASTER_BlockSizeParams.blockSize / 2) {
-            this.anchor.position.x -= Math.sin(this.angle) * this.moveSpeed
-            this.anchor.position.z -= Math.cos(this.angle) * this.moveSpeed
-        }
-        if (this.input.moveDown || this.inputMouse.moveDown) {
-            this.anchor.position.x += Math.sin(this.angle) * this.moveSpeed
-            this.anchor.position.z += Math.cos(this.angle) * this.moveSpeed
-        }
-
-        let blockSize = MASTER_BlockSizeParams.blockSize
-        let anchorWorldPos = this.anchor.getWorldPosition(new THREE.Vector3(0, 0, 0))
-        if (this.anchor.position.x < - blockSize / 2) this.anchor.position.x = - blockSize / 2
-        if (this.anchor.position.z < - blockSize / 2) this.anchor.position.z = - blockSize / 2
-        if (this.anchor.position.x > mapData.size * blockSize - blockSize / 2) this.anchor.position.x = mapData.size * blockSize - blockSize / 2
-        if (this.anchor.position.z > mapData.size * blockSize - blockSize / 2) this.anchor.position.z = mapData.size * blockSize - blockSize / 2
-
-        if (this.distance < cameraLimits.minDist) this.distance = cameraLimits.minDist
-        if (this.distance > cameraLimits.maxDist) this.distance = cameraLimits.maxDist
-
-        this.camera.position.x = this.anchor.position.x + this.distance * Math.sin(this.angle)
-        this.camera.position.z = this.anchor.position.z + this.distance * Math.cos(this.angle)
-        this.camera.position.y = this.distance
-        this.camera.lookAt(this.anchor.position)
     }
 
     getAnchor() {
