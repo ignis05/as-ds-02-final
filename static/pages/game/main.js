@@ -35,6 +35,7 @@ $(document).ready(async () => {
     game.debug_addAmbientLight(1)
     game.debug_cameraEnable(false, false, true)
     ui.debug_uiDisable(false)
+    ui.initChat()
 
 
     // #region ui listeners
