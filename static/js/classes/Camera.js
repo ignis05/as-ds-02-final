@@ -218,8 +218,6 @@ class CameraController { // camera controller
             this.anchor.position.z += Math.cos(this.angle) * this.moveSpeed
         }
 
-        console.log(mapData.size)
-
         let blockSize = MASTER_BlockSizeParams.blockSize
         let anchorWorldPos = this.anchor.getWorldPosition(new THREE.Vector3(0, 0, 0))
         if (this.anchor.position.x < - blockSize / 2) this.anchor.position.x = - blockSize / 2
