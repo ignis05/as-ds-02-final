@@ -6,7 +6,7 @@ class Unit {
         this.container = new THREE.Object3D()
 
         if (unitData.modelURL) {
-            console.log(game.models[unitName])
+            // console.log(game.models[unitName])
             this.model = game.models[unitName].pop() // pops model from array of loaded models
             this.model.mesh.scale.set(unitData.scale, unitData.scale, unitData.scale) // scale model
         }

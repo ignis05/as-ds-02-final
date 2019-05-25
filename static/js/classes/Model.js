@@ -11,6 +11,7 @@ class Model {
 
     load() { // recognizes extention and loads model, always call with `await` or `.then()`
         return new Promise(async (resolve, reject) => {
+            console.log('LOADING MODEL: ' + this.name);
             let extention = this.path.split(".")[this.path.split(".").length - 1]
             switch (extention) {
                 case "gltf":

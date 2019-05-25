@@ -28,4 +28,27 @@ class UI {
         else
             $('#ui').removeAttr('style')
     }
+
+    UpdateSpawnControls() {
+        let div = $('#ui-placeholder-spawn-controls')
+
+        if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no units left to spawn
+            game.debug_log(`All units spawned - removing spawn controls`, 0)
+            div.remove()
+            return
+        }
+
+        div.html('')
+
+        for (let unitName in game.avalUnits) {
+            let container = $(`<div class='ui-spawn-controls-container'>`)
+            container.appendTo(div)
+            container.html(`${unitName} : ${game.avalUnits[unitName]}`)
+            container.click(() => {
+                if (game.selectUnitToSpawn(unitName)) {
+                    event.target.classList.add('ui-spawn-controls-container-active')
+                }
+            })
+        }
+    }
 }

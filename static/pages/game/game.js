@@ -59,10 +59,11 @@ class Game {
         this.initRaycaster_spawns()
 
         this.myTurn = false
+        this.unitToSpawn = null // unit that will be spawned on click
         this.avalUnits // units avalible for this player to spawn
-        this.unitToSpawn = 'spider' // unit that will be spawned on click
         socket.getMyself().then(me => {
             this.avalUnits = me.unitsToSpawn
+            ui.UpdateSpawnControls()
         })
 
         function render() {
@@ -175,14 +176,22 @@ class Game {
         console.log('My turn');
         $("#button-end-turn").attr("disabled", false);
     }
+    selectUnitToSpawn(unitName) {
+        if (this.avalUnits[unitName] > 0) {
+            this.unitToSpawn = unitName
+            return true
+        }
+        return false
+    }
     initRaycaster_spawns() {
         var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
         this.raycaster_spawns = raycaster
         this.debug_log(`Raycaster.spawns.initialized`, 0)
 
         $('#game').click(() => {
-            if (!this.unitToSpawn || this.avalUnits[this.unitToSpawn] < 1 || !this.myTurn) return
             console.log('click');
+            if (!this.unitToSpawn || this.avalUnits[this.unitToSpawn] < 1 || !this.myTurn) return
+            console.log('canSpawn');
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
@@ -210,7 +219,6 @@ class Game {
                 this.models[unitName] = []
                 for (let i in session.clients) { // * player count
                     for (let j = 0; j < session.unitsToSpawn[unitName]; j++) { // * units per player
-                        console.log('---------------loading:' + unitName);
                         let model = new Model(MASTER_Units[unitName].modelURL, unitName)
                         await model.load()
                         this.models[unitName].push(model)
@@ -259,7 +267,9 @@ class Game {
         unit.addTo(this.scene)
         unit.position.set(size * tile.x, parseInt(tile.height) / 2, size * tile.z)
 
-        if (addToMoves) { // add spawning unit to moves array - to be sent with turn end & notify server thta spawn wa used
+        // add spawning unit to moves array - to be sent with turn end & notify server thta spawn wa used
+        // should be true when performed manually, undefind when performed by script rendering other player's moves
+        if (addToMoves) { 
             moves.push({
                 action: 'spawn',
                 unitData: {
@@ -269,6 +279,7 @@ class Game {
                 tileID: tile.id
             })
             this.avalUnits[unit.name]--
+            ui.UpdateSpawnControls()
         }
     }
     // #endregion functions
