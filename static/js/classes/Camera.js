@@ -209,7 +209,7 @@ class CameraController { // camera controller
             this.anchor.position.x += Math.cos(-this.angle) * this.moveSpeed
             this.anchor.position.z += Math.sin(-this.angle) * this.moveSpeed
         }
-        if (this.input.moveUp || this.inputMouse.moveUp) {
+        if (this.input.moveUp || this.inputMouse.moveUp && anchorWorldPos.z > - MASTER_BlockSizeParams.blockSize / 2) {
             this.anchor.position.x -= Math.sin(this.angle) * this.moveSpeed
             this.anchor.position.z -= Math.cos(this.angle) * this.moveSpeed
         }
@@ -217,6 +217,15 @@ class CameraController { // camera controller
             this.anchor.position.x += Math.sin(this.angle) * this.moveSpeed
             this.anchor.position.z += Math.cos(this.angle) * this.moveSpeed
         }
+
+        console.log(mapData.size)
+
+        let blockSize = MASTER_BlockSizeParams.blockSize
+        let anchorWorldPos = this.anchor.getWorldPosition(new THREE.Vector3(0, 0, 0))
+        if (this.anchor.position.x < - blockSize / 2) this.anchor.position.x = - blockSize / 2
+        if (this.anchor.position.z < - blockSize / 2) this.anchor.position.z = - blockSize / 2
+        if (this.anchor.position.x > mapData.size * blockSize - blockSize / 2) this.anchor.position.x = mapData.size * blockSize - blockSize / 2
+        if (this.anchor.position.z > mapData.size * blockSize - blockSize / 2) this.anchor.position.z = mapData.size * blockSize - blockSize / 2
 
         if (this.distance < cameraLimits.minDist) this.distance = cameraLimits.minDist
         if (this.distance > cameraLimits.maxDist) this.distance = cameraLimits.maxDist

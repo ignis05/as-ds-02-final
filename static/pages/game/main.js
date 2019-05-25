@@ -2,6 +2,7 @@ var game
 var ui
 var moves = []
 var token = Cookies.get('token')
+var mapData
 
 // ============================================================= //
 //  TODO: Move debug to external file (loaded first, universal)  //
@@ -16,7 +17,7 @@ $(document).ready(async () => {
 
     $('#loading').html(`<div id='loading-info'>Loading map: ${mapName}</div>`)
 
-    var mapData = await socket.getMapData() // load map from session instead of database
+    mapData = await socket.getMapData() // load map from session instead of database
 
     ui = new UI()
     ui.UpdateMinimap(mapData) // initial minimap calculation
@@ -33,7 +34,7 @@ $(document).ready(async () => {
     $('#loading').html('').css('display', 'none')
 
     game.debug_addAmbientLight(1)
-    game.debug_cameraEnable(false, false, true)
+    game.debug_cameraEnable(false, false, true) // [BUG] This is executed too late
     ui.debug_uiDisable(false)
 
 
