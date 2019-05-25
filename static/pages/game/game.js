@@ -174,7 +174,13 @@ class Game {
     // #region functions
     activateMyTurn() {
         console.log('My turn');
-        $("#button-end-turn").attr("disabled", false);
+        if (Object.values(this.avalUnits).some(val => val > 0)) {  // if spawning turn
+            $("#button-end-turn").attr("disabled", true)
+            $("#button-end-turn").css("color", "blue")
+        }
+        else { // if normal turn
+            $("#button-end-turn").attr("disabled", false)
+        }
     }
     selectUnitToSpawn(unitName) {
         if (this.avalUnits[unitName] > 0) {
@@ -189,7 +195,6 @@ class Game {
         this.debug_log(`Raycaster.spawns.initialized`, 0)
 
         $('#game').click(() => {
-            console.log('click');
             if (!this.unitToSpawn || this.avalUnits[this.unitToSpawn] < 1 || !this.myTurn) return
             console.log('canSpawn');
             var mouseVector = new THREE.Vector2()
@@ -269,7 +274,7 @@ class Game {
 
         // add spawning unit to moves array - to be sent with turn end & notify server thta spawn wa used
         // should be true when performed manually, undefind when performed by script rendering other player's moves
-        if (addToMoves) { 
+        if (addToMoves) {
             moves.push({
                 action: 'spawn',
                 unitData: {
@@ -280,6 +285,10 @@ class Game {
             })
             this.avalUnits[unit.name]--
             ui.UpdateSpawnControls()
+            if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
+                $("#button-end-turn").attr("disabled", false);
+                $("#button-end-turn").css("color", "initial");
+            }
         }
     }
     // #endregion functions

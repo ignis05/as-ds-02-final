@@ -62,12 +62,12 @@ socket.on('turn_ended', data => {
 socket.on('my_turn', () => {// notification that this client should make his moves now
     // if game object doen't exist yet, check every .5 sec
     let x = setInterval(async () => {
-        if (game && game.map) {
+        if (game && game.map && game.modelsLoaded) {
             game.myTurn = true
             game.activateMyTurn()
             clearInterval(x)
         }
-    }, 500)
+    }, 1000)
 })
 
 socket.on('error_token', () => { // token error
