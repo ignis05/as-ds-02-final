@@ -195,6 +195,7 @@ class CameraController { // camera controller
     }
 
     update() {
+        if ($('#socket-chat-input').is(":focus")) return // no camera movement while chat is focused
         if (this.input.rotLeft || (this.inputMouse.rotLeft && this.inputMouse.rot)) this.angle -= 0.05
         if (this.input.rotRight || (this.inputMouse.rotRight && this.inputMouse.rot)) this.angle += 0.05
 
