@@ -807,22 +807,20 @@ game.io.on('connect', socket => {
         let client = game.getClientByID(socket.id)
         res(client)
     })
-    socket.on('spawn', (unitName, res) => {
-        let client = game.getClientByID(socket.id)
-        console.log(client.unitsToSpawn);
-        client.unitsToSpawn[unitName] = parseInt(client.unitsToSpawn[unitName]) - 1
-        console.log(client.unitsToSpawn);
-        console.log(Object.values(client.unitsToSpawn).some(value => value > 0));
-
-        res(Object.values(client.unitsToSpawn).some(value => value > 0))
-    })
 
     socket.on('end_turn', data => {
         let session = game.getSessionByClientID(socket.id)
+        let client = game.getClientByID(socket.id)
 
-        // ---
-        // function that will validate changes
-        // ---
+
+        for (let move of data) {
+            // ---
+            // function that will validate changes
+            // ---
+            if (move.action == 'spawn') { // register that client spawned unit
+                client.unitsToSpawn[move.unitData.name]--
+            }
+        }
 
         session.movesList = session.movesList.concat(data) // add moves to the end of movesList array
 

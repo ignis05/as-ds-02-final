@@ -33,14 +33,6 @@ socket.getMyself = async () => { // get session information (without map)
     })
 }
 
-socket.notifySpawn = async (unitName) => { // get session information (without map)
-    return new Promise(resolve => {
-        socket.emit('spawn', unitName, res => {
-            resolve(res)
-        })
-    })
-}
-
 socket.endTurn = async data => { // end turn and send moves & stuff as single data object
     game.myTurn = false
     socket.emit('end_turn', data)
@@ -49,16 +41,15 @@ socket.endTurn = async data => { // end turn and send moves & stuff as single da
 // #region socket triggers
 
 socket.on('reconnecting', moves => { // triggers when user is reconencing to ongoing game
-    // if game object doen't exist yet, check every .5 sec
+    // if game object doen't exist yet, check every 1 sec
     let x = setInterval(async () => {
-        if (game && game.map) {
+        if (game && game.map && game.modelsLoaded) {
             let me = await socket.getMyself()
-            let canIstillSpawn = Object.values(me.unitsToSpawn).some(value => value > 0) ? true : false
-            game.canSpawn = canIstillSpawn
+            game.avalUnits = me.unitsToSpawn
             game.renderMoves(moves)
             clearInterval(x)
         }
-    }, 500)
+    }, 1000)
 
 })
 

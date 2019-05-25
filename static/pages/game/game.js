@@ -16,6 +16,7 @@ class Game {
         this.scene = scene
 
         this.models = {} // all models meshes will be loaded here when game is started
+        this.modelsLoaded = false
 
         let aaOn = Cookies.get('settings-aaOn') === 'true'
         let resScale = Cookies.get('settings-resScale')
@@ -57,8 +58,12 @@ class Game {
 
         this.initRaycaster_spawns()
 
-        this.canSpawn = true
         this.myTurn = false
+        this.avalUnits // units avalible for this player to spawn
+        this.unitToSpawn = 'spider' // unit that will be spawned on click
+        socket.getMyself().then(me => {
+            this.avalUnits = me.unitsToSpawn
+        })
 
         function render() {
             camCtrl.update()
@@ -176,7 +181,7 @@ class Game {
         this.debug_log(`Raycaster.spawns.initialized`, 0)
 
         $('#game').click(() => {
-            if (!this.canSpawn || !this.myTurn) return
+            if (!this.unitToSpawn || this.avalUnits[this.unitToSpawn] < 1 || !this.myTurn) return
             console.log('click');
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
@@ -191,7 +196,7 @@ class Game {
                 let tile = this.map.level.find(tile => tile.id == obj.tileID)
                 console.log(tile);
                 if (tile && !tile.unit) {
-                    this.spawnUnit(tile.id, new Unit('spider', token), true)
+                    this.spawnUnit(tile.id, new Unit(this.unitToSpawn, token), true)
                 }
             }
         })
@@ -212,7 +217,7 @@ class Game {
                     }
                 }
             }
-
+            this.modelsLoaded = true
             resolve('End')
         })
     }
@@ -263,7 +268,7 @@ class Game {
                 },
                 tileID: tile.id
             })
-            this.canSpawn = await socket.notifySpawn(unit.name) // check if can still spawn
+            this.avalUnits[unit.name]--
         }
     }
     // #endregion functions
