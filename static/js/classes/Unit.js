@@ -8,6 +8,7 @@ class Unit {
         if (unitData.modelURL) {
             console.log(game.models[unitName])
             this.model = game.models[unitName].pop() // pops model from array of loaded models
+            this.model.mesh.scale.set(unitData.scale, unitData.scale, unitData.scale) // scale model
         }
         else { // if no model url use cube as model
             let geometry = new THREE.BoxGeometry(100, 100, 100)

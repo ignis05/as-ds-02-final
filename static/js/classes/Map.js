@@ -24,6 +24,7 @@ class MapDisplay {
             var cube = new THREE.Mesh(geometry, material);
             cube.color = color
             cube.walkable = walkable
+            cube.tileID = cell.id
 
             cube.position.set(size * cell.x, parseInt(cell.height) / 2, size * cell.z)
 

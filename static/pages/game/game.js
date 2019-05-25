@@ -55,7 +55,10 @@ class Game {
 
         this.initDebugKeyListener()
 
-        this.initRaycaster_units()
+        this.initRaycaster_spawns()
+
+        this.canSpawn = true
+        this.myTurn = false
 
         function render() {
             camCtrl.update()
@@ -163,22 +166,33 @@ class Game {
     // #endregion
 
     // #region functions
-    initRaycaster_units() {
+    activateMyTurn() {
+        console.log('My turn');
+        $("#button-end-turn").attr("disabled", false);
+    }
+    initRaycaster_spawns() {
         var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
-        this.raycaster_units = raycaster
-        this.debug_log(`Raycaster.initialized`, 0)
+        this.raycaster_spawns = raycaster
+        this.debug_log(`Raycaster.spawns.initialized`, 0)
 
         $('#game').click(() => {
+            if (!this.canSpawn || !this.myTurn) return
+            console.log('click');
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
             raycaster.setFromCamera(mouseVector, this.camera);
 
-            var intersects = raycaster.intersectObjects(this.scene.children, true);
+            var intersects = raycaster.intersectObjects(this.map.group.children, true);
 
             if (intersects.length > 0) {
                 let obj = intersects[0].object
                 console.log(obj);
+                let tile = this.map.level.find(tile => tile.id == obj.tileID)
+                console.log(tile);
+                if (tile && !tile.unit) {
+                    this.spawnUnit(tile.id, new Unit('spider', token), true)
+                }
             }
         })
     }
@@ -186,12 +200,17 @@ class Game {
         return new Promise(async resolve => {
             let session = await socket.getSession()
 
-            // placeholder that loads single spider for each player
-            this.models['spider'] = []
-            for (let i in session.clients) {
-                let model = new Model(MASTER_Units['spider'].modelURL, 'spider')
-                await model.load()
-                this.models['spider'].push(model)
+            // loading models
+            for (let unitName in session.unitsToSpawn) { // each unit
+                this.models[unitName] = []
+                for (let i in session.clients) { // * player count
+                    for (let j = 0; j < session.unitsToSpawn[unitName]; j++) { // * units per player
+                        console.log('---------------loading:' + unitName);
+                        let model = new Model(MASTER_Units[unitName].modelURL, unitName)
+                        await model.load()
+                        this.models[unitName].push(model)
+                    }
+                }
             }
 
             resolve('End')
@@ -224,7 +243,7 @@ class Game {
             }
         }
     }
-    spawnUnit(tileID, unit, addToMoves) {
+    async spawnUnit(tileID, unit, addToMoves) {
         let size = MASTER_BlockSizeParams.blockSize
         let tile = this.map.level.find(tile => tile.id == tileID)
         if (tile.unit) { // something is already spawned there
@@ -235,7 +254,7 @@ class Game {
         unit.addTo(this.scene)
         unit.position.set(size * tile.x, parseInt(tile.height) / 2, size * tile.z)
 
-        if (addToMoves) { // add spawning unit to moves array - to be sent with turn end
+        if (addToMoves) { // add spawning unit to moves array - to be sent with turn end & notify server thta spawn wa used
             moves.push({
                 action: 'spawn',
                 unitData: {
@@ -244,6 +263,7 @@ class Game {
                 },
                 tileID: tile.id
             })
+            this.canSpawn = await socket.notifySpawn(unit.name) // check if can still spawn
         }
     }
     // #endregion functions

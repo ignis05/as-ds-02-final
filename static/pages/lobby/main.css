@@ -331,8 +331,8 @@
     top: 0;
     left: 0;
 
-    background-image: url(https://i.kym-cdn.com/entries/icons/original/000/017/280/e29.jpg);
-    background-size: contain;
+    background-image: url('/static/res/img/map_placeholder.png');
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-color: #FFFFFF;

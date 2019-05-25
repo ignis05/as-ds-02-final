@@ -520,6 +520,7 @@ lobby.io.on('connect', socket => {
                     token: client.token,
                     name: client.name,
                     connected: false,
+                    unitsToSpawn: JSON.parse(JSON.stringify(room.units)), // units available for each player - might later be changed to currency or sth
                 }
                 return _client
             }),
@@ -528,7 +529,8 @@ lobby.io.on('connect', socket => {
             mapData: map.mapData, // whole game will be saved here
             turn: null, // who is making move now
             inProgress: false, // if session is already in progress
-            movesList: [] // list of changes to map since start of the game
+            movesList: [], // list of changes to map since start of the game
+            unitsToSpawn: JSON.parse(JSON.stringify(room.units)), // refrence for whole room - to load all models at start
         })
         console.log('-->> MAPDATA:');
         console.log(game.sessions[game.sessions.length - 1].mapData);
@@ -546,6 +548,17 @@ lobby.io.on('connect', socket => {
         }
         lobby.io.to(room.name).emit('map_selected', mapName)
         room.map = mapName
+    })
+
+    // update units available in game
+    socket.on('updateUnits', unitsArray => {
+        let room = lobby.getRoomByClientId(socket.id)
+        if (!room) {
+            console.error('ERROR: room doesnt exist')
+            return
+        }
+        room.units = unitsArray
+        lobby.io.to(room.name).emit('units_updated')
     })
 
     // kick user
@@ -788,6 +801,20 @@ game.io.on('connect', socket => {
     socket.on('get_mapData', res => {
         let session = game.getSessionByClientID(socket.id)
         res(session.mapData)
+    })
+
+    socket.on('get_myself', res => {
+        let client = game.getClientByID(socket.id)
+        res(client)
+    })
+    socket.on('spawn', (unitName, res) => {
+        let client = game.getClientByID(socket.id)
+        console.log(client.unitsToSpawn);
+        client.unitsToSpawn[unitName] = parseInt(client.unitsToSpawn[unitName]) - 1
+        console.log(client.unitsToSpawn);
+        console.log(Object.values(client.unitsToSpawn).some(value => value > 0));
+
+        res(Object.values(client.unitsToSpawn).some(value => value > 0))
     })
 
     socket.on('end_turn', data => {
