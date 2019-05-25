@@ -24,7 +24,11 @@ $(document).ready(async () => {
 
     game = new Game('#game') // create game display in '#game' div
 
-    game.loadMap(mapData)
+    await game.loadMap(mapData)
+
+    $('#loading').html(`<div id='loading-info'>Loading models...</div>`)
+
+    await game.loadModels()
 
     $('#loading').html('').css('display', 'none')
 
@@ -50,19 +54,11 @@ $(document).ready(async () => {
 
         console.log(`adding random unit to tile ${tile.id}`)
 
-        // add spawning unit to moves array - to be sent with turn end
-        moves.push({
-            action: 'spawn',
-            unitData: {
-                name: 'testUnit',
-                owner: token,
-            },
-            tileID: tile.id
-        })
+
 
         // spawn unit client-sided
-        let unit = new Unit('testUnit', token)
-        game.spawnUnit(tile.id, unit)
+        let unit = new Unit('spider', token)
+        game.spawnUnit(tile.id, unit, true)
     })
     // #endregion ui listeners
 })

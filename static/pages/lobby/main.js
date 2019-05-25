@@ -45,8 +45,16 @@ socket.setReadyState = function (boolean) {
 socket.kick = function (userID) {
     socket.emit('kick', userID)
 }
+socket.updateUnits = function (unitsArray) {
+    socket.emit('updateUnits', unitsArray)
+}
 
 //      #region socket events
+
+// when admin updates units
+socket.on('units_updated', () => {
+    UpdateUnitsSelector()
+})
 
 // triggers when someone tries to connect using token that is alredy in use - client should be immediately redirected to main page
 socket.on('error_token', () => {
@@ -91,6 +99,8 @@ socket.on('admin_changed', async () => {
         user: currentRoom.admin.id,
         action: 'is new room administrator',
     })
+
+    UpdateUnitsSelector()
 })
 
 // triggers when someone connects to room
@@ -128,7 +138,7 @@ socket.on('readyState_change', async () => {
                 everyone = false
             }
         }
-        if (everyone && room.clients.length != 1 && room.map != null) // Checking if user is not alone and if a map is selected
+        if (everyone && room.clients.length != 1 && room.map != null && Object.values(room.units).some(value => value > 0)) // Checking if user is not alone and if a map is selected and if there is at least one unit
             $('#button-start').removeAttr('disabled')
         else
             $('#button-start').attr('disabled', true)
@@ -196,6 +206,7 @@ $(document).ready(async () => {
 
     UpdateRoomMembers() // trigger function displaying members of room manually
     UpdateBottomPanel()
+    UpdateUnitsSelector()
 
     InitClicks() // Initializes bottom panel
 
@@ -489,7 +500,7 @@ async function UpdateBottomPanel() {
                 everyone = false
             }
         }
-        if (everyone && room.clients.length != 1 && room.map != null)
+        if (everyone && room.clients.length != 1 && room.map != null && Object.values(room.units).some(value => value > 0))
             $('#button-start').removeAttr('disabled')
         else
             $('#button-start').attr('disabled', true)
@@ -552,6 +563,41 @@ async function UpdateChat(msg) { // placeholder function triggered by 'chat' eve
     }
 
     $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
+}
+
+async function UpdateUnitsSelector() {
+    let rooms = await socket.getRooms()
+    let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
+    let admin = (room.admin.id == socket.id);
+    let unitsArray = room.units
+    if (!unitsArray) { // units array doenst exist - creat it
+        unitsArray = {}
+        for (let unitName in MASTER_Units) {
+            unitsArray[unitName] = 1
+        }
+        socket.updateUnits(unitsArray)
+    }
+
+    let div = $('#settings-units-selector')
+    div.html('')
+
+    for (let unitName in MASTER_Units) {
+        let group = $(`<div class='settings-unit-group'>`)
+        group.appendTo(div)
+        group.html(`<label class='settings-unit-label'>${unitName}</label><input name='${unitName}' type='number' value='${~~unitsArray[unitName]}' min='0' max='5' step='1' class='settings-unit-input' id='settings-unit-input-${unitName}' ${admin ? '' : 'disabled'}>`)
+    }
+
+    if (admin) {
+        $('.settings-unit-input').on('input', () => {
+            let inputs = Object.values(document.getElementsByClassName('settings-unit-input'))
+            let unitsArray = {}
+            for (let input of inputs) {
+                unitsArray[input.name] = input.value
+            }
+            socket.updateUnits(unitsArray)
+            UpdateBottomPanel()
+        })
+    }
 }
 // #endregion
 

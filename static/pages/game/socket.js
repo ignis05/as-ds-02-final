@@ -17,20 +17,39 @@ socket.getMapData = async () => { // load map directly from session
     })
 }
 
+socket.getSession = async () => { // get session information (without map)
+    return new Promise(resolve => {
+        socket.emit('get_session', res => {
+            resolve(res)
+        })
+    })
+}
+
+socket.getMyself = async () => { // get session information (without map)
+    return new Promise(resolve => {
+        socket.emit('get_myself', res => {
+            resolve(res)
+        })
+    })
+}
+
 socket.endTurn = async data => { // end turn and send moves & stuff as single data object
+    game.myTurn = false
     socket.emit('end_turn', data)
 }
 
 // #region socket triggers
 
 socket.on('reconnecting', moves => { // triggers when user is reconencing to ongoing game
-    // if game object doen't exist yet, check every .5 sec
-    let x = setInterval(() => {
-        if (game && game.map) {
+    // if game object doen't exist yet, check every 1 sec
+    let x = setInterval(async () => {
+        if (game && game.map && game.modelsLoaded) {
+            let me = await socket.getMyself()
+            game.avalUnits = me.unitsToSpawn
             game.renderMoves(moves)
             clearInterval(x)
         }
-    }, 500)
+    }, 1000)
 
 })
 
@@ -40,10 +59,15 @@ socket.on('turn_ended', data => {
     game.renderMoves(data)
 })
 
-socket.on('my_turn', () => {
-    // notification that this client should make his moves now
-    console.log('My turn');
-    $("#button-end-turn").attr("disabled", false);
+socket.on('my_turn', () => {// notification that this client should make his moves now
+    // if game object doen't exist yet, check every .5 sec
+    let x = setInterval(async () => {
+        if (game && game.map && game.modelsLoaded) {
+            game.myTurn = true
+            game.activateMyTurn()
+            clearInterval(x)
+        }
+    }, 1000)
 })
 
 socket.on('error_token', () => { // token error

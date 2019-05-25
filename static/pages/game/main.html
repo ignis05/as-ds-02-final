@@ -36,6 +36,7 @@
     <script src="/static/js/classes/Database.js"></script>
     <script src="/static/js/classes/MapDB.js"></script>
     <script src="/static/js/classes/Map.js"></script>
+    <script src="/static/js/classes/Model.js"></script>
     <script src="/static/js/classes/Unit.js"></script>
 
     <script src="/static/pages/game/socket.js"></script>
@@ -58,11 +59,14 @@
     <div id="loading"></div>
     <div id="overlay"></div>
     <div id="ui" style="display: none;">
-        <button id="button-end-turn" disabled="true" style="position: absolute;left:100px;top:100px;z-index:999999;">END
-            TURN</button> <!-- placeholder -->
-        <button id="button-test-addTestUnit" style="position: absolute;left:100px;top:200px;z-index:999999;">SPAWN
-            RANDOM UNIT</button> <!-- test - to be completely removed -->
-        <div id="ui-top-container" style="display: none"> <!-- WIP, disabled for current release -->
+        <!-- placeholder -->
+        <div id='ui-placeholder-game-controls'>
+            <button id="button-end-turn" disabled="true">END TURN</button>
+            <div id='ui-placeholder-spawn-controls'>
+            </div>
+        </div>
+        <div id="ui-top-container" style="display: none">
+            <!-- WIP, disabled for current release -->
             <div id="ui-top-left-panel">
 
             </div>

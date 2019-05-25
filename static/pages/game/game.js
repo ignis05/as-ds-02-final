@@ -15,6 +15,9 @@ class Game {
         var scene = new THREE.Scene()
         this.scene = scene
 
+        this.models = {} // all models meshes will be loaded here when game is started
+        this.modelsLoaded = false
+
         let aaOn = Cookies.get('settings-aaOn') === 'true'
         let resScale = Cookies.get('settings-resScale')
         this.debug_log('Renderer.antialias: ' + aaOn, 0)
@@ -52,6 +55,16 @@ class Game {
         this.debug_log('Renderer.init: Success', 0)
 
         this.initDebugKeyListener()
+
+        this.initRaycaster_spawns()
+
+        this.myTurn = false
+        this.unitToSpawn = null // unit that will be spawned on click
+        this.avalUnits // units avalible for this player to spawn
+        socket.getMyself().then(me => {
+            this.avalUnits = me.unitsToSpawn
+            ui.UpdateSpawnControls()
+        })
 
         function render() {
             camCtrl.update()
@@ -106,7 +119,7 @@ class Game {
     debug_consoleEnable(boolean) {
         if (boolean) $('#debug-log').removeAttr('style')
         else $('#debug-log').css('display', 'none')
-        
+
         //this.debug_log('Game.consoleEnable: ' + boolean, 1)
     }
     debug_log(string, type) {
@@ -159,9 +172,71 @@ class Game {
     // #endregion
 
     // #region functions
+    activateMyTurn() {
+        console.log('My turn');
+        if (Object.values(this.avalUnits).some(val => val > 0)) {  // if spawning turn
+            $("#button-end-turn").attr("disabled", true)
+            $("#button-end-turn").css("color", "blue")
+        }
+        else { // if normal turn
+            $("#button-end-turn").attr("disabled", false)
+        }
+    }
+    selectUnitToSpawn(unitName) {
+        if (this.avalUnits[unitName] > 0) {
+            this.unitToSpawn = unitName
+            return true
+        }
+        return false
+    }
+    initRaycaster_spawns() {
+        var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
+        this.raycaster_spawns = raycaster
+        this.debug_log(`Raycaster.spawns.initialized`, 0)
+
+        $('#game').click(() => {
+            if (!this.unitToSpawn || this.avalUnits[this.unitToSpawn] < 1 || !this.myTurn) return
+            console.log('canSpawn');
+            var mouseVector = new THREE.Vector2()
+            mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
+            mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
+            raycaster.setFromCamera(mouseVector, this.camera);
+
+            var intersects = raycaster.intersectObjects(this.map.group.children, true);
+
+            if (intersects.length > 0) {
+                let obj = intersects[0].object
+                console.log(obj);
+                let tile = this.map.level.find(tile => tile.id == obj.tileID)
+                console.log(tile);
+                if (tile && !tile.unit) {
+                    this.spawnUnit(tile.id, new Unit(this.unitToSpawn, token), true)
+                }
+            }
+        })
+    }
+    loadModels() { // load all models to single array
+        return new Promise(async resolve => {
+            let session = await socket.getSession()
+
+            // loading models
+            for (let unitName in session.unitsToSpawn) { // each unit
+                this.models[unitName] = []
+                for (let i in session.clients) { // * player count
+                    for (let j = 0; j < session.unitsToSpawn[unitName]; j++) { // * units per player
+                        let model = new Model(MASTER_Units[unitName].modelURL, unitName)
+                        await model.load()
+                        this.models[unitName].push(model)
+                    }
+                }
+            }
+            this.modelsLoaded = true
+            resolve('End')
+        })
+    }
     loadMap(mapData) {
         return new Promise((resolve, reject) => {
-            this.map = new Map(mapData)
+            this.map = new MapDisplay(mapData)
             this.map.renderMap(this.scene)
             resolve('End')
         })
@@ -186,16 +261,35 @@ class Game {
             }
         }
     }
-    spawnUnit(tileID, unit) {
+    async spawnUnit(tileID, unit, addToMoves) {
         let size = MASTER_BlockSizeParams.blockSize
         let tile = this.map.level.find(tile => tile.id == tileID)
         if (tile.unit) { // something is already spawned there
-            console.error(`Attempted to spawn unit ${unit} on taken tile ${tile}`);
+            console.error(`Attempted to spawn unit ${unit.name} on taken tile ${tile}`);
             return
         }
         tile.unit = unit
         unit.addTo(this.scene)
         unit.position.set(size * tile.x, parseInt(tile.height) / 2, size * tile.z)
+
+        // add spawning unit to moves array - to be sent with turn end & notify server thta spawn wa used
+        // should be true when performed manually, undefind when performed by script rendering other player's moves
+        if (addToMoves) {
+            moves.push({
+                action: 'spawn',
+                unitData: {
+                    name: unit.name,
+                    owner: token,
+                },
+                tileID: tile.id
+            })
+            this.avalUnits[unit.name]--
+            ui.UpdateSpawnControls()
+            if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
+                $("#button-end-turn").attr("disabled", false);
+                $("#button-end-turn").css("color", "initial");
+            }
+        }
     }
     // #endregion functions
 }

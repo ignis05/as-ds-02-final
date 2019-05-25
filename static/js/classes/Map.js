@@ -1,5 +1,5 @@
 // class for generating maps
-class Map {
+class MapDisplay {
     constructor(mapData) {
         this.size = mapData.size
         this.level = mapData.level
@@ -24,6 +24,7 @@ class Map {
             var cube = new THREE.Mesh(geometry, material);
             cube.color = color
             cube.walkable = walkable
+            cube.tileID = cell.id
 
             cube.position.set(size * cell.x, parseInt(cell.height) / 2, size * cell.z)
 

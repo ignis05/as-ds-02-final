@@ -1,27 +1,32 @@
 class Unit {
-    constructor(unitName, owner) { // object with unit variables & Model.js class object
+    constructor(unitName, ownerToken) { // object with unit variables & Model.js class object
 
         let unitData = MASTER_Units[unitName]
 
         this.container = new THREE.Object3D()
 
-        if (unitData.modelName) {
-            this.model = models[unitData.modelName] // i suggest to load all models to single array and just take them from here
+        if (unitData.modelURL) {
+            // console.log(game.models[unitName])
+            this.model = game.models[unitName].pop() // pops model from array of loaded models
+            this.model.mesh.scale.set(unitData.scale, unitData.scale, unitData.scale) // scale model
         }
-        else {
-            let geometry = new THREE.BoxGeometry(100, 100, 100);
-            let material = new THREE.MeshBasicMaterial({ color: 0x0000ff });
-            this.model = new THREE.Mesh(geometry, material);
+        else { // if no model url use cube as model
+            let geometry = new THREE.BoxGeometry(100, 100, 100)
+            let material = new THREE.MeshBasicMaterial({ color: 0x0000ff })
+            this.model = {
+                mesh: new THREE.Mesh(geometry, material)
+            }
         }
-        this.container.add(this.model)
+        this.container.add(this.model.mesh)
 
         // statistics
         this.mobility = unitData.stats.mobility
         this.damage = unitData.stats.damage
         this.health = unitData.stats.health
         this.range = unitData.stats.range
+        this.name = unitName
 
-        this.owner = owner
+        this.owner = ownerToken
     }
     addTo(parent) { //adds apropriate element to parent
         parent.add(this.container)

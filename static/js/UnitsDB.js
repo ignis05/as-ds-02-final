@@ -1,10 +1,20 @@
 // database for unit types
 const MASTER_Units = {
-    testUnit: {
-        modelName: null, // in this case blue cube will be spawned instead of model
-        modelURL: null,
+    spider: {
+        modelURL: '/static/res/models/spider/spider.fbx',
+        scale: 0.8,
         stats: {
             mobility: 5,
+            health: 10,
+            damage: 15,
+            range: 1
+        },
+    },
+    raptoid: {
+        modelURL: '/static/res/models/raptoid/scene.gltf',
+        scale: 1,
+        stats: {
+            mobility: 8,
             health: 10,
             damage: 5,
             range: 1

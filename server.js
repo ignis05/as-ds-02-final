@@ -49,7 +49,7 @@ function createMatrix(dbfile) {
             case "dirt":
                 matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
                 break
-        
+
             case "rock":
                 matrix[matrix.length - 1].push([1, parseInt(map[cell].height)])
                 break
@@ -57,7 +57,7 @@ function createMatrix(dbfile) {
             case "river":
                 matrix[matrix.length - 1].push([1, parseInt(map[cell].height)])
                 break
-                
+
             case "ford":
                 matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
                 break
@@ -69,7 +69,7 @@ function createMatrix(dbfile) {
             case "marsh":
                 matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
                 break
-                
+
             case "oil":
                 matrix[matrix.length - 1].push([0, parseInt(map[cell].height)])
                 break
@@ -520,20 +520,22 @@ lobby.io.on('connect', socket => {
                     token: client.token,
                     name: client.name,
                     connected: false,
+                    unitsToSpawn: JSON.parse(JSON.stringify(room.units)), // units available for each player - might later be changed to currency or sth
                 }
                 return _client
             }),
             mapName: room.map, // name of map
-            id: sessionId   , // used as roomName
+            id: sessionId, // used as roomName
             mapData: map.mapData, // whole game will be saved here
             turn: null, // who is making move now
             inProgress: false, // if session is already in progress
-            movesList: [] // list of changes to map since start of the game
+            movesList: [], // list of changes to map since start of the game
+            unitsToSpawn: JSON.parse(JSON.stringify(room.units)), // refrence for whole room - to load all models at start
         })
         console.log('-->> MAPDATA:');
         console.log(game.sessions[game.sessions.length - 1].mapData);
-        
-        loadedMaps.push({ grid: new PF.Grid(createMatrix(map.mapData)), session: sessionId})
+
+        loadedMaps.push({ grid: new PF.Grid(createMatrix(map.mapData)), session: sessionId })
         lobby.io.to(room.name).emit('startGame')
     })
 
@@ -546,6 +548,17 @@ lobby.io.on('connect', socket => {
         }
         lobby.io.to(room.name).emit('map_selected', mapName)
         room.map = mapName
+    })
+
+    // update units available in game
+    socket.on('updateUnits', unitsArray => {
+        let room = lobby.getRoomByClientId(socket.id)
+        if (!room) {
+            console.error('ERROR: room doesnt exist')
+            return
+        }
+        room.units = unitsArray
+        lobby.io.to(room.name).emit('units_updated')
     })
 
     // kick user
@@ -759,8 +772,8 @@ game.io.on('connect', socket => {
         }
         if (empty) {
             let i = game.sessions.indexOf(session)
-            for (let index in loadedMaps){
-                if(loadedMaps[index].session == session.id){
+            for (let index in loadedMaps) {
+                if (loadedMaps[index].session == session.id) {
                     loadedMaps.splice(index, 1)
                     break
                 }
@@ -778,17 +791,36 @@ game.io.on('connect', socket => {
         res(session.mapName)
     })
 
+    socket.on('get_session', res => { // get session info (without mapData & movesList)
+        let session = JSON.parse(JSON.stringify(game.getSessionByClientID(socket.id)))
+        session.mapData = null
+        session.movesList = null
+        res(session)
+    })
+
     socket.on('get_mapData', res => {
         let session = game.getSessionByClientID(socket.id)
         res(session.mapData)
     })
 
+    socket.on('get_myself', res => {
+        let client = game.getClientByID(socket.id)
+        res(client)
+    })
+
     socket.on('end_turn', data => {
         let session = game.getSessionByClientID(socket.id)
+        let client = game.getClientByID(socket.id)
 
-        // ---
-        // function that will validate changes
-        // ---
+
+        for (let move of data) {
+            // ---
+            // function that will validate changes
+            // ---
+            if (move.action == 'spawn') { // register that client spawned unit
+                client.unitsToSpawn[move.unitData.name]--
+            }
+        }
 
         session.movesList = session.movesList.concat(data) // add moves to the end of movesList array
 
@@ -824,8 +856,8 @@ pathfindingTest.io.on('connect', socket => {
     console.log(`user token: ${token}`)
 
     socket.on('disconnect', () => {
-        for (let index in loadedMaps){
-            if(loadedMaps[index].session == socket.id){
+        for (let index in loadedMaps) {
+            if (loadedMaps[index].session == socket.id) {
                 loadedMaps.splice(index, 1)
                 break
             }
@@ -844,25 +876,25 @@ pathfindingTest.io.on('connect', socket => {
         db.findOne({
             mapName: mapName
         }, function (err, doc) {
-            loadedMaps.push({ grid: new PF.Grid(createMatrix(doc.mapData)), session: socket.id})
+            loadedMaps.push({ grid: new PF.Grid(createMatrix(doc.mapData)), session: socket.id })
             console.log("length (added map from PF):" + loadedMaps.length);
         })
     })
 
-    socket.on('send_PF_Data', function(data, res) {
+    socket.on('send_PF_Data', function (data, res) {
         let grid
-        for(maps in loadedMaps){
-            if(loadedMaps[maps].session == socket.id){
+        for (maps in loadedMaps) {
+            if (loadedMaps[maps].session == socket.id) {
                 grid = loadedMaps[maps].grid.clone()
                 break
             }
-        }      
+        }
         data = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
         console.log(data.length);
-        
+
         res(data)
         //socket.emit('get_PF_Data', res)
-    }) 
+    })
 
     // #endregion custom events
 })

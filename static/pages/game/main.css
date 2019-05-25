@@ -378,3 +378,27 @@ body {
 }
 
 /* #endregion */
+
+/* #region placeholder UI*/
+
+#ui-placeholder-game-controls {
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 999999999;
+    background: #aaaaaaaa;
+}
+
+.ui-spawn-controls-container {
+    cursor: pointer;
+}
+
+.ui-spawn-controls-container-active {
+    background: blue;
+}
+
+.ui-spawn-controls-container:hover {
+    background: red;
+}
+
+/*#endregion placeholder UI*/

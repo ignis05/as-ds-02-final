@@ -11,6 +11,7 @@ class Model {
 
     load() { // recognizes extention and loads model, always call with `await` or `.then()`
         return new Promise(async (resolve, reject) => {
+            console.log('LOADING MODEL: ' + this.name);
             let extention = this.path.split(".")[this.path.split(".").length - 1]
             switch (extention) {
                 case "gltf":
@@ -96,10 +97,10 @@ class Model {
             loader.load(this.path, gltf => {
                 // console.log(gltf);
                 this.gltf = gltf
-                this.mesh = gltf.scene
+                this.mesh = this.gltf.scene
                 this.mesh.name = this.name
 
-                this.animations = gltf.animations
+                this.animations = this.gltf.animations
                 this.mixer = new THREE.AnimationMixer(this.mesh);
                 resolve()
             },
