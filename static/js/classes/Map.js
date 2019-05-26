@@ -22,6 +22,7 @@ class MapDisplay {
             var material = new THREE.MeshPhongMaterial({ color: color });
 
             var cube = new THREE.Mesh(geometry, material);
+            cube.receiveShadow = true
             cube.color = color
             cube.walkable = walkable
             cube.tileID = cell.id
@@ -30,7 +31,7 @@ class MapDisplay {
 
             // black frame - placeholder
             var _geometry = new THREE.BoxGeometry(size, parseInt(cell.height), size);
-            var _material = new THREE.MeshPhongMaterial({ color: 0x000000, wireframe: true });
+            var _material = new THREE.MeshLambertMaterial({ color: 0x000000, wireframe: true });
             let frame = new THREE.Mesh(_geometry, _material);
             cube.add(frame)
 
