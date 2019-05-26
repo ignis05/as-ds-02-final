@@ -86,46 +86,49 @@ $(document).ready(async function () {
     container.style.right = "0"
     document.body.appendChild(container)
     models.forEach(model => {
-        var button = $("<div>")
-        button.text(model.name)
-        button.addClass(`modelSelectButton`)
-        button.css(`background`, `#000000cc`)
-        button.css(`padding`, `3px`)
-        button.css(`color`, `white`)
-        button.css(`width`, `auto`)
-        button.css(`display`, `flex`)
-        button.css(`align-items`, `center`)
-        button.css(`justify-content`, `center`)
-        button.css(`margin`, `2px`)
-        button.click(async e => {
-            if (currentModel != e.target.innerText) {
-                $(".modelSelectButton").css("color", "white")
-                e.target.style.color = "blue"
-                currentModel = e.target.innerText
+        model.files.forEach(path => {
+            var button = $("<div>")
+            if (model.files.length == 1) button.text(model.name)
+            else button.text(`${model.name}/${path.split("/")[path.split("/").length - 1]}`)
+            button.addClass(`modelSelectButton`)
+            button.css(`background`, `#000000cc`)
+            button.css(`padding`, `3px`)
+            button.css(`color`, `white`)
+            button.css(`width`, `auto`)
+            button.css(`display`, `flex`)
+            button.css(`align-items`, `center`)
+            button.css(`justify-content`, `center`)
+            button.css(`margin`, `2px`)
+            button.click(async e => {
+                if (currentModel != e.target.innerText) {
+                    $(".modelSelectButton").css("color", "white")
+                    e.target.style.color = "red"
+                    currentModel = e.target.innerText
 
-                if (testmodel) scene.remove(testmodel.mesh)
-                // adding model
-                testmodel = new Model(`/static/res/models/${model.path}`, model.name)
-                await testmodel.load()
-                testmodel.addTo(scene)
-                testmodel.mesh.position.copy(center.position.clone())
-                // enable shadows
-                testmodel.mesh.castShadow = true
-                testmodel.mesh.traverse(node => {
-                    if (node instanceof THREE.Mesh) node.castShadow = true
-                })
-                testmodel.createButtons()
-            }
-            else {
-                $(".modelSelectButton").css("color", "white")
-                currentModel = null
-                // removing model
-                $("#animationDisplayButtonsContainer").remove()
-                if (testmodel) scene.remove(testmodel.mesh)
-                testmodel = null
-            }
+                    if (testmodel) scene.remove(testmodel.mesh)
+                    // adding model
+                    testmodel = new Model(`/static/res/models/${path}`, model.name)
+                    await testmodel.load()
+                    testmodel.addTo(scene)
+                    testmodel.mesh.position.copy(center.position.clone())
+                    // enable shadows
+                    testmodel.mesh.castShadow = true
+                    testmodel.mesh.traverse(node => {
+                        if (node instanceof THREE.Mesh) node.castShadow = true
+                    })
+                    testmodel.createButtons()
+                }
+                else {
+                    $(".modelSelectButton").css("color", "white")
+                    currentModel = null
+                    // removing model
+                    $("#animationDisplayButtonsContainer").remove()
+                    if (testmodel) scene.remove(testmodel.mesh)
+                    testmodel = null
+                }
+            })
+            $(container).append(button)
         })
-        $(container).append(button)
     })
 
     function render() {
