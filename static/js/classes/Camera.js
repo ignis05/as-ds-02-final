@@ -219,7 +219,7 @@ class CameraController { // camera controller
                 this.anchor.position.x += Math.cos(-this.angle) * this.moveSpeed
                 this.anchor.position.z += Math.sin(-this.angle) * this.moveSpeed
             }
-            if (this.input.moveUp || this.inputMouse.moveUp && anchorWorldPos.z > - MASTER_BlockSizeParams.blockSize / 2) {
+            if (this.input.moveUp || this.inputMouse.moveUp) {
                 this.anchor.position.x -= Math.sin(this.angle) * this.moveSpeed
                 this.anchor.position.z -= Math.cos(this.angle) * this.moveSpeed
             }
@@ -229,18 +229,21 @@ class CameraController { // camera controller
             }
 
             let blockSize = MASTER_BlockSizeParams.blockSize
-            let anchorWorldPos = this.anchor.getWorldPosition(new THREE.Vector3(0, 0, 0))
             if (this.anchor.position.x < - blockSize / 2) this.anchor.position.x = - blockSize / 2
             if (this.anchor.position.z < - blockSize / 2) this.anchor.position.z = - blockSize / 2
             if (this.anchor.position.x > mapData.size * blockSize - blockSize / 2) this.anchor.position.x = mapData.size * blockSize - blockSize / 2
             if (this.anchor.position.z > mapData.size * blockSize - blockSize / 2) this.anchor.position.z = mapData.size * blockSize - blockSize / 2
+
+            let anchorMapX = Math.floor((this.anchor.position.x + blockSize / 2) / blockSize)
+            let anchorMapZ = Math.floor((this.anchor.position.z + blockSize / 2) / blockSize)
+            this.anchor.position.y = parseInt(mapData.level[anchorMapZ * mapData.size + anchorMapX].height)
 
             if (this.distance < CameraController.cameraLimits().minDist) this.distance = CameraController.cameraLimits().minDist
             if (this.distance > CameraController.cameraLimits().maxDist) this.distance = CameraController.cameraLimits().maxDist
 
             this.camera.position.x = this.anchor.position.x + this.distance * Math.sin(this.angle)
             this.camera.position.z = this.anchor.position.z + this.distance * Math.cos(this.angle)
-            this.camera.position.y = this.distance
+            this.camera.position.y = this.anchor.position.y + this.distance
             this.camera.lookAt(this.anchor.position)
         }
     }
