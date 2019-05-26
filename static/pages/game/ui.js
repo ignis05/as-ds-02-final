@@ -1,5 +1,7 @@
 class UI {
-    static memberColors = ['#CF2F2F', '#CF7F2F', '#CFCF2F', '#2F2FCF', '#2F2F2F', '#CF2FCF', '#2FCFCF', '#2FCF2F']
+    static get memberColors() {
+        return ['#CF2F2F', '#CF7F2F', '#CFCF2F', '#2F2FCF', '#2F2F2F', '#CF2FCF', '#2FCFCF', '#2FCF2F']
+    }
     constructor() {
         $('#ui').removeAttr('style')
 
