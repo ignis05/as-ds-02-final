@@ -137,20 +137,20 @@
     position: relative;
     width: calc(100vw - 400px);
     height: 100vh;
-    padding: 30px;
+    padding: 10px;
     overflow: auto;
     background-color: #0F0F0F;
 }
 
 .cell {
-    --cellSize: 50px;
+    --cellSize: 30px;
 
     position: absolute;
     width: var(--cellSize);
     height: var(--cellSize);
     line-height: var(--cellSize);
     text-align: center;
-    font-size: 2em;
+    /* font-size: 2em; */
     font-weight: bolder;
     cursor: pointer;
     overflow: visible;

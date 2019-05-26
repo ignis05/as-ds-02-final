@@ -8,7 +8,7 @@ let input
 
 let mapsDB
 
-const cellSize = 50
+const cellSize = 30
 //#endregion 
 
 /* ===================================================== *
@@ -181,21 +181,16 @@ function createTiles() {
 
 function cellClick() {
     let cellArray = Array.from($(document).find('.cell-active'))
+    let height = cellSettings.height
+    let type = cellSettings.type
     for (let i in cellArray) {
+        let cell = cellArray[i]
+        cell.cell.type = type
+        cell.cell.height = height
 
-        cell = cellArray[i]
-        cell.cell.type = cellSettings.type
-        cell.cell.height = cellSettings.height
-        cell.innerHTML = cell.height
-
-        for (let j in pack.level) {
-            let datapack = pack.level[j]
-            if (datapack.id == cell.cell.id) {
-                datapack.height = cell.cell.height
-                datapack.type = cell.cell.type
-                break
-            }
-        }
+        let datapack = pack.level[cell.cell.z * pack.size + cell.cell.x]
+        datapack.type = type
+        datapack.height = height
         cell.cell.setup()
     }
 
@@ -248,14 +243,10 @@ class Cell {
         cont.on('mouseover', e => {
             let x = e.target.cell.x
             let z = e.target.cell.z
-            for (let i = -(brushSize - 1) / 2; i < (brushSize + 1) / 2; i++) {
-                for (let j = -(brushSize - 1) / 2; j < (brushSize + 1) / 2; j++) {
-                    for (let k in cells) {
-                        if (cells[k].x == x + i && cells[k].z == z + j) {
-                            $(cells[k].object).addClass('cell-active')
-                            break
-                        }
-                    }
+            for (let i = x - (brushSize - 1) / 2; i < x + (brushSize + 1) / 2; i++) {
+                for (let j = z - (brushSize - 1) / 2; j < z + (brushSize + 1) / 2; j++) {
+                    if (i >= 0 && j >= 0 && i < pack.size && j < pack.size)
+                        $(cells[j * pack.size + i].object).addClass('cell-active')
                 }
             }
             if (input.leftMouse) {
@@ -264,17 +255,9 @@ class Cell {
         })
 
         cont.on('mouseout', e => {
-            let x = e.target.cell.x
-            let z = e.target.cell.z
-            for (let i = -(brushSize - 1) / 2; i < (brushSize + 1) / 2; i++) {
-                for (let j = -(brushSize - 1) / 2; j < (brushSize + 1) / 2; j++) {
-                    for (let k in cells) {
-                        if (cells[k].x == x + i && cells[k].z == z + j) {
-                            $(cells[k].object).removeClass('cell-active')
-                            break
-                        }
-                    }
-                }
+            let cellArray = Array.from($(document).find('.cell-active'))
+            for (let i in cellArray) {
+                cellArray[i].className = 'cell'
             }
         })
 
