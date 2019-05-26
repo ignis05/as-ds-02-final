@@ -175,12 +175,13 @@ class Game {
 
     // #region functions
     addSunLight(dsiplayZone, displayTest) { // directional light that simulates the sun
+        let blockSize = MASTER_BlockSizeParams.blockSize
 
         var light = new THREE.DirectionalLight(0xffffff, 1);
         this.scene.add(light);
 
         // position light above middle of the scene and aim it directly down
-        light.position.set(this.map.size * 150 / 2, 1000, this.map.size * 150 / 2)
+        light.position.set(this.map.size * blockSize / 2, 1000, this.map.size * blockSize / 2)
         light.target = new THREE.Object3D
         this.scene.add(light.target)
         light.target.position.set(light.position.x, 0, light.position.z)
@@ -191,12 +192,12 @@ class Game {
         light.shadow.mapSize.height = 2048;
 
         // set up shadow-rendering zone
-        light.shadow.camera.near = 2;
-        light.shadow.camera.far = 1024;
-        light.shadow.camera.left = this.map.size * 150 / 2 + 75
-        light.shadow.camera.right = -this.map.size * 150 / 2 - 75
-        light.shadow.camera.top = this.map.size * 150 / 2 + 75
-        light.shadow.camera.bottom = -this.map.size * 150 / 2 - 75
+        light.shadow.camera.near = 1;
+        light.shadow.camera.far = 1000;
+        light.shadow.camera.left = this.map.size * blockSize / 2 - blockSize / 2
+        light.shadow.camera.right = -this.map.size * blockSize / 2 - blockSize / 2
+        light.shadow.camera.top = this.map.size * blockSize / 2 + blockSize / 2
+        light.shadow.camera.bottom = -this.map.size * blockSize / 2 + blockSize / 2
 
         if (dsiplayZone) {
             // helper thast visualizes shadow-rendering zone
