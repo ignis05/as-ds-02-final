@@ -62,6 +62,12 @@ socket.on('error_token', () => {
     window.location = '/'
 })
 
+// triggers when someone in ongoing session joins main menu
+socket.on('reconnect_to_game', () => {
+    window.alert('You are in ongoing game')
+    window.location = '/game'
+})
+
 // triggers when someone sends message to room
 socket.on('chat', msg => {
     console.log(msg);
