@@ -236,6 +236,10 @@ class CameraController { // camera controller
 
             let anchorMapX = Math.floor((this.anchor.position.x + blockSize / 2) / blockSize)
             let anchorMapZ = Math.floor((this.anchor.position.z + blockSize / 2) / blockSize)
+
+            anchorMapX = anchorMapX == mapData.size ? anchorMapX - 1 : anchorMapX
+            anchorMapZ = anchorMapZ == mapData.size ? anchorMapZ - 1 : anchorMapZ
+
             this.anchor.position.y = parseInt(mapData.level[anchorMapZ * mapData.size + anchorMapX].height)
 
             if (this.distance < CameraController.cameraLimits().minDist) this.distance = CameraController.cameraLimits().minDist
