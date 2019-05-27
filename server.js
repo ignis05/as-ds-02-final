@@ -243,18 +243,13 @@ app.post("/getTestPages", function (req, res) {
 
 app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
-    console.log(dirs);
     let models = []
     dirs.forEach(dir => {
-        let file = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).find(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf"))
-        let dirpath = `${dir}/${file}`
-        // let temp = dir.split("_").map(x => x.charAt(0).toUpperCase() + x.slice(1))
-        let name = dir //temp.pop() + " " + temp.join(" ")
-        let obj = {
-            name: name,
-            path: dirpath
-        }
-        models.push(obj)
+        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf")).map(file => `${dir}/${file}`)
+        models.push({
+            name: dir,
+            files: files
+        })
     })
     res.send({ msg: "OK", models: models })
 })
