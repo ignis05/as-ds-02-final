@@ -25,6 +25,8 @@ class Game {
 
         var renderer = new THREE.WebGLRenderer({ antialias: aaOn })
         this.renderer = renderer
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMapSoft = true;
 
         renderer.setPixelRatio(resScale) // Resolution scale
 
@@ -172,6 +174,47 @@ class Game {
     // #endregion
 
     // #region functions
+    addSunLight(dsiplayZone, displayTest) { // directional light that simulates the sun
+        let blockSize = MASTER_BlockSizeParams.blockSize
+
+        var light = new THREE.DirectionalLight(0xffffff, 1);
+        this.scene.add(light);
+
+        // position light above middle of the scene and aim it directly down
+        light.position.set(this.map.size * blockSize / 2, 1000, this.map.size * blockSize / 2)
+        light.target = new THREE.Object3D
+        this.scene.add(light.target)
+        light.target.position.set(light.position.x, 0, light.position.z)
+
+        // enable shadows and set up quality 
+        light.castShadow = true
+        light.shadow.mapSize.width = 2048;
+        light.shadow.mapSize.height = 2048;
+
+        // set up shadow-rendering zone
+        light.shadow.camera.near = 1;
+        light.shadow.camera.far = 1000;
+        light.shadow.camera.left = this.map.size * blockSize / 2 - blockSize / 2
+        light.shadow.camera.right = -this.map.size * blockSize / 2 - blockSize / 2
+        light.shadow.camera.top = this.map.size * blockSize / 2 + blockSize / 2
+        light.shadow.camera.bottom = -this.map.size * blockSize / 2 + blockSize / 2
+
+        if (dsiplayZone) {
+            // helper thast visualizes shadow-rendering zone
+            var helper = new THREE.CameraHelper(light.shadow.camera);
+            this.scene.add(helper);
+        }
+
+        if (displayTest) {
+            // sphere to test shadows without models
+            var sphereGeometry = new THREE.SphereBufferGeometry(20, 32, 32);
+            var sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+            var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            sphere.castShadow = true;
+            this.scene.add(sphere);
+            sphere.position.set(200, 100, 200)
+        }
+    }
     activateMyTurn() {
         console.log('My turn');
         if (Object.values(this.avalUnits).some(val => val > 0)) {  // if spawning turn
@@ -270,7 +313,7 @@ class Game {
         }
         tile.unit = unit
         unit.addTo(this.scene)
-        unit.position.set(size * tile.x, parseInt(tile.height) / 2, size * tile.z)
+        unit.position.set(size * tile.x, parseInt(tile.height), size * tile.z)
 
         // add spawning unit to moves array - to be sent with turn end & notify server thta spawn wa used
         // should be true when performed manually, undefind when performed by script rendering other player's moves
