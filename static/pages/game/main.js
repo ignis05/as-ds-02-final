@@ -40,7 +40,7 @@ $(document).ready(async () => {
     ui.debug_uiDisable(false)
     ui.initChat()
     //game.enableOrbitContols()
-    game.addSunLight(true)
+    game.addSunLight()
 
 
     // #region ui listeners
