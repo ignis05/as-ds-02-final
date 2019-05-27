@@ -444,6 +444,18 @@ lobby.io.on('connect', socket => {
 
     if (client) { // server remembers client profile
 
+        let gameSession = game.sessions.find(session => session.clients.find(client => client.token == token))
+        if (gameSession) { // in game
+            let gameClient = gameSession.clients.find(client => client.token == token)
+            console.log(gameClient);
+            if (gameClient.connected) { // still connected to game
+                socket.emit('error_token')
+            }
+            else { // left game
+                socket.emit('reconnect_to_game')
+            }
+        }
+
         if (client.connected) { // someone is already connected using this token
             socket.emit('error_token')
             return
