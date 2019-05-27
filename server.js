@@ -785,6 +785,14 @@ game.io.on('connect', socket => {
 
     // #region custom events
 
+
+    // send chat msg
+    socket.on('send', msg => {
+        console.log(`${socket.id} sent: ${msg}`)
+        let session = game.getSessionByClientID(socket.id)
+        game.io.to(session.id).emit('chat', msg)
+    })
+
     // get selected map
     socket.on('get_mapName', res => {
         let session = game.getSessionByClientID(socket.id)
