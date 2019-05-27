@@ -85,24 +85,24 @@ $(document).ready(async () => {
             height: 540,
             title: 'Load',
             buttons: [{
-                    id: 'bLoad',
-                    disabled: true,
-                    text: 'Load',
-                    'class': 'ui-dialog-button disabled',
-                    click: async function () {
-                        startGame(await loadMap(await mapsDB.importMap(name.val())))
-                        $(this).dialog('close')
-                        overlay.css('display', 'none')
-                    }
-                },
-                {
-                    text: 'Back',
-                    'class': 'ui-dialog-button',
-                    click: function () {
-                        $(this).dialog('close')
-                        overlay.css('display', 'none')
-                    }
+                id: 'bLoad',
+                disabled: true,
+                text: 'Load',
+                'class': 'ui-dialog-button disabled',
+                click: async function () {
+                    startGame(await loadMap(await mapsDB.importMap(name.val())))
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
                 }
+            },
+            {
+                text: 'Back',
+                'class': 'ui-dialog-button',
+                click: function () {
+                    $(this).dialog('close')
+                    overlay.css('display', 'none')
+                }
+            }
             ]
         })
     }
@@ -207,58 +207,11 @@ async function startGame(map) {
     var light = new THREE.AmbientLight(0xffffff, 2, 1000); // ambient light bc gltf textures always require light
     scene.add(light)
 
-    var testmodel = null;
+    var testmodel = new Model(`/static/res/models/raptoid/scene.gltf`, 'raptoid')
+    await testmodel.load()
+    testmodel.addTo(scene)
+    $('#root').on('click', rayClick)
 
-    var currentModel = null
-    let models = await Net.getModels()
-    console.log(models);
-    let container = document.createElement("div")
-    container.id = "modelSelector"
-    container.style.position = "absolute"
-    container.style.top = "0"
-    container.style.right = "0"
-    document.body.appendChild(container)
-    models.forEach(model => {
-        var button = $("<div>")
-        button.text(model.name)
-        button.addClass(`modelSelectButton`)
-        button.css(`background`, `#000000cc`)
-        button.css(`padding`, `3px`)
-        button.css(`color`, `white`)
-        button.css(`width`, `auto`)
-        button.css(`display`, `flex`)
-        button.css(`align-items`, `center`)
-        button.css(`justify-content`, `center`)
-        button.css(`margin`, `2px`)
-        button.click(async e => {
-            if (currentModel != e.target.innerText) {
-                $(".modelSelectButton").css("color", "white")
-                e.target.style.color = "blue"
-                currentModel = e.target.innerText
-
-                //if (testmodel) scene.remove(testmodel.mesh)
-                // adding model
-                testmodel = new Model(`/static/res/models/${model.path}`, model.name)
-                await testmodel.load()
-                testmodel.addTo(scene)
-                testmodel.createButtons()
-                testmodel.mesh.position.set(gridMatrix[selectedUnitPoint.z][selectedUnitPoint.x].position.x, gridMatrix[selectedUnitPoint.z][selectedUnitPoint.x].position.y, gridMatrix[selectedUnitPoint.z][selectedUnitPoint.x].position.z)
-            } else {
-                $(".modelSelectButton").css("color", "white")
-                currentModel = null
-                // removing model
-                $("#animationDisplayButtonsContainer").remove()
-                if (testmodel) scene.remove(testmodel.mesh)
-                let index = unitsTab.indexOf(testmodel.mesh)
-                unitsTab.splice(index, 1)
-                console.log(unitsTab);
-
-                testmodel = null
-            }
-        })
-        $(container).append(button)
-        $("#root").on("click", rayClick)
-    })
 
     function render() {
 
