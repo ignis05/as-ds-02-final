@@ -74,7 +74,7 @@ class Model {
                 var i = index
                 if (this.currentAnimation != e.target.innerText) {
                     $(".animationDisplayButton").css("color", "white")
-                    e.target.style.color = "blue"
+                    e.target.style.color = "red"
                     this.mixer.uncacheRoot(this.mesh)
                     console.log(e.target.innerText);
                     this.mixer.clipAction(this.animations[i]).play()

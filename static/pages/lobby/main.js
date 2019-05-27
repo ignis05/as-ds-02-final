@@ -62,6 +62,12 @@ socket.on('error_token', () => {
     window.location = '/'
 })
 
+// triggers when someone in ongoing session joins main menu
+socket.on('reconnect_to_game', () => {
+    window.alert('You are in ongoing game')
+    window.location = '/game'
+})
+
 // triggers when someone sends message to room
 socket.on('chat', msg => {
     console.log(msg);
@@ -404,6 +410,11 @@ async function UpdateMaplist() {
     let nor = list.length
     if (nor < 8) nor = 8
 
+    if (room.admin.id != socket.id) { // invisible div over mapList that prevents :hover from triggering
+        let cover = $(`<div style='width:100%;height:100%;position:absolute;top:0;left:0;'>`)
+        $('#region-maplist').append(cover)
+    }
+
     let rowlist = []
 
     for (let i = 0; i < nor; i++) {
@@ -449,6 +460,7 @@ async function UpdateMaplist() {
             }
 
         })
+        row.css('cursor', 'pointer')
     }
 
     // display selected map

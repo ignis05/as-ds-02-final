@@ -34,10 +34,13 @@ $(document).ready(async () => {
     $('#loading').html('').css('display', 'none')
 
     game.camCtrl.initCamera()
-
     game.debug_addAmbientLight(1)
     game.debug_cameraEnable(true, false, true)
+
     ui.debug_uiDisable(false)
+    ui.initChat()
+    //game.enableOrbitContols()
+    game.addSunLight(true)
 
 
     // #region ui listeners

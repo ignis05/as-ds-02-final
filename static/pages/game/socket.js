@@ -38,7 +38,16 @@ socket.endTurn = async data => { // end turn and send moves & stuff as single da
     socket.emit('end_turn', data)
 }
 
+socket.send = function (msg) { // chat msg
+    socket.emit('send', msg)
+}
+
 // #region socket triggers
+
+socket.on('chat', msg => {
+    console.log(msg);
+    ui.UpdateChat(msg)
+})
 
 socket.on('reconnecting', moves => { // triggers when user is reconencing to ongoing game
     // if game object doen't exist yet, check every 1 sec

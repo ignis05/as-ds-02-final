@@ -233,15 +233,38 @@ body {
 #ui-chat-open {
     position: absolute;
     text-align: center;
-    top: 0;
+    top: -80px;
     left: 0;
-    margin-left: 10px;
-    width: 50px;
-    height: 20px;
+    /* margin-left: 10px; */
+    width: 300px;
+    height: 100px;
     line-height: 20px;
     background-color: #2F2F2F4F;
     color: #DFDFDF4F;
     transition: color 0.1s linear, background-color 0.1s linear;
+}
+
+#socket-chat-display {
+    width: 300px;
+    height: 80px;
+    overflow-x: visible;
+    overflow-y: scroll;
+    color: #2FCF2F;
+    text-shadow: 2px 0px 1px #000000;
+    text-align: left;
+    padding-left: 5px;
+}
+
+#socket-chat-input {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    padding: 5px;
+    caret-color: #2F7F2F;
+    background-color: #2222227F;
+    color: #DFDFDF;
+    font-weight: bolder;
+    border: none;
 }
 
 #ui-chat-open:hover {

@@ -243,18 +243,13 @@ app.post("/getTestPages", function (req, res) {
 
 app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
-    console.log(dirs);
     let models = []
     dirs.forEach(dir => {
-        let file = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).find(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf"))
-        let dirpath = `${dir}/${file}`
-        // let temp = dir.split("_").map(x => x.charAt(0).toUpperCase() + x.slice(1))
-        let name = dir //temp.pop() + " " + temp.join(" ")
-        let obj = {
-            name: name,
-            path: dirpath
-        }
-        models.push(obj)
+        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf")).map(file => `${dir}/${file}`)
+        models.push({
+            name: dir,
+            files: files
+        })
     })
     res.send({ msg: "OK", models: models })
 })
@@ -448,6 +443,18 @@ lobby.io.on('connect', socket => {
 
 
     if (client) { // server remembers client profile
+
+        let gameSession = game.sessions.find(session => session.clients.find(client => client.token == token))
+        if (gameSession) { // in game
+            let gameClient = gameSession.clients.find(client => client.token == token)
+            console.log(gameClient);
+            if (gameClient.connected) { // still connected to game
+                socket.emit('error_token')
+            }
+            else { // left game
+                socket.emit('reconnect_to_game')
+            }
+        }
 
         if (client.connected) { // someone is already connected using this token
             socket.emit('error_token')
@@ -784,6 +791,14 @@ game.io.on('connect', socket => {
     // #endregion initial
 
     // #region custom events
+
+
+    // send chat msg
+    socket.on('send', msg => {
+        console.log(`${socket.id} sent: ${msg}`)
+        let session = game.getSessionByClientID(socket.id)
+        game.io.to(session.id).emit('chat', msg)
+    })
 
     // get selected map
     socket.on('get_mapName', res => {

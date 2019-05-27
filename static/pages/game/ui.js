@@ -1,4 +1,7 @@
 class UI {
+    static get memberColors() {
+        return ['#CF2F2F', '#CF7F2F', '#CFCF2F', '#2F2FCF', '#2F2F2F', '#CF2FCF', '#2FCFCF', '#2FCF2F']
+    }
     constructor() {
         $('#ui').removeAttr('style')
 
@@ -50,5 +53,37 @@ class UI {
                 }
             })
         }
+    }
+
+    initChat() {
+        game.debug_log('Chat.enabled', 0)
+        $('#socket-chat-input').on('keyup', () => {
+            if (event.code === 'Enter') {
+                // Moved retired button function
+                if ($('#socket-chat-input').val() !== '') { // Blocking empty messages
+                    let msg = {
+                        author: socket.id, // id of current connection - will always be unique
+                        content: $('#socket-chat-input').val().replace('<', '&lt;').replace('>', '&gt;')  // Sanitization on send, server gets sanitized content
+                    }
+                    socket.send(msg) // trigger event 'chat' for every user in room (including self) and pass msg obj as data
+                    $('#socket-chat-input').val('') // Clear message field to prevent accidental spam
+                }
+            }
+        })
+    }
+
+    async UpdateChat(msg) { // placeholder function triggered by 'chat' event
+        let session = await socket.getSession()
+        let author = session.clients.find(client => client.id == msg.author)
+        let uid = session.clients.indexOf(author)
+
+        let msgContent = msg.content.replace('<', '&lt;').replace('>', '&gt;') // Sanitization on recieve (in case someone bypases the send sanitizer)
+
+        let chat = $('#socket-chat-display').html()
+        chat += `<div style="display: inline; color: ` + UI.memberColors[uid] + `; text-shadow: 2px 0px 1px #000000;">${author.name}</div>: ` + msgContent + `<br>`
+        $('#socket-chat-display').html(chat)
+
+
+        $("#socket-chat-display").scrollTop($("#socket-chat-display")[0].scrollHeight) // scroll chat to bottom
     }
 }

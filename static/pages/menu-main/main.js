@@ -7,6 +7,13 @@ socket.on('error_token', () => {
     DisplayMultiTabError()
 })
 
+// triggers when someone in ongoing session joins main menu
+socket.on('reconnect_to_game', () => {
+    window.alert('You are in ongoing game')
+    window.location = '/game'
+})
+
+
 socket.on('rooms_updated', async () => {
     if ($('#room-table').filter(":visible").length) DisplayRooms()
 })
