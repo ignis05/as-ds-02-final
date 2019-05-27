@@ -2,6 +2,7 @@ var game
 var ui
 var moves = []
 var token = Cookies.get('token')
+var mapData
 
 // ============================================================= //
 //  TODO: Move debug to external file (loaded first, universal)  //
@@ -16,13 +17,13 @@ $(document).ready(async () => {
 
     $('#loading').html(`<div id='loading-info'>Loading map: ${mapName}</div>`)
 
-    var mapData = await socket.getMapData() // load map from session instead of database
+    mapData = await socket.getMapData() // load map from session instead of database
 
     ui = new UI()
     ui.UpdateMinimap(mapData) // initial minimap calculation
 
-
     game = new Game('#game') // create game display in '#game' div
+    ui.debug_uiDisable(true)
 
     await game.loadMap(mapData)
 
@@ -32,7 +33,10 @@ $(document).ready(async () => {
 
     $('#loading').html('').css('display', 'none')
 
-    game.debug_cameraEnable(false, false, true)
+    game.camCtrl.initCamera()
+    game.debug_addAmbientLight(1)
+    game.debug_cameraEnable(true, false, true)
+
     ui.debug_uiDisable(false)
     ui.initChat()
     //game.enableOrbitContols()
