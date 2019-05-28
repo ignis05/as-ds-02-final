@@ -37,7 +37,7 @@ class UI {
 
         if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no units left to spawn
             game.debug_log(`All units spawned - removing spawn controls`, 0)
-            div.remove()
+            div.html('-- EMPTY --')
             return
         }
 
@@ -46,7 +46,11 @@ class UI {
         for (let unitName in game.avalUnits) {
             let container = $(`<div class='ui-spawn-controls-container'>`)
             container.appendTo(div)
-            container.html(`${unitName} : ${game.avalUnits[unitName]}`)
+            container.html(`<img src="https://vignette.wikia.nocookie.net/no-game-no-life/images/9/9e/Hatsuse_Izuna.png/revision/latest"><p>${unitName}: ${game.avalUnits[unitName]} left</p>`)
+            
+            if (!game.avalUnits[unitName])
+                container.addClass('ui-spawn-controls-container-empty') // Slightly fade out menu item when no more units available
+
             container.click(() => {
                 if (game.selectUnitToSpawn(unitName)) {
                     event.target.classList.add('ui-spawn-controls-container-active')
