@@ -228,48 +228,6 @@ body {
     justify-content: flex-start;
 }
 
-#ui-chat-open {
-    position: absolute;
-    text-align: center;
-    top: -80px;
-    left: 0;
-    /* margin-left: 10px; */
-    width: 300px;
-    height: 100px;
-    line-height: 20px;
-    background-color: #2F2F2F4F;
-    color: #DFDFDF4F;
-    transition: color 0.1s linear, background-color 0.1s linear;
-}
-
-#socket-chat-display {
-    width: 300px;
-    height: 80px;
-    overflow-x: visible;
-    overflow-y: scroll;
-    color: #2FCF2F;
-    text-shadow: 2px 0px 1px #000000;
-    text-align: left;
-    padding-left: 5px;
-}
-
-#socket-chat-input {
-    position: relative;
-    bottom: 0;
-    width: 100%;
-    padding: 5px;
-    caret-color: #2F7F2F;
-    background-color: #2222227F;
-    color: #DFDFDF;
-    font-weight: bolder;
-    border: none;
-}
-
-#ui-chat-open:hover {
-    background-color: #2F2F2FDF;
-    color: #DFDFDFDF;
-}
-
 #ui-minimap {
     width: 300px;
     height: 300px;
@@ -370,7 +328,7 @@ body {
 #ui-top-left-panel {
     height: 300px;
     width: 512px;
-    background-color: #7F2F2F7F;
+    /* background-color: #7F2F2F7F; */
     color: #2F7F2F;
     font-size: 3em;
     text-align: center;
@@ -379,6 +337,52 @@ body {
     flex-direction: row;
     align-items: flex-end;
     justify-content: space-between;
+}
+
+#ui-chat-open {
+    position: absolute;
+    text-align: center;
+    top: 20px;
+    left: 20px;
+    /* margin-left: 10px; */
+    width: 512px;
+    height: 300px;
+    line-height: 20px;
+    background-color: #2F2F2F4F;
+    color: #DFDFDF4F;
+    transition: color 0.1s linear, background-color 0.1s linear;
+}
+
+#socket-chat-display {
+    width: 512px;
+    height: 270px;
+    overflow-x: visible;
+    overflow-y: scroll;
+    color: #2FCF2F;
+    text-shadow: 2px 0px 1px #000000;
+    text-align: left;
+    padding: 0 5px;
+    font-size: 20px;
+    word-wrap: break-word;
+}
+
+#socket-chat-input {
+    position: relative;
+    bottom: 4px;
+    width: 100%;
+    height: 30px;
+    padding: 0 5px;
+    font-size: 20px;
+    caret-color: #2F7F2F;
+    background-color: #2222227F;
+    color: #DFDFDF;
+    font-weight: bolder;
+    border: none;
+}
+
+#ui-chat-open:hover {
+    background-color: #2F2F2FDF;
+    color: #DFDFDFDF;
 }
 
 /* #endregion */
@@ -439,14 +443,6 @@ body {
 /* #endregion */
 
 /* #region placeholder UI*/
-
-#ui-placeholder-game-controls {
-    position: fixed;
-    right: 0;
-    top: 0;
-    z-index: 999999999;
-    background: #aaaaaaaa;
-}
 
 #ui-placeholder-spawn-controls {
     height: 160px;

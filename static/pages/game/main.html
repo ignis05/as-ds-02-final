@@ -59,11 +59,12 @@
     <div id="loading"></div>
     <div id="overlay"></div>
     <div id="ui" style="display: none;">
-        <!-- placeholder -->
         <div id="ui-top-container">
-            <!-- WIP, disabled for current release -->
-            <div id="ui-top-left-panel" style="opacity: 0; pointer-events: none">
-
+            <div id="ui-top-left-panel">
+                <div id="ui-chat-open">
+                    <div id="socket-chat-display"></div>
+                    <input id="socket-chat-input">
+                </div>
             </div>
             <div id="ui-top-right-panel">
                 <div id="ui-top-buttons-container">
@@ -76,10 +77,6 @@
         </div>
 
         <div id="ui-bottom-container">
-            <div id="ui-chat-open">
-                <div id="socket-chat-display"></div>
-                <input id="socket-chat-input">
-            </div>
             <div id="ui-bottom-panel">
                 <div id="ui-minimap">
                     <canvas id="minimap-canvas"></canvas>
