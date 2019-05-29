@@ -8,7 +8,8 @@ class MapDisplay {
     renderMap(scene) {
 
         var group = new THREE.Group() // subclass of Object3D optimized for working as invisible container
-
+        var matrix = []
+        var iterator = 0
         for (let cell of this.level) {
             if (parseInt(cell.height) == 0) continue // dont create cells with height 0
 
@@ -35,10 +36,15 @@ class MapDisplay {
             let frame = new THREE.Mesh(_geometry, _material);
             cube.add(frame)
 
-            group.add(cube);
+            group.add(cube)
+
+            if(iterator % this.size == 0) matrix.push([])
+            iterator++
+            matrix[matrix.length-1].push(cube)
         }
 
         this.group = group
+        this.matrix = matrix
 
         if (scene) scene.add(group) // if scene given as parameter add generated content to scene
     }

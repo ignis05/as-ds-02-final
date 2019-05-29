@@ -53,7 +53,7 @@ $(document).ready(async () => {
 
     $('#button-test-addTestUnit').click(() => { // button to test moves - spawns testunit on radom tile
         let tile
-        // select random tile that doen't have unit on it
+        // select random tile that doesn't have unit on it
         do {
             tile = game.map.level[Math.floor(Math.random() * game.map.level.length)]
         } while (tile.unit)

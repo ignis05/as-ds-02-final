@@ -823,6 +823,23 @@ game.io.on('connect', socket => {
         res(client)
     })
 
+    socket.on('send_PF_Data', function (data, res) {
+        let grid
+        for (maps in loadedMaps) {
+            if (loadedMaps[maps].session == session.id) {
+                console.log("found one!");
+                
+                grid = loadedMaps[maps].grid.clone()
+                break
+            }
+        }
+        console.log(data);
+        data = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
+        console.log(data.length);
+
+        res(data)
+    })
+
     socket.on('end_turn', data => {
         let session = game.getSessionByClientID(socket.id)
         let client = game.getClientByID(socket.id)
@@ -908,7 +925,6 @@ pathfindingTest.io.on('connect', socket => {
         console.log(data.length);
 
         res(data)
-        //socket.emit('get_PF_Data', res)
     })
 
     // #endregion custom events
