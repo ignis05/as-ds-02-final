@@ -46,7 +46,7 @@ class UI {
         for (let unitName in game.avalUnits) {
             let container = $(`<div class='ui-spawn-controls-container'>`)
             container.appendTo(div)
-            container.html(`<img src="https://vignette.wikia.nocookie.net/no-game-no-life/images/9/9e/Hatsuse_Izuna.png/revision/latest"><p>${unitName}: ${game.avalUnits[unitName]} left</p>`)
+            container.html(`<img src="http://www.stleos.uq.edu.au/wp-content/uploads/2016/08/image-placeholder-350x350.png"><p>${unitName}: ${game.avalUnits[unitName]} left</p>`)
             
             if (!game.avalUnits[unitName])
                 container.addClass('ui-spawn-controls-container-empty') // Slightly fade out menu item when no more units available
