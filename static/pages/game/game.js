@@ -243,7 +243,7 @@ class Game {
         return false
     }
     initRaycaster_spawns() {
-        var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
+        var raycaster = new THREE.Raycaster();
         this.raycaster_spawns = raycaster
         this.debug_log(`Raycaster.spawns.initialized`, 0)
 
@@ -269,10 +269,11 @@ class Game {
         })
     }
     initRaycaster_unitSelect() {
-        var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
+        var raycaster = new THREE.Raycaster();
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
         var selectU = () => {
+            if (!this.myTurn) return // do nothing if someone else's turn
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
@@ -282,6 +283,7 @@ class Game {
             if (intersects.length > 0) {
                 this.selectedUnit = intersects[0].object.parent
                 console.log("selu", this.selectedUnit);
+                if (this.selectedUnit.owner != token) return // do nothing if someone else's unit
                 this.initRaycaster_movePoint(selectU)
                 $('#game').off('click', selectU)
             }
@@ -289,7 +291,7 @@ class Game {
         $('#game').on('click', selectU)
     }
     initRaycaster_movePoint(unitSelectFn) {
-        var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
+        var raycaster = new THREE.Raycaster();
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
         var moveU = () => {
@@ -309,22 +311,17 @@ class Game {
                     this.selectedTile = tile
 
                     socket.sendPFData({
-                        x: this.selectedUnit.userData.x,
-                        z: this.selectedUnit.userData.z,
+                        x: this.selectedUnit.tileData.x,
+                        z: this.selectedUnit.tileData.z,
                         xn: tile.x,
                         zn: tile.z
                     }).then((result) => {
-                        Pathfinder.moveTiles(result, this.map.matrix, this.map, this.selectedUnit, unitSelectFn)
-                        if (result.length <= 1) $('#game').on('click', unitSelectFn)
-                        moves.push({
-                            action: 'move',
-                            unitData: {
-                                x: tile.x,
-                                z: tile.z,
-                                height: this.map.level.find(ftile => ftile.x == tile.x && ftile.z == tile.z).height
-                            },
-                            unit: this.selectedUnit
-                        })
+                        console.log(result);
+                        if (result.length > 0) {
+                            let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
+                            this.moveUnit(result, tile.id, true)
+                        }
+                        $('#game').on('click', unitSelectFn)
                     })
                 }
             }
@@ -383,11 +380,11 @@ class Game {
         for (let move of moves) {
             if (move.action == 'spawn') {
                 this.spawnUnit(move.tileID, new Unit(move.unitData.name, move.unitData.owner))
-            } else
-            if (move.action == 'move') {
+            }
+            else if (move.action == 'move') {
                 console.log("selu", move);
-                move.unit.object.position.set(move.unitData.x * MASTER_BlockSizeParams.blockSize, move.unitData.height, move.unitData.z * MASTER_BlockSizeParams.blockSize)
-            }            
+                this.moveUnit(move.moves, move.tileID)
+            }
         }
     }
     async spawnUnit(tileID, unit, addToMoves) {
@@ -401,9 +398,10 @@ class Game {
         this.unitsSpawned.push(unit.container.clickBox)
         unit.addTo(this.scene)
         unit.position.set(size * tile.x, parseInt(tile.height), size * tile.z)
-        unit.container.userData.x = tile.x
-        unit.container.userData.z = tile.z
-        console.log(unit.container.userData);
+        unit.container.tileData = {}
+        unit.container.tileData.x = tile.x
+        unit.container.tileData.z = tile.z
+        console.log(unit.container.tileData);
 
 
         // add spawning unit to moves array - to be sent with turn end & notify server thta spawn wa used
@@ -424,6 +422,52 @@ class Game {
                 $("#button-end-turn").css("color", "initial");
             }
         }
+    }
+    moveUnit(path, tileID, addToMoves) {
+        if (addToMoves) {
+            moves.push({
+                action: 'move',
+                tileID: tileID,
+                moves: path,
+            })
+        }
+        let tile = this.map.level.find(tile => tile.id == tileID)
+        let unit = tile.unit.container
+        console.log(tile);
+        console.log(unit);
+
+
+        var movePath = path
+        var map = this.map
+        var matrix = map.matrix
+
+        let move = 0
+        var moveInterval = setInterval(() => {
+            if (move > movePath.length - 1) {
+                /*  console.log(clickFunction); */
+
+                /*  $('#game').on('click', clickFunction) */
+                window.clearInterval(moveInterval)
+                /* setTimeout(() => {
+                    for (let unmove in movePath) {
+                        let redTile = map.level.find(tile => tile.x == movePath[unmove][0] && tile.z == movePath[unmove][1])
+                        matrix[movePath[unmove][1]][movePath[unmove][0]].material.color.set(MASTER_BlockTypes[redTile.type].game.color)
+                    }
+                }, 1000) */
+            } else {
+                console.log(movePath[move]);
+                unit.tileData.z = movePath[move][1]
+                unit.tileData.x = movePath[move][0]
+                unit.position.y = matrix[unit.tileData.z][unit.tileData.x].position.y * 2
+                unit.position.set(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize)
+                console.log(unit.position);
+                /*  matrix[unit.tileData.z][unit.tileData.x].material.color.set(0xff0000) */
+                console.log(matrix[unit.tileData.z][unit.tileData.x].position);
+                move++
+            }
+        }, 250)
+
+        /* Pathfinder.moveTiles(moves, this.map.matrix, this.map, unit.container) */
     }
     // #endregion functions
 }

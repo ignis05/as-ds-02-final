@@ -32,6 +32,7 @@ class Unit {
         this.container.add(box)
         this.container.model = this.model
         this.container.clickBox = box
+        this.container.owner = ownerToken
 
         // statistics
         this.mobility = unitData.stats.mobility
