@@ -59,27 +59,24 @@
     <div id="loading"></div>
     <div id="overlay"></div>
     <div id="ui" style="display: none;">
-        <!-- placeholder -->
-        <div id='ui-placeholder-game-controls'>
-            <button id="button-end-turn" disabled="true">END TURN</button>
-            <div id='ui-placeholder-spawn-controls'>
-            </div>
-        </div>
-        <div id="ui-top-container" style="display: none">
-            <!-- WIP, disabled for current release -->
+        <div id="ui-top-container">
             <div id="ui-top-left-panel">
-
+                <div id="ui-chat-open">
+                    <div id="socket-chat-display"></div>
+                    <input id="socket-chat-input">
+                </div>
             </div>
             <div id="ui-top-right-panel">
-
+                <div id="ui-top-buttons-container">
+                    <button id="temp" disabled="true">TEMP</button>
+                    <button id="temp" disabled="true">TEMP</button>
+                    <button id="temp" disabled="true">TEMP</button>
+                    <button id="button-end-turn" disabled="true">END TURN</button>
+                </div>
             </div>
         </div>
 
         <div id="ui-bottom-container">
-            <div id="ui-chat-open">
-                <div id="socket-chat-display"></div>
-                <input id="socket-chat-input">
-            </div>
             <div id="ui-bottom-panel">
                 <div id="ui-minimap">
                     <canvas id="minimap-canvas"></canvas>
@@ -87,30 +84,40 @@
                 <div id="ui-main">
                     <div id="ui-build-cont">
                         <div id="ui-build-cats">
-                            <div id="ui-build-cat0" class="ui-build-cat selected">EMPTY
-                                <!-- Industry -->
+                            <!-- <div id="ui-build-cat0" class="ui-build-cat selected">
+                                Industry
                             </div>
-                            <div id="ui-build-cat1" class="ui-build-cat disabled">LOCKED
-                                <!-- Food -->
+                            <div id="ui-build-cat1" class="ui-build-cat disabled">
+                                Food
                             </div>
-                            <div id="ui-build-cat2" class="ui-build-cat disabled">LOCKED
-                                <!-- Civilian -->
+                            <div id="ui-build-cat2" class="ui-build-cat disabled">
+                                Civilian
                             </div>
-                            <div id="ui-build-cat3" class="ui-build-cat disabled">LOCKED
-                                <!-- Military -->
+                            <div id="ui-build-cat3" class="ui-build-cat disabled">
+                                Military
                             </div>
-                            <div id="ui-build-cat4" class="ui-build-cat disabled">LOCKED
-                                <!-- Castle -->
+                            <div id="ui-build-cat4" class="ui-build-cat disabled">
+                                Castle
+                            </div> -->
+                            <div id="ui-temp-cat0" class="ui-build-cat selected">
+                                Melee
                             </div>
+                            <div id="ui-temp-cat1" class="ui-build-cat disabled">
+                                Ranged
+                            </div>
+                            <div id="ui-placeholder-cat2" class="ui-placeholder-cat disabled"></div>
                         </div>
                         <div id="ui-build-tabs">
-                            <div id="ui-build-tab0" class="ui-build-tab">
-                                <!-- ui-build-tab0 -->
-                            </div>
+                            <!-- <div id="ui-build-tab0" class="ui-build-tab"></div>
                             <div id="ui-build-tab1" class="ui-build-tab" style="display: none">ui-build-tab1</div>
                             <div id="ui-build-tab2" class="ui-build-tab" style="display: none">ui-build-tab2</div>
                             <div id="ui-build-tab3" class="ui-build-tab" style="display: none">ui-build-tab3</div>
-                            <div id="ui-build-tab4" class="ui-build-tab" style="display: none">ui-build-tab4</div>
+                            <div id="ui-build-tab4" class="ui-build-tab" style="display: none">ui-build-tab4</div> -->
+                            <div id="ui-temp-tab0" class="ui-build-tab">
+                                <div id="ui-placeholder-spawn-controls">
+                                </div>
+                            </div>
+                            <div id="ui-temp-tab1" class="ui-build-tab" style="display: none"></div>
                         </div>
                     </div>
                     <div id="ui-units-cont" style="display: none;">
