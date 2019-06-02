@@ -68,6 +68,7 @@ class Game {
         this.initRaycaster_unitSelect()
 
         this.myTurn = false
+        this.spawnTurn = true
         this.unitToSpawn = null // unit that will be spawned on click
         this.avalUnits // units avalible for this player to spawn
         socket.getMyself().then(me => {
@@ -233,6 +234,7 @@ class Game {
             $("#button-end-turn").css("color", "blue")
         } else { // if normal turn
             $("#button-end-turn").attr("disabled", false)
+            this.spawnTurn = false
         }
     }
     selectUnitToSpawn(unitName) {
@@ -273,7 +275,7 @@ class Game {
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
         var selectU = () => {
-            if (!this.myTurn) return // do nothing if someone else's turn
+            if (!this.myTurn || this.spawnTurn) return // do nothing if someone else's turn or its spawning turn
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
