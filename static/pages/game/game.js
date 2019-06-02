@@ -424,6 +424,11 @@ class Game {
         }
     }
     moveUnit(path, tileID, addToMoves) {
+        console.log('moving');
+        let tile = this.map.level.find(tile => tile.id == tileID)
+        if (!tile || !tile.unit) return
+        let unit = tile.unit.container
+
         if (addToMoves) {
             moves.push({
                 action: 'move',
@@ -431,8 +436,6 @@ class Game {
                 moves: path,
             })
         }
-        let tile = this.map.level.find(tile => tile.id == tileID)
-        let unit = tile.unit.container
         console.log(tile);
         console.log(unit);
 
@@ -448,13 +451,14 @@ class Game {
 
                 /*  $('#game').on('click', clickFunction) */
                 window.clearInterval(moveInterval)
-                /* setTimeout(() => {
-                    for (let unmove in movePath) {
-                        let redTile = map.level.find(tile => tile.x == movePath[unmove][0] && tile.z == movePath[unmove][1])
-                        matrix[movePath[unmove][1]][movePath[unmove][0]].material.color.set(MASTER_BlockTypes[redTile.type].game.color)
-                    }
-                }, 1000) */
-            } else {
+                let lastPos = movePath[movePath.length - 1]
+                console.log(lastPos);
+                let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
+                console.log(newTile);
+                newTile.unit = tile.unit
+                tile.unit = null
+            }
+            else {
                 console.log(movePath[move]);
                 unit.tileData.z = movePath[move][1]
                 unit.tileData.x = movePath[move][0]
@@ -466,6 +470,7 @@ class Game {
                 move++
             }
         }, 250)
+
 
         /* Pathfinder.moveTiles(moves, this.map.matrix, this.map, unit.container) */
     }
