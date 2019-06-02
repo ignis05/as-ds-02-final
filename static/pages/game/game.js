@@ -71,6 +71,7 @@ class Game {
         this.spawnTurn = true
         this.unitToSpawn = null // unit that will be spawned on click
         this.avalUnits // units avalible for this player to spawn
+        this.myUnits = [] // units belinging to current player
         socket.getMyself().then(me => {
             this.avalUnits = me.unitsToSpawn
             ui.UpdateSpawnControls()
@@ -232,9 +233,15 @@ class Game {
         if (Object.values(this.avalUnits).some(val => val > 0)) { // if spawning turn
             $("#button-end-turn").attr("disabled", true)
             $("#button-end-turn").css("color", "blue")
-        } else { // if normal turn
+            $('#turn-status').html('Spawning turn')
+        }
+        else { // if normal turn
             $("#button-end-turn").attr("disabled", false)
+            $('#turn-status').html('My turn')
             this.spawnTurn = false
+            for (let unit of this.myUnits) {
+                unit.canMakeMove = true
+            }
         }
     }
     selectUnitToSpawn(unitName) {
@@ -286,6 +293,11 @@ class Game {
                 this.selectedUnit = intersects[0].object.parent
                 console.log("selu", this.selectedUnit);
                 if (this.selectedUnit.owner != token) return // do nothing if someone else's unit
+                let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
+                console.log(this.myUnits);
+                console.log(tile.unit);
+                if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
+                $("#selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
                 this.initRaycaster_movePoint(selectU)
                 $('#game').off('click', selectU)
             }
@@ -324,6 +336,7 @@ class Game {
                             this.moveUnit(result, tile.id, true)
                         }
                         $('#game').on('click', unitSelectFn)
+                        $("#selected-unit").html('')
                     })
                 }
             }
@@ -404,6 +417,10 @@ class Game {
         unit.container.tileData.x = tile.x
         unit.container.tileData.z = tile.z
         console.log(unit.container.tileData);
+        if (unit.owner == token) {
+            this.myUnits.push(unit)
+            unit.canMakeMove = true // reset moves status on rejoin
+        }
 
 
         // add spawning unit to moves array - to be sent with turn end & notify server thta spawn wa used
@@ -422,6 +439,7 @@ class Game {
             if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
                 $("#button-end-turn").attr("disabled", false);
                 $("#button-end-turn").css("color", "initial");
+                $('#turn-status').html('No available moves')
             }
         }
     }
@@ -437,6 +455,7 @@ class Game {
                 tileID: tileID,
                 moves: path,
             })
+            tile.unit.canMakeMove = false
         }
         console.log(tile);
         console.log(unit);
@@ -459,6 +478,11 @@ class Game {
                 console.log(newTile);
                 newTile.unit = tile.unit
                 tile.unit = null
+
+                console.log(this.myUnits);
+                if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
+                    $('#turn-status').html('No available moves')
+                }
             }
             else {
                 console.log(movePath[move]);

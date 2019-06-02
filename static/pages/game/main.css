@@ -440,6 +440,32 @@ body {
     font-size: initial;
 }
 
+#selected-unit {
+    width: 200px;
+    height: 60px;
+    position: fixed;
+    top: 80px;
+    right: 150px;
+    background-color: #3F3F3F;
+    color: #AFAFAF;
+    font-size: initial;
+    z-index: 99999;
+    text-align: center;
+}
+
+#turn-status {
+    width: 200px;
+    height: 60px;
+    position: fixed;
+    top: 0px;
+    right: 150px;
+    background-color: #3F3F3F;
+    color: #AFAFAF;
+    font-size: initial;
+    z-index: 99999;
+    text-align: center;
+}
+
 /* #endregion */
 
 /* #region placeholder UI*/

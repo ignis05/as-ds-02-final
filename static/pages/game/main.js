@@ -49,6 +49,7 @@ $(document).ready(async () => {
         socket.endTurn(moves) // send array of made moves
         moves = [] // reset array of moves
         $("#button-end-turn").attr("disabled", true)
+        $('#turn-status').html('-')
     })
 
     $('#button-test-addTestUnit').click(() => { // button to test moves - spawns testunit on radom tile
