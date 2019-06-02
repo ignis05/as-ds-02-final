@@ -139,13 +139,15 @@ $(document).ready(async function () {
         scene.remove(light)
         var AMBlight = new THREE.AmbientLight(0xffffff); // soft white light
         scene.add(AMBlight);
-        $(document).on("keydown", () => {
-            $(document).off("keydown")
-            $(document.body.childNodes).css('display', 'initial')
-            scene.add(map.group)
-            scene.add(light)
-            scene.remove(AMBlight);
-            renderer.setClearColor(0x00CFFF)
+        $(document).on("keydown", (e) => {
+            if (e.key == 'Escape') {
+                $(document).off("keydown")
+                $(document.body.childNodes).css('display', 'initial')
+                scene.add(map.group)
+                scene.add(light)
+                scene.remove(AMBlight);
+                renderer.setClearColor(0x00CFFF)
+            }
         })
     })
 
