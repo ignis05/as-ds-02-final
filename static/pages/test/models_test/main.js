@@ -82,7 +82,7 @@ $(document).ready(async function () {
     let container = document.createElement("div")
     container.id = "modelSelector"
     container.style.position = "absolute"
-    container.style.top = "0"
+    container.style.top = "50px"
     container.style.right = "0"
     document.body.appendChild(container)
     models.forEach(model => {
@@ -128,6 +128,26 @@ $(document).ready(async function () {
                 }
             })
             $(container).append(button)
+        })
+    })
+
+    $("#screenshot_mode").click(() => {
+        $(document.body.childNodes).css('display', 'none')
+        $('#root').css('display', 'initial')
+        renderer.setClearColor(0x00ff00)
+        scene.remove(map.group)
+        scene.remove(light)
+        var AMBlight = new THREE.AmbientLight(0xffffff); // soft white light
+        scene.add(AMBlight);
+        $(document).on("keydown", (e) => {
+            if (e.key == 'Escape') {
+                $(document).off("keydown")
+                $(document.body.childNodes).css('display', 'initial')
+                scene.add(map.group)
+                scene.add(light)
+                scene.remove(AMBlight);
+                renderer.setClearColor(0x00CFFF)
+            }
         })
     })
 
