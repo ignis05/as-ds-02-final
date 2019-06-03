@@ -3,26 +3,53 @@ class MapDisplay {
     constructor(mapData) {
         this.size = mapData.size
         this.level = mapData.level
+        this.textureList = [] // Holds names of textures needed for this map, filled by buildTextureList()
+        this.texturePack = {} // Holds textures loaded by <loadTextures()>
     }
+
+    buildTextureList() {
+        for (let cell of this.level) {
+            if (this.textureList.indexOf(cell.type) == -1)
+                this.textureList.push(cell.type)
+        }
+    }
+
+    loadTextures() {
+        for (let type of this.textureList) {  // load each texture once
+            this.texturePack[type] = new THREE.TextureLoader().load('/static/res/textures/blocks/' + type + '.png')
+        }
+    }
+
     // generates 3D display of map (and if scene is given adds it to scene)
     renderMap(scene) {
 
-        var group = new THREE.Group() // subclass of Object3D optimized for working as invisible container
+        this.buildTextureList()
+        this.loadTextures()
+
+        let group = new THREE.Group() // subclass of Object3D optimized for working as invisible container
         var matrix = []
         var iterator = 0
         for (let cell of this.level) {
             if (parseInt(cell.height) == 0) continue // dont create cells with height 0
 
             // import const values
-            var size = MASTER_BlockSizeParams.blockSize
-            var color = MASTER_BlockTypes[cell.type].game.color
-            var walkable = MASTER_BlockTypes[cell.type].game.walkable
+            let size = MASTER_BlockSizeParams.blockSize
+            let color = MASTER_BlockTypes[cell.type].game.color
+            let walkable = MASTER_BlockTypes[cell.type].game.walkable
 
 
-            var geometry = new THREE.BoxGeometry(size, parseInt(cell.height), size);
-            var material = new THREE.MeshPhongMaterial({ color: color });
+            let geometry = new THREE.BoxGeometry(size, parseInt(cell.height), size)
+            let materials = []
+            let defMaterial = new THREE.MeshPhongMaterial({ color: color })
+            for (let i = 0; i < 6; i++) {
+                materials.push(defMaterial)  // set all sides of the cube to color mat
+            }
+            materials[2] = new THREE.MeshPhongMaterial({  // set top side of the cube to texture mat
+                side: THREE.DoubleSide,
+                map: this.texturePack[cell.type]
+            })
 
-            var cube = new THREE.Mesh(geometry, material);
+            let cube = new THREE.Mesh(geometry, materials)
             cube.receiveShadow = true
             cube.color = color
             cube.walkable = walkable
@@ -31,16 +58,16 @@ class MapDisplay {
             cube.position.set(size * cell.x, parseInt(cell.height) / 2, size * cell.z)
 
             // black frame - placeholder
-            var _geometry = new THREE.BoxGeometry(size, parseInt(cell.height), size);
-            var _material = new THREE.MeshLambertMaterial({ color: 0x000000, wireframe: true });
-            let frame = new THREE.Mesh(_geometry, _material);
-            cube.add(frame)
+            let _geometry = new THREE.BoxGeometry(size, parseInt(cell.height), size)
+            let _material = new THREE.MeshLambertMaterial({ color: 0x000000, wireframe: true })
+            let frame = new THREE.Mesh(_geometry, _material)
+            /* cube.add(frame) */
 
             group.add(cube)
 
-            if(iterator % this.size == 0) matrix.push([])
+            if (iterator % this.size == 0) matrix.push([])
             iterator++
-            matrix[matrix.length-1].push(cube)
+            matrix[matrix.length - 1].push(cube)
         }
 
         this.group = group
