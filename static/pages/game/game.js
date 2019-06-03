@@ -233,11 +233,11 @@ class Game {
         if (Object.values(this.avalUnits).some(val => val > 0)) { // if spawning turn
             $("#button-end-turn").attr("disabled", true)
             $("#button-end-turn").css("color", "blue")
-            $('#turn-status').html('Spawning turn')
+            $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
         }
         else { // if normal turn
             $("#button-end-turn").attr("disabled", false)
-            $('#turn-status').html('My turn')
+            $('#ui-top-turn-status').html('My turn').css('background-color', '#2FCF2F')
             this.spawnTurn = false
             for (let unit of this.myUnits) {
                 unit.canMakeMove = true
@@ -297,7 +297,7 @@ class Game {
                 console.log(this.myUnits);
                 console.log(tile.unit);
                 if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
-                $("#selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
+                $("#ui-top-selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
                 this.initRaycaster_movePoint(selectU)
                 $('#game').off('click', selectU)
             }
@@ -439,7 +439,7 @@ class Game {
             if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
                 $("#button-end-turn").attr("disabled", false);
                 $("#button-end-turn").css("color", "initial");
-                $('#turn-status').html('No available moves')
+                $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
             }
         }
     }
@@ -481,7 +481,7 @@ class Game {
 
                 console.log(this.myUnits);
                 if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
-                    $('#turn-status').html('No available moves')
+                    $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
                 }
             }
             else {
