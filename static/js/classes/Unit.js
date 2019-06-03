@@ -4,6 +4,8 @@ class Unit {
         let unitData = MASTER_Units[unitName]
 
         this.container = new THREE.Object3D()
+        this.container.model = null
+        this.container.clickBox = null
 
         if (unitData.modelURL) {
             // console.log(game.models[unitName])
@@ -24,6 +26,13 @@ class Unit {
             }
         }
         this.container.add(this.model.mesh)
+        let boxGeometry = new THREE.BoxGeometry(MASTER_BlockSizeParams.blockSize, MASTER_BlockSizeParams.blockSize, MASTER_BlockSizeParams.blockSize)
+        let boxMaterial = new THREE.MeshBasicMaterial({ color: (ownerToken == token ? 0x00ff00 : 0x0000ff), opacity: 1 })
+        let box = new THREE.Mesh(boxGeometry, boxMaterial)
+        this.container.add(box)
+        this.container.model = this.model
+        this.container.clickBox = box
+        this.container.owner = ownerToken
 
         // statistics
         this.mobility = unitData.stats.mobility
