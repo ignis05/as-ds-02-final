@@ -18,12 +18,18 @@ class Game {
         this.models = {} // all models meshes will be loaded here when game is started
         this.modelsLoaded = false
 
+        this.unitsSpawned = []
+        this.selectedUnit = null
+        this.selectedTile = null
+
         let aaOn = Cookies.get('settings-aaOn') === 'true'
         let resScale = Cookies.get('settings-resScale')
         this.debug_log('Renderer.antialias: ' + aaOn, 0)
         this.debug_log('Renderer.resScale: ' + resScale, 0)
 
-        var renderer = new THREE.WebGLRenderer({ antialias: aaOn })
+        var renderer = new THREE.WebGLRenderer({
+            antialias: aaOn
+        })
         this.renderer = renderer
         renderer.shadowMap.enabled = true;
         renderer.shadowMapSoft = true;
@@ -59,10 +65,13 @@ class Game {
         this.initDebugKeyListener()
 
         this.initRaycaster_spawns()
+        this.initRaycaster_unitSelect()
 
         this.myTurn = false
+        this.spawnTurn = true
         this.unitToSpawn = null // unit that will be spawned on click
         this.avalUnits // units avalible for this player to spawn
+        this.myUnits = [] // units belinging to current player
         socket.getMyself().then(me => {
             this.avalUnits = me.unitsToSpawn
             ui.UpdateSpawnControls()
@@ -80,7 +89,9 @@ class Game {
     // #region test functions
     addTestCube(size) {
         var geometry = new THREE.BoxGeometry(size, size, size)
-        var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+        var material = new THREE.MeshBasicMaterial({
+            color: 0x00ff00
+        })
         var cube = new THREE.Mesh(geometry, material)
         this.scene.add(cube)
     }
@@ -208,7 +219,9 @@ class Game {
         if (displayTest) {
             // sphere to test shadows without models
             var sphereGeometry = new THREE.SphereBufferGeometry(20, 32, 32);
-            var sphereMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000 });
+            var sphereMaterial = new THREE.MeshStandardMaterial({
+                color: 0xff0000
+            });
             var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
             sphere.castShadow = true;
             this.scene.add(sphere);
@@ -217,12 +230,18 @@ class Game {
     }
     activateMyTurn() {
         console.log('My turn');
-        if (Object.values(this.avalUnits).some(val => val > 0)) {  // if spawning turn
+        if (Object.values(this.avalUnits).some(val => val > 0)) { // if spawning turn
             $("#button-end-turn").attr("disabled", true)
             $("#button-end-turn").css("color", "blue")
+            $('#turn-status').html('Spawning turn')
         }
         else { // if normal turn
             $("#button-end-turn").attr("disabled", false)
+            $('#turn-status').html('My turn')
+            this.spawnTurn = false
+            for (let unit of this.myUnits) {
+                unit.canMakeMove = true
+            }
         }
     }
     selectUnitToSpawn(unitName) {
@@ -233,7 +252,7 @@ class Game {
         return false
     }
     initRaycaster_spawns() {
-        var raycaster = new THREE.Raycaster(); // obiekt symulujący "rzucanie" promieni
+        var raycaster = new THREE.Raycaster();
         this.raycaster_spawns = raycaster
         this.debug_log(`Raycaster.spawns.initialized`, 0)
 
@@ -257,6 +276,72 @@ class Game {
                 }
             }
         })
+    }
+    initRaycaster_unitSelect() {
+        var raycaster = new THREE.Raycaster();
+        this.raycaster_unitSelect = raycaster
+        this.debug_log(`Raycaster.unitSelect.initialized`, 0)
+        var selectU = () => {
+            if (!this.myTurn || this.spawnTurn) return // do nothing if someone else's turn or its spawning turn
+            var mouseVector = new THREE.Vector2()
+            mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
+            mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
+            raycaster.setFromCamera(mouseVector, this.camera);
+            var intersects = raycaster.intersectObjects(this.unitsSpawned, true);
+
+            if (intersects.length > 0) {
+                this.selectedUnit = intersects[0].object.parent
+                console.log("selu", this.selectedUnit);
+                if (this.selectedUnit.owner != token) return // do nothing if someone else's unit
+                let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
+                console.log(this.myUnits);
+                console.log(tile.unit);
+                if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
+                $("#selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
+                this.initRaycaster_movePoint(selectU)
+                $('#game').off('click', selectU)
+            }
+        }
+        $('#game').on('click', selectU)
+    }
+    initRaycaster_movePoint(unitSelectFn) {
+        var raycaster = new THREE.Raycaster();
+        this.raycaster_unitSelect = raycaster
+        this.debug_log(`Raycaster.unitSelect.initialized`, 0)
+        var moveU = () => {
+            var mouseVector = new THREE.Vector2()
+            mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
+            mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
+            raycaster.setFromCamera(mouseVector, this.camera);
+            var intersects = raycaster.intersectObjects(this.map.group.children, true);
+
+            if (intersects.length > 0) {
+                let obj = intersects[0].object
+                console.log(obj);
+                let tile = this.map.level.find(tile => tile.id == obj.tileID)
+                console.log(tile);
+                if (tile.type != "rock" && tile.type != "river" && tile.type != "sea") {
+                    $('#game').off('click', moveU)
+                    this.selectedTile = tile
+
+                    socket.sendPFData({
+                        x: this.selectedUnit.tileData.x,
+                        z: this.selectedUnit.tileData.z,
+                        xn: tile.x,
+                        zn: tile.z
+                    }).then((result) => {
+                        console.log(result);
+                        if (result.length > 0) {
+                            let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
+                            this.moveUnit(result, tile.id, true)
+                        }
+                        $('#game').on('click', unitSelectFn)
+                        $("#selected-unit").html('')
+                    })
+                }
+            }
+        }
+        $('#game').on('click', moveU)
     }
     loadModels() { // load all models to single array
         return new Promise(async resolve => {
@@ -295,12 +380,25 @@ class Game {
                 },
             tileID: _id_of_tile_unit_should_be_spawned_on
             }
+            {
+            action: 'move',
+            unitData: {
+                x: _x_position,
+                z: _z_position,
+                height: _guess
+                },
+            unit: unit_which_is_used
+            }
         */
         console.log('renering moves:');
         console.log(moves);
         for (let move of moves) {
             if (move.action == 'spawn') {
                 this.spawnUnit(move.tileID, new Unit(move.unitData.name, move.unitData.owner))
+            }
+            else if (move.action == 'move') {
+                console.log("selu", move);
+                this.moveUnit(move.moves, move.tileID)
             }
         }
     }
@@ -312,8 +410,18 @@ class Game {
             return
         }
         tile.unit = unit
+        this.unitsSpawned.push(unit.container.clickBox)
         unit.addTo(this.scene)
         unit.position.set(size * tile.x, parseInt(tile.height), size * tile.z)
+        unit.container.tileData = {}
+        unit.container.tileData.x = tile.x
+        unit.container.tileData.z = tile.z
+        console.log(unit.container.tileData);
+        if (unit.owner == token) {
+            this.myUnits.push(unit)
+            unit.canMakeMove = true // reset moves status on rejoin
+        }
+
 
         // add spawning unit to moves array - to be sent with turn end & notify server thta spawn wa used
         // should be true when performed manually, undefind when performed by script rendering other player's moves
@@ -331,8 +439,66 @@ class Game {
             if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
                 $("#button-end-turn").attr("disabled", false);
                 $("#button-end-turn").css("color", "initial");
+                $('#turn-status').html('No available moves')
             }
         }
+    }
+    moveUnit(path, tileID, addToMoves) {
+        console.log('moving');
+        let tile = this.map.level.find(tile => tile.id == tileID)
+        if (!tile || !tile.unit) return
+        let unit = tile.unit.container
+
+        if (addToMoves) {
+            moves.push({
+                action: 'move',
+                tileID: tileID,
+                moves: path,
+            })
+            tile.unit.canMakeMove = false
+        }
+        console.log(tile);
+        console.log(unit);
+
+
+        var movePath = path
+        var map = this.map
+        var matrix = map.matrix
+
+        let move = 0
+        var moveInterval = setInterval(() => {
+            if (move > movePath.length - 1) {
+                /*  console.log(clickFunction); */
+
+                /*  $('#game').on('click', clickFunction) */
+                window.clearInterval(moveInterval)
+                let lastPos = movePath[movePath.length - 1]
+                console.log(lastPos);
+                let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
+                console.log(newTile);
+                newTile.unit = tile.unit
+                tile.unit = null
+
+                console.log(this.myUnits);
+                if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
+                    $('#turn-status').html('No available moves')
+                }
+            }
+            else {
+                console.log(movePath[move]);
+                unit.tileData.z = movePath[move][1]
+                unit.tileData.x = movePath[move][0]
+                unit.position.y = matrix[unit.tileData.z][unit.tileData.x].position.y * 2
+                unit.position.set(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize)
+                console.log(unit.position);
+                /*  matrix[unit.tileData.z][unit.tileData.x].material.color.set(0xff0000) */
+                console.log(matrix[unit.tileData.z][unit.tileData.x].position);
+                move++
+            }
+        }, 250)
+
+
+        /* Pathfinder.moveTiles(moves, this.map.matrix, this.map, unit.container) */
     }
     // #endregion functions
 }

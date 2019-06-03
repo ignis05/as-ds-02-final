@@ -34,11 +34,12 @@ $(document).ready(async () => {
     $('#loading').html('').css('display', 'none')
 
     game.camCtrl.initCamera()
-    game.debug_addAmbientLight(1)
+    // game.debug_addAmbientLight(1)
     game.debug_cameraEnable(true, false, true)
 
     ui.debug_uiDisable(false)
     ui.initChat()
+    ui.debug_perfMonitor()
     //game.enableOrbitContols()
     game.addSunLight()
 
@@ -49,11 +50,12 @@ $(document).ready(async () => {
         socket.endTurn(moves) // send array of made moves
         moves = [] // reset array of moves
         $("#button-end-turn").attr("disabled", true)
+        $('#turn-status').html('-')
     })
 
     $('#button-test-addTestUnit').click(() => { // button to test moves - spawns testunit on radom tile
         let tile
-        // select random tile that doen't have unit on it
+        // select random tile that doesn't have unit on it
         do {
             tile = game.map.level[Math.floor(Math.random() * game.map.level.length)]
         } while (tile.unit)

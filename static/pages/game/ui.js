@@ -47,7 +47,7 @@ class UI {
             let container = $(`<div class='ui-spawn-controls-container'>`)
             container.appendTo(div)
             container.html(`<img src="http://www.stleos.uq.edu.au/wp-content/uploads/2016/08/image-placeholder-350x350.png"><p>${unitName}: ${game.avalUnits[unitName]} left</p>`)
-            
+
             if (!game.avalUnits[unitName])
                 container.addClass('ui-spawn-controls-container-empty') // Slightly fade out menu item when no more units available
 
@@ -74,6 +74,25 @@ class UI {
                 }
             }
         })
+    }
+
+    debug_perfMonitor() {
+        var stats = new Stats();
+        stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
+        document.body.appendChild(stats.dom);
+
+        function animate() {
+
+            stats.begin();
+
+            // monitored code goes here
+
+            stats.end();
+
+            requestAnimationFrame(animate);
+
+        }
+        requestAnimationFrame(animate);
     }
 
     async UpdateChat(msg) { // placeholder function triggered by 'chat' event

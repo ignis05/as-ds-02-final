@@ -42,6 +42,16 @@ socket.send = function (msg) { // chat msg
     socket.emit('send', msg)
 }
 
+socket.sendPFData = async (positions) => {
+    return new Promise(resolve => {
+        socket.emit('send_PF_Data', positions, res => {
+            let data = res
+            console.log("data for PF:", data);
+            resolve(res)
+        })
+    })
+}
+
 // #region socket triggers
 
 socket.on('chat', msg => {
