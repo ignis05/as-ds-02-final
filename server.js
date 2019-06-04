@@ -542,7 +542,8 @@ lobby.io.on('connect', socket => {
         console.log('-->> MAPDATA:');
         console.log(game.sessions[game.sessions.length - 1].mapData);
 
-        loadedMaps.push({ grid: new PF.Grid(createMatrix(map.mapData)), session: sessionId })
+        let matrix = createMatrix(map.mapData)
+        loadedMaps.push({ matrix: matrix, session: sessionId })
         lobby.io.to(room.name).emit('startGame')
     })
 
@@ -824,20 +825,35 @@ game.io.on('connect', socket => {
     })
 
     socket.on('send_PF_Data', function (data, res) {
+        let matrix
         let grid
-        for (maps in loadedMaps) {
+        let PFpath
+        for (let maps in loadedMaps) {
             if (loadedMaps[maps].session == session.id) {
                 console.log("found one!");
                 
-                grid = loadedMaps[maps].grid.clone()
+                matrix = loadedMaps[maps].matrix
+                grid = new PF.Grid(matrix)
                 break
             }
         }
         console.log(data);
-        data = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
-        console.log(data.length);
+        PFpath = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
+        if(PFpath.length > 1){
+            matrix[data.z][data.x][0] = 0
+            matrix[data.zn][data.xn][0] = 1
+        }
+        res(PFpath)
+    })
 
-        res(data)
+    socket.on('send_Spawn_Data', function (data, res) {
+        for (let maps in loadedMaps) {
+            if (loadedMaps[maps].session == session.id) {
+                console.log("found one!");
+                loadedMaps[maps].matrix[data.z][data.x][0] = 1
+                break
+            }
+        }
     })
 
     socket.on('end_turn', data => {
