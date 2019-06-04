@@ -46,7 +46,8 @@ class MapDisplay {
             }
             materials[2] = new THREE.MeshPhongMaterial({  // set top side of the cube to texture mat
                 side: THREE.DoubleSide,
-                map: this.texturePack[cell.type]
+                map: this.texturePack[cell.type],
+                color: color
             })
 
             let cube = new THREE.Mesh(geometry, materials)

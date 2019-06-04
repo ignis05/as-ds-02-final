@@ -66,11 +66,13 @@ class Game {
 
         this.initRaycaster_spawns()
         this.initRaycaster_unitSelect()
+        this.initRaycaster_movePoint()
 
         this.myTurn = false
         this.spawnTurn = true
         this.unitToSpawn = null // unit that will be spawned on click
         this.avalUnits // units avalible for this player to spawn
+        this.avalMoveTab = [] // tab of possible moves
         this.myUnits = [] // units belinging to current player
         socket.getMyself().then(me => {
             this.avalUnits = me.unitsToSpawn
@@ -281,7 +283,7 @@ class Game {
         var raycaster = new THREE.Raycaster();
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
-        var selectU = () => {
+        this.selectU = () => {
             if (!this.myTurn || this.spawnTurn) return // do nothing if someone else's turn or its spawning turn
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
@@ -297,18 +299,41 @@ class Game {
                 console.log(this.myUnits);
                 console.log(tile.unit);
                 if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
+
                 $("#ui-top-selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
-                this.initRaycaster_movePoint(selectU)
-                $('#game').off('click', selectU)
+                let attackRange = MASTER_Units[this.selectedUnit.model.name].stats.range
+                console.log(attackRange);
+                let moveRange = MASTER_Units[this.selectedUnit.model.name].stats.mobility
+                console.log(moveRange);
+                for (var i = -moveRange; i <= moveRange; i++) {
+                    for (var j = -moveRange; j <= moveRange; j++) {
+                        if (parseInt(this.selectedUnit.tileData.z) + i >= 0 &&
+                            parseInt(this.selectedUnit.tileData.z) + i < this.map.size &&
+                            parseInt(this.selectedUnit.tileData.x) + j >= 0 &&
+                            parseInt(this.selectedUnit.tileData.x) + j < this.map.size &&
+                            Math.abs(i) + Math.abs(j) <= moveRange) {
+                            let avalMove = {
+                                x: parseInt(this.selectedUnit.tileData.x) + j,
+                                z: parseInt(this.selectedUnit.tileData.z) + i
+                            }
+                            if (this.map.matrix[avalMove.z][avalMove.x].walkable) {
+                                this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
+                                this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
+                            }
+                        }
+                    }
+                }
+                $('#game').on('click', this.moveU)
+                $('#game').off('click', this.selectU)
             }
         }
-        $('#game').on('click', selectU)
+        $('#game').on('click', this.selectU)
     }
-    initRaycaster_movePoint(unitSelectFn) {
+    initRaycaster_movePoint() {
         var raycaster = new THREE.Raycaster();
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
-        var moveU = () => {
+        this.moveU = () => {
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
@@ -321,9 +346,11 @@ class Game {
                 let tile = this.map.level.find(tile => tile.id == obj.tileID)
                 console.log(tile);
                 if (tile.type != "rock" && tile.type != "river" && tile.type != "sea") {
-                    $('#game').off('click', moveU)
+                    $('#game').off('click', this.moveU)
                     this.selectedTile = tile
-
+                    for (let recolor of this.avalMoveTab) {
+                        recolor.material[2].color.set(recolor.color)
+                    }
                     socket.sendPFData({
                         x: this.selectedUnit.tileData.x,
                         z: this.selectedUnit.tileData.z,
@@ -335,13 +362,13 @@ class Game {
                             let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
                             this.moveUnit(result, tile.id, true)
                         }
-                        $('#game').on('click', unitSelectFn)
+                        $('#game').on('click', this.selectU)
+                        this.avalMoveTab = []
                         $("#selected-unit").html('')
                     })
                 }
             }
         }
-        $('#game').on('click', moveU)
     }
     loadModels() { // load all models to single array
         return new Promise(async resolve => {
@@ -395,8 +422,7 @@ class Game {
         for (let move of moves) {
             if (move.action == 'spawn') {
                 this.spawnUnit(move.tileID, new Unit(move.unitData.name, move.unitData.owner))
-            }
-            else if (move.action == 'move') {
+            } else if (move.action == 'move') {
                 console.log("selu", move);
                 this.moveUnit(move.moves, move.tileID)
             }
@@ -412,6 +438,11 @@ class Game {
         tile.unit = unit
         this.unitsSpawned.push(unit.container.clickBox)
         unit.addTo(this.scene)
+        socket.sendSpawnData({
+            x: tile.x,
+            z: tile.z
+        })
+        this.map.matrix[tile.z][tile.x].walkable = false
         unit.position.set(size * tile.x, parseInt(tile.height), size * tile.z)
         unit.container.tileData = {}
         unit.container.tileData.x = tile.x
@@ -474,6 +505,8 @@ class Game {
                 window.clearInterval(moveInterval)
                 let lastPos = movePath[movePath.length - 1]
                 console.log(lastPos);
+                map.matrix[movePath[0][1]][movePath[0][0]].walkable = true
+                map.matrix[lastPos[1]][lastPos[0]].walkable = false
                 let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
                 console.log(newTile);
                 newTile.unit = tile.unit
@@ -483,8 +516,7 @@ class Game {
                 if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
                     $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
                 }
-            }
-            else {
+            } else {
                 console.log(movePath[move]);
                 unit.tileData.z = movePath[move][1]
                 unit.tileData.x = movePath[move][0]

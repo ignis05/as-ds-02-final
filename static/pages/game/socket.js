@@ -52,6 +52,13 @@ socket.sendPFData = async (positions) => {
     })
 }
 
+socket.sendSpawnData = async (positions) => {
+    return new Promise(resolve => {
+        socket.emit('send_Spawn_Data', positions, res => {
+            resolve('ok')
+        })
+    })
+}
 // #region socket triggers
 
 socket.on('chat', msg => {
