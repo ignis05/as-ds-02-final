@@ -538,6 +538,7 @@ lobby.io.on('connect', socket => {
             inProgress: false, // if session is already in progress
             movesList: [], // list of changes to map since start of the game
             unitsToSpawn: JSON.parse(JSON.stringify(room.units)), // refrence for whole room - to load all models at start
+            tempMatrixChanges: [],
         })
         console.log('-->> MAPDATA:');
         console.log(game.sessions[game.sessions.length - 1].mapData);
@@ -773,6 +774,17 @@ game.io.on('connect', socket => {
 
         session.clients[session.clients.indexOf(client)].connected = false
 
+        if (client.tempMatrixChanges.length > 0) { // client modified matrix, but didnt upload moves to server - restore matrix
+            let map = (loadedMaps.find(map => map.session == session.id))
+            if (map && map.matrix) {
+                let matrix = map.matrix
+                for (let change of client.tempMatrixChanges) {
+                    matrix[change.old.z][change.old.x][0] = 1
+                    matrix[change.new.z][change.new.x][0] = 0
+                }
+            }
+        }
+
         // delete session if last player leaves
         let empty = true
         for (let client of session.clients) {
@@ -825,23 +837,32 @@ game.io.on('connect', socket => {
     })
 
     socket.on('send_PF_Data', function (data, res) {
+        let client = game.getClientByID(socket.id)
         let matrix
         let grid
         let PFpath
+
+        // michał pls
+        matrix = (loadedMaps.find(map => map.session == session.id)).matrix
+        grid = new PF.Grid(matrix)
+        /* 
         for (let maps in loadedMaps) {
             if (loadedMaps[maps].session == session.id) {
                 console.log("found one!");
-                
+
                 matrix = loadedMaps[maps].matrix
                 grid = new PF.Grid(matrix)
                 break
             }
-        }
+        } 
+        */
+
         console.log(data);
         PFpath = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
-        if(PFpath.length > 1){
+        if (PFpath.length > 1) {
             matrix[data.z][data.x][0] = 0
             matrix[data.zn][data.xn][0] = 1
+            client.tempMatrixChanges.push({ old: { z: data.z, x: data.x }, new: { z: data.zn, x: data.xn } }) // save move as not uploaded
         }
         res(PFpath)
     })
@@ -860,6 +881,7 @@ game.io.on('connect', socket => {
         let session = game.getSessionByClientID(socket.id)
         let client = game.getClientByID(socket.id)
 
+        client.tempMatrixChanges = [] //  clear not uploaded moves
 
         for (let move of data) {
             // ---
