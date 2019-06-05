@@ -11,6 +11,7 @@ class Unit {
             // console.log(game.models[unitName])
             this.model = game.models[unitName].pop() // pops model from array of loaded models
             this.model.mesh.scale.set(unitData.scale, unitData.scale, unitData.scale) // scale model
+            this.model.mesh.position.y = unitData.posY // move model vertically - for flying units
 
             // enable shadows - for each model's mesh
             this.model.mesh.castShadow = true

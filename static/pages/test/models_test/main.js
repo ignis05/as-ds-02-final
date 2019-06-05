@@ -113,6 +113,7 @@ $(document).ready(async function () {
                     testmodel.mesh.position.copy(center.position.clone())
                     if (MASTER_Units[model.name]) {
                         testmodel.mesh.scale.set(MASTER_Units[model.name].scale, MASTER_Units[model.name].scale, MASTER_Units[model.name].scale)
+                        testmodel.mesh.position.y += MASTER_Units[model.name].posY
                     }
                     // enable shadows
                     testmodel.mesh.castShadow = true
