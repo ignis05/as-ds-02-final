@@ -730,6 +730,7 @@ game.io.on('connect', socket => {
 
         client.id = socket.id // update socket id
         client.connected = true // update status
+        client.tempMatrixChanges = []
 
     }
     else {
@@ -779,9 +780,10 @@ game.io.on('connect', socket => {
             if (map && map.matrix) {
                 let matrix = map.matrix
                 for (let change of client.tempMatrixChanges) {
-                    matrix[change.old.z][change.old.x][0] = 1
+                    if (change.old) matrix[change.old.z][change.old.x][0] = 1
                     matrix[change.new.z][change.new.x][0] = 0
                 }
+                client.tempMatrixChanges = []
             }
         }
 
@@ -868,10 +870,14 @@ game.io.on('connect', socket => {
     })
 
     socket.on('send_Spawn_Data', function (data, res) {
+        let client = game.getClientByID(socket.id)
+        console.log('873');
+        console.log(client);
         for (let maps in loadedMaps) {
             if (loadedMaps[maps].session == session.id) {
                 console.log("found one!");
                 loadedMaps[maps].matrix[data.z][data.x][0] = 1
+                client.tempMatrixChanges.push({ new: { z: data.z, x: data.x } })
                 break
             }
         }
