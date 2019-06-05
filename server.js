@@ -96,6 +96,9 @@ app.get("/lobby", function (req, res) {
 app.get("/game", function (req, res) {
     res.sendFile(path.join(__dirname + `/static/pages/game/main.html`))
 })
+app.get("/favicon.ico", function (req, res) { // default favicon for all pages
+    res.sendFile(path.join(__dirname + `/static/res/img/favicon.png`))
+})
 // #endregion static routing
 
 // automatic routing

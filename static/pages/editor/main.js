@@ -591,7 +591,7 @@ function DisplayWorking(title = 'Please wait...') {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('<img id=\'popup-working-spinner\' src=\'/static/res/img/flavicon.png\'>')
+    popup.append('<img id=\'popup-working-spinner\' src=\'/static/res/img/favicon.png\'>')
 
     popup.dialog({
         closeOnEscape: false,
