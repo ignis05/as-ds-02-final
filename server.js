@@ -248,7 +248,7 @@ app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
     let models = []
     dirs.forEach(dir => {
-        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf")).map(file => `${dir}/${file}`)
+        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf")|| filename.endsWith(".obj")).map(file => `${dir}/${file}`)
         models.push({
             name: dir,
             files: files
