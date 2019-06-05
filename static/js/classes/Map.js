@@ -30,7 +30,6 @@ class MapDisplay {
         var matrix = []
         var iterator = 0
         for (let cell of this.level) {
-            if (parseInt(cell.height) == 0) continue // dont create cells with height 0
 
             // import const values
             let size = MASTER_BlockSizeParams.blockSize
@@ -55,6 +54,9 @@ class MapDisplay {
             cube.color = color
             cube.walkable = walkable
             cube.tileID = cell.id
+            if (parseInt(cell.height) == 0) cube.visible = false // invisible cell
+
+
 
             cube.position.set(size * cell.x, parseInt(cell.height) / 2, size * cell.z)
 
