@@ -111,6 +111,9 @@ $(document).ready(async function () {
                     await testmodel.load()
                     testmodel.addTo(scene)
                     testmodel.mesh.position.copy(center.position.clone())
+                    if (MASTER_Units[model.name]) {
+                        testmodel.mesh.scale.set(MASTER_Units[model.name].scale, MASTER_Units[model.name].scale, MASTER_Units[model.name].scale)
+                    }
                     // enable shadows
                     testmodel.mesh.castShadow = true
                     testmodel.mesh.traverse(node => {
