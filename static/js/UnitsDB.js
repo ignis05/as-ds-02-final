@@ -55,4 +55,15 @@ const MASTER_Units = {
             range: 1
         },
     },
+    skeleton: {
+        modelURL: '/static/res/models/skeleton/model.obj',
+        scale: 15,
+        posY: 127,
+        stats: {
+            mobility: 5,
+            health: 10,
+            damage: 5,
+            range: 1
+        },
+    },
 }
