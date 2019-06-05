@@ -33,4 +33,15 @@ const MASTER_Units = {
             range: 1
         },
     },
+    dragon: {
+        modelURL: '/static/res/models/dragon/model.fbx',
+        scale: 0.015,
+        posY: 0,
+        stats: {
+            mobility: 8,
+            health: 10,
+            damage: 50,
+            range: 1
+        },
+    },
 }
