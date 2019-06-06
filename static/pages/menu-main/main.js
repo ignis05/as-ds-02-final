@@ -772,7 +772,7 @@ function RoomSetup(list) {
     $('#dialog').append(sizeCont)
 
     let sizeLbl = $('<div>')
-        .html('[TEMP] Room Size')
+        .html('Room Size')
         .addClass('info-label')
     sizeCont.append(sizeLbl)
 
