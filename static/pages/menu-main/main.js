@@ -352,9 +352,9 @@ async function DisplayTests() {
 
 function DisplayOptions() {
     let list = [
-        { name: 'Game Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsGame()' },
+        /* { name: 'Game Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsGame()' }, */
         { name: 'Video Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsVideo()' },
-        { name: 'Sound Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsSound()' },
+        /* { name: 'Sound Options', action: '$(\'#dialog\').dialog(\'close\'); OptionsSound()' }, */
         { name: 'Setup Identity', action: '$(\'#dialog\').dialog(\'close\'); OptionsIdentity()' },
     ]
 
