@@ -92,6 +92,22 @@ class CameraController { // camera controller
             }
         })
 
+        document.addEventListener('contextmenu', e => {
+            e.preventDefault()
+        })
+
+        document.addEventListener('blur', e => {
+            let input = this.input
+            input.rotLeft = false
+            input.rotRight = false
+            input.zoomIn = false
+            input.zoomOut = false
+            input.moveLeft = false
+            input.moveRight = false
+            input.moveUp = false
+            input.moveDown = false
+        })
+
         document.addEventListener('keyup', e => {
             let keys = this.inputKeys
             let input = this.input
