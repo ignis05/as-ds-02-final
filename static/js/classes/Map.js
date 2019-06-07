@@ -61,9 +61,9 @@ class MapDisplay {
             cube.position.set(size * cell.x, parseInt(cell.height) / 2, size * cell.z)
 
             // black frame - placeholder
-            let _geometry = new THREE.BoxGeometry(size, parseInt(cell.height), size)
-            let _material = new THREE.MeshLambertMaterial({ color: 0x000000, wireframe: true })
-            let frame = new THREE.Mesh(_geometry, _material)
+           /*  let _geometry = new THREE.BoxGeometry(size, parseInt(cell.height), size)
+            let _material = new THREE.MeshLambertMaterial({ color: 0x000000, wireframe: true }) */
+            /* let frame = new THREE.Mesh(_geometry, _material) */
             /* cube.add(frame) */
 
             group.add(cube)

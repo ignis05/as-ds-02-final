@@ -238,7 +238,7 @@ class Game {
             $('#turn-status').html('Spawning turn')
         }
         else { // if normal turn
-            if(this.myUnits.length < 1){ // if no units alive - end turn immediately
+            if (this.myUnits.length < 1) { // if no units alive - end turn immediately
                 moves = []
                 socket.endTurn(moves)
             }
@@ -275,6 +275,7 @@ class Game {
             if (intersects.length > 0) {
                 let obj = intersects[0].object
                 console.log(obj);
+                if (!obj.walkable) return
                 let tile = this.map.level.find(tile => tile.id == obj.tileID)
                 console.log(tile);
                 if (tile && !tile.unit) {
