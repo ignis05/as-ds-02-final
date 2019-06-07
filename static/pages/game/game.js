@@ -559,7 +559,10 @@ class Game {
         enemyUnit.health -= unit.damage
         if (enemyUnit.health < 1) { // rip
             this.scene.remove(enemyUnit.container)
+            this.unitsSpawned.splice(this.unitsSpawned.indexOf(enemyUnit.container.clickBox), 1)
+            this.map.matrix[enemyTile.z][enemyTile.x].walkable = true
             enemyTile.unit = null
+            if (addToMoves) socket.notifyUnitKilled({ x: enemyTile.x, z: enemyTile.z })
         }
         // --- sth that will update hp display ---
 
@@ -569,6 +572,10 @@ class Game {
                 attackerTileID: attackerTileID,
                 targetTileID: targetTileID,
             })
+            tile.unit.canMakeMove = false
+            if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
+                $('#turn-status').html('No available moves')
+            }
         }
     }
     // #endregion functions

@@ -248,7 +248,7 @@ app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
     let models = []
     dirs.forEach(dir => {
-        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf")|| filename.endsWith(".obj")).map(file => `${dir}/${file}`)
+        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf") || filename.endsWith(".obj")).map(file => `${dir}/${file}`)
         models.push({
             name: dir,
             files: files
@@ -784,7 +784,7 @@ game.io.on('connect', socket => {
                 let matrix = map.matrix
                 for (let change of client.tempMatrixChanges) {
                     if (change.old) matrix[change.old.z][change.old.x][0] = 1
-                    matrix[change.new.z][change.new.x][0] = 0
+                    if (change.new) matrix[change.new.z][change.new.x][0] = 0
                 }
                 client.tempMatrixChanges = []
             }
@@ -872,6 +872,14 @@ game.io.on('connect', socket => {
         res(PFpath)
     })
 
+    socket.on('unit_killed', data => {
+        console.log('unit killed!', data);
+        let client = game.getClientByID(socket.id)
+        var matrix = (loadedMaps.find(map => map.session == session.id)).matrix
+        matrix[data.z][data.x][0] = 0
+        client.tempMatrixChanges.push({ old: { z: data.z, x: data.x } })
+    })
+
     socket.on('send_Spawn_Data', function (data, res) {
         let client = game.getClientByID(socket.id)
         console.log('873');
@@ -922,61 +930,6 @@ game.io.on('connect', socket => {
     // #endregion custom events
 })
 // #endregion socket.io - game
-
-// #region socket.io - pathfinding-test
-var pathfindingTest = {
-    io: io.of('/pathfindingTest'), // separate instace for pathfindingTest
-}
-pathfindingTest.io.on('connect', socket => {
-    console.log(`${socket.id} connected`);
-
-    var cookies = cookie.parse(socket.handshake.headers.cookie);
-    var token = cookies["token"]
-    console.log(`user token: ${token}`)
-
-    socket.on('disconnect', () => {
-        for (let index in loadedMaps) {
-            if (loadedMaps[index].session == socket.id) {
-                loadedMaps.splice(index, 1)
-                break
-            }
-        }
-    })
-
-    // #region custom events
-
-    // load selected map
-    socket.on('load_selected_map', mapName => {
-        let db = new Datastore({
-            filename: path.join(__dirname + `/static/database/maps.db`),
-            autoload: true
-        });
-
-        db.findOne({
-            mapName: mapName
-        }, function (err, doc) {
-            loadedMaps.push({ grid: new PF.Grid(createMatrix(doc.mapData)), session: socket.id })
-            console.log("length (added map from PF):" + loadedMaps.length);
-        })
-    })
-
-    socket.on('send_PF_Data', function (data, res) {
-        let grid
-        for (maps in loadedMaps) {
-            if (loadedMaps[maps].session == socket.id) {
-                grid = loadedMaps[maps].grid.clone()
-                break
-            }
-        }
-        data = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
-        console.log(data.length);
-
-        res(data)
-    })
-
-    // #endregion custom events
-})
-// #endregion socket.io - pathfindingTest
 
 //nasłuch na określonym porcie
 server.listen(PORT, function () {

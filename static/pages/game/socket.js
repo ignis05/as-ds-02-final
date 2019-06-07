@@ -59,6 +59,9 @@ socket.sendSpawnData = async (positions) => {
         })
     })
 }
+socket.notifyUnitKilled = async (pos) => {
+    socket.emit('unit_killed', pos)
+}
 // #region socket triggers
 
 socket.on('chat', msg => {
