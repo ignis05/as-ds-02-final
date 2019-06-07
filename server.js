@@ -771,8 +771,9 @@ game.io.on('connect', socket => {
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
 
-        var client = game.getClientByID(socket.id)
         let session = game.getSessionByClientID(socket.id)
+        if(!session) return
+        var client = game.getClientByID(socket.id)
 
         game.io.to(session.id).emit('player_disconnected', socket.id) // notify room
 
@@ -892,6 +893,23 @@ game.io.on('connect', socket => {
                 break
             }
         }
+    })
+
+    socket.on('victory', () => {
+        let client = game.getClientByID(socket.id)
+        let session = game.getSessionByClientID(socket.id)
+        console.log('victory');
+        // delete session
+        let i = game.sessions.indexOf(session)
+        for (let index in loadedMaps) {
+            if (loadedMaps[index].session == session.id) {
+                loadedMaps.splice(index, 1)
+                break
+            }
+        }
+        game.sessions.splice(i, 1)
+        // notify players
+        game.io.to(session.id).emit('end_of_game', client.name)
     })
 
     socket.on('end_turn', data => {

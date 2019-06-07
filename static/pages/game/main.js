@@ -51,6 +51,8 @@ $(document).ready(async () => {
         moves = [] // reset array of moves
         $("#button-end-turn").attr("disabled", true)
         $('#turn-status').html('-')
+        console.log(game.unitsSpawned.map(clickObj => clickObj.parent));
+        if (!game.spawnTurn && ((game.unitsSpawned.map(clickObj => clickObj.parent)).every(unit => unit.owner == token))) socket.triggerWin() // win condition
     })
 
     $('#button-test-addTestUnit').click(() => { // button to test moves - spawns testunit on radom tile

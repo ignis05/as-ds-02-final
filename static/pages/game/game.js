@@ -236,7 +236,12 @@ class Game {
             $("#button-end-turn").attr("disabled", true)
             $("#button-end-turn").css("color", "blue")
             $('#turn-status').html('Spawning turn')
-        } else { // if normal turn
+        }
+        else { // if normal turn
+            if(this.myUnits.length < 1){ // if no units alive - end turn immediately
+                moves = []
+                socket.endTurn(moves)
+            }
             $("#button-end-turn").attr("disabled", false)
             $('#turn-status').html('My turn')
             this.spawnTurn = false
@@ -563,6 +568,9 @@ class Game {
             this.map.matrix[enemyTile.z][enemyTile.x].walkable = true
             enemyTile.unit = null
             if (addToMoves) socket.notifyUnitKilled({ x: enemyTile.x, z: enemyTile.z })
+            if (enemyUnit.owner == token) {
+                this.myUnits.splice(this.myUnits.indexOf(enemyUnit), 1)
+            }
         }
         // --- sth that will update hp display ---
 
