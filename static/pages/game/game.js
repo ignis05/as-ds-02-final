@@ -336,8 +336,22 @@ class Game {
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
             raycaster.setFromCamera(mouseVector, this.camera);
-            var intersects = raycaster.intersectObjects(this.map.group.children, true);
 
+            // check for click on other unit
+            var modelsIntersects = raycaster.intersectObjects(this.unitsSpawned, true);
+            if (modelsIntersects.length > 0) {
+                console.log('unit clicked');
+                let enemyUnitMesh = modelsIntersects[0].object.parent
+                let targetTile = this.map.level.find(tile => tile.x == enemyUnitMesh.tileData.x && tile.z == enemyUnitMesh.tileData.z)
+                let enemyUnit = targetTile.unit
+                console.log(enemyUnit);
+                if(enemyUnit.owner == token) return
+                
+                return
+            }
+
+            // check for click on map
+            var intersects = raycaster.intersectObjects(this.map.group.children, true);
             if (intersects.length > 0) {
                 let obj = intersects[0].object
                 console.log(obj);
@@ -365,6 +379,7 @@ class Game {
                         $("#selected-unit").html('')
                     })
                 }
+                return
             }
         }
     }
