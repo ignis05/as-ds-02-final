@@ -234,7 +234,6 @@ class Game {
         console.log('My turn');
         if (Object.values(this.avalUnits).some(val => val > 0)) { // if spawning turn
             $("#button-end-turn").attr("disabled", true)
-            $("#button-end-turn").css("color", "blue")
             $('#turn-status').html('Spawning turn')
         } else { // if normal turn
             $("#button-end-turn").attr("disabled", false)
@@ -430,8 +429,8 @@ class Game {
             unit: unit_which_is_used
             }
         */
-        console.log('renering moves:');
-        console.log(moves);
+        console.log('renering moves:')
+        console.log(moves)
         for (let move of moves) {
             if (move.action == 'spawn') {
                 this.spawnUnit(move.tileID, new Unit(move.unitData.name, move.unitData.owner))
@@ -482,7 +481,6 @@ class Game {
             ui.UpdateSpawnControls()
             if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
                 $("#button-end-turn").attr("disabled", false);
-                $("#button-end-turn").css("color", "initial");
                 $('#turn-status').html('No available moves')
             }
         }

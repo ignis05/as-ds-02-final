@@ -470,7 +470,7 @@ body {
 
 /* #region placeholder UI*/
 
-#ui-placeholder-spawn-controls {
+#ui-spawn-controls {
     height: 160px;
     display: flex;
     flex-direction: row;
