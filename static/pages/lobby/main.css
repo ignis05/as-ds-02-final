@@ -228,6 +228,29 @@
     border: none;
 }
 
+#settings-units-selector {
+    overflow-y: scroll;
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    position: relative;
+}
+
+.settings-unit-group {
+    padding-left: 40px;
+    width: 100%;
+    text-align: left;
+}
+
+.settings-unit-input {
+    position: absolute;
+    right: 40px;
+    width: 60px;
+    font-size: 28px;
+}
+
 #region-maplist {
     position: absolute;
     width: 300px;
