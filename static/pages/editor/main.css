@@ -81,6 +81,7 @@
     height: 100%;
     padding: 5px;
     background-color: #2F2F2F7F;
+    overflow: hidden auto;
 }
 
 #ctrl-create * {
@@ -144,11 +145,12 @@
 
 .cell {
     --cellSize: 30px;
+    --borderSize: 2px;
 
     position: absolute;
     width: var(--cellSize);
     height: var(--cellSize);
-    line-height: var(--cellSize);
+    line-height: calc(var(--cellSize) - var(--borderSize));
     text-align: center;
     /* font-size: 2em; */
     font-weight: bolder;
@@ -157,7 +159,7 @@
     z-index: 2;
     background-color: #7F7F7F;
     pointer-events: all;
-    border: 1px solid #2F2F2F;
+    border: var(--borderSize) solid #2F2F2F;
 }
 
 .cell-active {

@@ -73,6 +73,7 @@ class Game {
         this.unitToSpawn = null // unit that will be spawned on click
         this.avalUnits // units avalible for this player to spawn
         this.avalMoveTab = [] // tab of possible moves
+        this.avalMoveTiles = []
         this.myUnits = [] // units belinging to current player
         socket.getMyself().then(me => {
             this.avalUnits = me.unitsToSpawn
@@ -234,7 +235,6 @@ class Game {
         console.log('My turn');
         if (Object.values(this.avalUnits).some(val => val > 0)) { // if spawning turn
             $("#button-end-turn").attr("disabled", true)
-            $("#button-end-turn").css("color", "blue")
             $('#turn-status').html('Spawning turn')
         }
         else { // if normal turn
@@ -288,7 +288,7 @@ class Game {
         var raycaster = new THREE.Raycaster();
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
-        this.selectU = () => {
+        this.selectU = async () => {
             if (!this.myTurn || this.spawnTurn) return // do nothing if someone else's turn or its spawning turn
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
@@ -309,8 +309,9 @@ class Game {
                 console.log(attackRange);
                 let moveRange = MASTER_Units[this.selectedUnit.model.name].stats.mobility
                 console.log(moveRange);
-                for (var i = -moveRange; i <= moveRange; i++) {
-                    for (var j = -moveRange; j <= moveRange; j++) {
+                var tempMoves = []
+                for (var i = -moveRange; i <= moveRange + 1; i++) {
+                    for (var j = -moveRange; j <= moveRange + 1; j++) {
                         if (parseInt(this.selectedUnit.tileData.z) + i >= 0 &&
                             parseInt(this.selectedUnit.tileData.z) + i < this.map.size &&
                             parseInt(this.selectedUnit.tileData.x) + j >= 0 &&
@@ -321,11 +322,19 @@ class Game {
                                 z: parseInt(this.selectedUnit.tileData.z) + i
                             }
                             if (this.map.matrix[avalMove.z][avalMove.x].walkable) {
-                                this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
-                                this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
+                                tempMoves.push(avalMove)
                             }
                         }
                     }
+                }
+                let lengths = await socket.checkPaths(this.selectedUnit.tileData, tempMoves)
+                this.avalMoveTiles = []
+                for (let i in tempMoves) {
+                    if (lengths[i] < 1 || lengths[i] - 1 > moveRange) continue
+                    let avalMove = tempMoves[i]
+                    this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
+                    this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
+                    this.avalMoveTiles.push(this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z))
                 }
                 $('#game').on('click', this.moveU)
                 $('#game').off('click', this.selectU)
@@ -382,7 +391,7 @@ class Game {
                 console.log(obj);
                 let tile = this.map.level.find(tile => tile.id == obj.tileID)
                 console.log(tile);
-                if (tile.type != "rock" && tile.type != "river" && tile.type != "sea") {
+                if (tile.type != "rock" && tile.type != "river" && tile.type != "sea" && this.avalMoveTiles.indexOf(tile) != -1) {
                     $('#game').off('click', this.moveU)
                     this.selectedTile = tile
                     for (let recolor of this.avalMoveTab) {
@@ -435,8 +444,8 @@ class Game {
         })
     }
     renderMoves(moves) {
-        console.log('renering moves:');
-        console.log(moves);
+        console.log('renering moves:')
+        console.log(moves)
         for (let move of moves) {
             if (move.action == 'spawn') {
                 this.spawnUnit(move.tileID, new Unit(move.unitData.name, move.unitData.owner))
@@ -492,7 +501,6 @@ class Game {
             ui.UpdateSpawnControls()
             if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
                 $("#button-end-turn").attr("disabled", false);
-                $("#button-end-turn").css("color", "initial");
                 $('#turn-status').html('No available moves')
             }
         }

@@ -842,6 +842,17 @@ game.io.on('connect', socket => {
         res(client)
     })
 
+    socket.on('check_PF_Data', (data, res) => {
+        console.log(data);
+        let matrix = (loadedMaps.find(map => map.session == session.id)).matrix
+        let lengths = data.destArray.map(dest => {
+            let grid = new PF.Grid(matrix)
+            let path = finder.findPath(data.origin.x, data.origin.z, dest.x, dest.z, grid)
+            return path.length
+        })
+        res(lengths)
+    })
+
     socket.on('send_PF_Data', function (data, res) {
         let client = game.getClientByID(socket.id)
         let matrix
