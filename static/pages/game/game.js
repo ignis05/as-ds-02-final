@@ -247,6 +247,7 @@ class Game {
             this.spawnTurn = false
             for (let unit of this.myUnits) {
                 unit.canMakeMove = true
+                unit.moveIndicator.material.color.set(0x578be0)
             }
         }
     }
@@ -304,7 +305,7 @@ class Game {
                 console.log(this.myUnits);
                 console.log(tile.unit);
                 if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
-
+                tile.unit.moveIndicator.material.color.set(0xf9f22a)
                 $("#ui-top-selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
                 let attackRange = MASTER_Units[this.selectedUnit.model.name].stats.range
                 console.log(attackRange);
@@ -540,6 +541,7 @@ class Game {
                 let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
                 console.log(newTile);
                 newTile.unit = tile.unit
+                tile.unit.moveIndicator.material.color.set(0xff0000)
                 tile.unit = null
                 $('#game').on('click', this.selectU)
 
@@ -583,11 +585,12 @@ class Game {
             }
         }
 
-        // --- update hp display ---
+        // --- update hp display, state display ---
         enemyUnit.statBar.hp.scale.x = (enemyUnit.health/(enemyUnit.health + unit.damage)) * enemyUnit.statBar.hp.scale.x
+        unit.moveIndicator.material.color.set(0xff0000)
 
         $('#game').on('click', this.selectU)
-        
+
         if (addToMoves) {
             moves.push({
                 action: 'attack',
