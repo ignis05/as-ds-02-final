@@ -380,7 +380,6 @@ class Game {
 
                 this.attackUnit(tile.id, targetTile.id, true)
 
-                $('#game').on('click', this.selectU)
                 $("#selected-unit").html('')
                 return
             }
@@ -409,7 +408,6 @@ class Game {
                             let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
                             this.moveUnit(result, tile.id, true)
                         }
-                        $('#game').on('click', this.selectU)
                         this.avalMoveTab = []
                         $("#selected-unit").html('')
                     })
@@ -543,6 +541,7 @@ class Game {
                 console.log(newTile);
                 newTile.unit = tile.unit
                 tile.unit = null
+                $('#game').on('click', this.selectU)
 
                 console.log(this.myUnits);
                 if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
@@ -572,6 +571,7 @@ class Game {
         let enemyUnit = enemyTile.unit
 
         enemyUnit.health -= unit.damage
+        
         if (enemyUnit.health < 1) { // rip
             this.scene.remove(enemyUnit.container)
             this.unitsSpawned.splice(this.unitsSpawned.indexOf(enemyUnit.container.clickBox), 1)
@@ -582,8 +582,12 @@ class Game {
                 this.myUnits.splice(this.myUnits.indexOf(enemyUnit), 1)
             }
         }
-        // --- sth that will update hp display ---
 
+        // --- update hp display ---
+        enemyUnit.statBar.hp.scale.x = (enemyUnit.health/(enemyUnit.health + unit.damage)) * enemyUnit.statBar.hp.scale.x
+
+        $('#game').on('click', this.selectU)
+        
         if (addToMoves) {
             moves.push({
                 action: 'attack',
