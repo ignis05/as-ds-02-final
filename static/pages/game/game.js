@@ -303,6 +303,7 @@ class Game {
                 console.log(attackRange);
                 let moveRange = MASTER_Units[this.selectedUnit.model.name].stats.mobility
                 console.log(moveRange);
+                var tempMoves = []
                 for (var i = -moveRange; i <= moveRange + 1; i++) {
                     for (var j = -moveRange; j <= moveRange + 1; j++) {
                         if (parseInt(this.selectedUnit.tileData.z) + i >= 0 &&
@@ -314,17 +315,18 @@ class Game {
                                 x: parseInt(this.selectedUnit.tileData.x) + j,
                                 z: parseInt(this.selectedUnit.tileData.z) + i
                             }
-                            let path = await socket.checkPath({ x: this.selectedUnit.tileData.x, z: this.selectedUnit.tileData.z }, { x: avalMove.x, z: avalMove.z })
-                            if (path.length > moveRange + 1 || path.length < 1) {
-                                console.log('path bad'), avalMove;
-                                continue
-                            }
                             if (this.map.matrix[avalMove.z][avalMove.x].walkable) {
-                                this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
-                                this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
+                                tempMoves.push(avalMove)
                             }
                         }
                     }
+                }
+                let lengths = await socket.checkPaths(this.selectedUnit.tileData, tempMoves)
+                for (let i in tempMoves) {
+                    if (lengths[i] < 1 || lengths[i] - 1 > moveRange) continue
+                    let avalMove = tempMoves[i]
+                    this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
+                    this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
                 }
                 $('#game').on('click', this.moveU)
                 $('#game').off('click', this.selectU)

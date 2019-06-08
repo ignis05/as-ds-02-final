@@ -52,6 +52,15 @@ socket.checkPath = async (origin, dest) => {
     })
 }
 
+socket.checkPaths = async (origin, destArray) => {
+    return new Promise(resolve => {
+        socket.emit('check_PF_Data', { origin: origin, destArray: destArray }, res => {
+            console.log("paths", res);
+            resolve(res)
+        })
+    })
+}
+
 socket.sendPFData = async (positions) => {
     return new Promise(resolve => {
         socket.emit('send_PF_Data', positions, res => {
