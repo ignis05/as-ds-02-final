@@ -56,9 +56,7 @@ $(document).ready(async () => {
             game.avalMoveTab = []
         }
         $("#button-end-turn").attr("disabled", true)
-        $('#turn-status').html('-')
-        console.log(game.unitsSpawned.map(clickObj => clickObj.parent));
-        if (!game.spawnTurn && ((game.unitsSpawned.map(clickObj => clickObj.parent)).every(unit => unit.owner == token))) socket.triggerWin() // win condition
+        $('#ui-top-turn-status').html('-').css('background-color', '#3F3F3F')
     })
     // #endregion ui listeners
 })
