@@ -73,6 +73,7 @@ class Game {
         this.unitToSpawn = null // unit that will be spawned on click
         this.avalUnits // units avalible for this player to spawn
         this.avalMoveTab = [] // tab of possible moves
+        this.avalMoveTiles = []
         this.myUnits = [] // units belinging to current player
         socket.getMyself().then(me => {
             this.avalUnits = me.unitsToSpawn
@@ -322,11 +323,13 @@ class Game {
                     }
                 }
                 let lengths = await socket.checkPaths(this.selectedUnit.tileData, tempMoves)
+                this.avalMoveTiles = []
                 for (let i in tempMoves) {
                     if (lengths[i] < 1 || lengths[i] - 1 > moveRange) continue
                     let avalMove = tempMoves[i]
                     this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
                     this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
+                    this.avalMoveTiles.push(this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z))
                 }
                 $('#game').on('click', this.moveU)
                 $('#game').off('click', this.selectU)
@@ -364,7 +367,7 @@ class Game {
                 console.log(obj);
                 let tile = this.map.level.find(tile => tile.id == obj.tileID)
                 console.log(tile);
-                if (tile.type != "rock" && tile.type != "river" && tile.type != "sea") {
+                if (tile.type != "rock" && tile.type != "river" && tile.type != "sea" && this.avalMoveTiles.indexOf(tile) != -1) {
                     $('#game').off('click', this.moveU)
                     this.selectedTile = tile
                     for (let recolor of this.avalMoveTab) {
