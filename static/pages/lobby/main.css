@@ -189,8 +189,18 @@
     left: 20px;
     top: 250px;
     box-sizing: content-box;
-    background-color: #0000007F;
     border: 5px outset #7F2F2F;
+}
+
+#unit-settings {
+    width: 100%;
+    height: 100%;
+    background-color: #0000007F;
+    border: 5px inset #0000007F;
+    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
 #region-chat {
@@ -214,6 +224,7 @@
     padding: 5px;
     color: #2FCF2F;
     text-shadow: 2px 0px 1px #000000;
+    scrollbar-color: #7F7F7FCF #0000002F;
 }
 
 #socket-chat-input {
@@ -226,29 +237,6 @@
     color: #DFDFDF;
     font-weight: bolder;
     border: none;
-}
-
-#settings-units-selector {
-    overflow-y: scroll;
-    height: 150px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-start;
-    position: relative;
-}
-
-.settings-unit-group {
-    padding-left: 40px;
-    width: 100%;
-    text-align: left;
-}
-
-.settings-unit-input {
-    position: absolute;
-    right: 40px;
-    width: 60px;
-    font-size: 28px;
 }
 
 #region-maplist {

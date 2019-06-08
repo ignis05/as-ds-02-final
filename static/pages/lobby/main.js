@@ -582,7 +582,7 @@ async function UpdateUnitsSelector() {
     let room = rooms.find(room => room.clients.find(client => client.id == socket.id))
     let admin = (room.admin.id == socket.id);
     let unitsArray = room.units
-    if (!unitsArray) { // units array doenst exist - creat it
+    if (!unitsArray) { // units array doenst exist - create it
         unitsArray = {}
         for (let unitName in MASTER_Units) {
             unitsArray[unitName] = 1
@@ -590,11 +590,11 @@ async function UpdateUnitsSelector() {
         socket.updateUnits(unitsArray)
     }
 
-    let div = $('#settings-units-selector')
+    let div = $('#unit-settings-list')
     div.html('')
 
     for (let unitName in MASTER_Units) {
-        let group = $(`<div class='settings-unit-group'>`)
+        let group = $(`<div class='unit-settings-elem'>`)
         group.appendTo(div)
         group.html(`<label class='settings-unit-label'>${unitName}</label><input name='${unitName}' type='number' value='${~~unitsArray[unitName]}' min='0' max='5' step='1' class='settings-unit-input' id='settings-unit-input-${unitName}' ${admin ? '' : 'disabled'}>`)
     }

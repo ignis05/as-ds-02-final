@@ -281,6 +281,7 @@
     overflow: hidden scroll;
     border: 2px solid #FFFFFF;
     border-top: none;
+    scrollbar-color: #FFFFFF #4F0000;
 }
 
 .ui-dialog-content tr *:first-child {
@@ -291,6 +292,7 @@
     padding: 2px;
     background-color: #6F1F1F;
     height: 30px;
+    border-right: 2px solid #FFFFFF;
 }
 
 .saves-row:nth-child(2n) {
