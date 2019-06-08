@@ -42,6 +42,16 @@ socket.send = function (msg) { // chat msg
     socket.emit('send', msg)
 }
 
+socket.checkPath = async (origin, dest) => {
+    return new Promise(resolve => {
+        socket.emit('check_PF_Data', { origin: origin, dest: dest }, res => {
+            console.log("path", res);
+            console.log('path -- length:', res.length);
+            resolve(res)
+        })
+    })
+}
+
 socket.sendPFData = async (positions) => {
     return new Promise(resolve => {
         socket.emit('send_PF_Data', positions, res => {

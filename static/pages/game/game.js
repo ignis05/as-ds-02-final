@@ -282,7 +282,7 @@ class Game {
         var raycaster = new THREE.Raycaster();
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
-        this.selectU = () => {
+        this.selectU = async () => {
             if (!this.myTurn || this.spawnTurn) return // do nothing if someone else's turn or its spawning turn
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
@@ -303,8 +303,8 @@ class Game {
                 console.log(attackRange);
                 let moveRange = MASTER_Units[this.selectedUnit.model.name].stats.mobility
                 console.log(moveRange);
-                for (var i = -moveRange; i <= moveRange; i++) {
-                    for (var j = -moveRange; j <= moveRange; j++) {
+                for (var i = -moveRange; i <= moveRange + 1; i++) {
+                    for (var j = -moveRange; j <= moveRange + 1; j++) {
                         if (parseInt(this.selectedUnit.tileData.z) + i >= 0 &&
                             parseInt(this.selectedUnit.tileData.z) + i < this.map.size &&
                             parseInt(this.selectedUnit.tileData.x) + j >= 0 &&
@@ -313,6 +313,11 @@ class Game {
                             let avalMove = {
                                 x: parseInt(this.selectedUnit.tileData.x) + j,
                                 z: parseInt(this.selectedUnit.tileData.z) + i
+                            }
+                            let path = await socket.checkPath({ x: this.selectedUnit.tileData.x, z: this.selectedUnit.tileData.z }, { x: avalMove.x, z: avalMove.z })
+                            if (path.length > moveRange + 1 || path.length < 1) {
+                                console.log('path bad'), avalMove;
+                                continue
                             }
                             if (this.map.matrix[avalMove.z][avalMove.x].walkable) {
                                 this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
@@ -345,8 +350,8 @@ class Game {
                 let targetTile = this.map.level.find(tile => tile.x == enemyUnitMesh.tileData.x && tile.z == enemyUnitMesh.tileData.z)
                 let enemyUnit = targetTile.unit
                 console.log(enemyUnit);
-                if(enemyUnit.owner == token) return
-                
+                if (enemyUnit.owner == token) return
+
                 return
             }
 

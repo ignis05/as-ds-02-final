@@ -248,7 +248,7 @@ app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
     let models = []
     dirs.forEach(dir => {
-        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf")|| filename.endsWith(".obj")).map(file => `${dir}/${file}`)
+        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf") || filename.endsWith(".obj")).map(file => `${dir}/${file}`)
         models.push({
             name: dir,
             files: files
@@ -839,6 +839,14 @@ game.io.on('connect', socket => {
     socket.on('get_myself', res => {
         let client = game.getClientByID(socket.id)
         res(client)
+    })
+
+    socket.on('check_PF_Data', (data, res) => {
+        console.log(data);
+        let matrix = (loadedMaps.find(map => map.session == session.id)).matrix
+        let grid = new PF.Grid(matrix)
+        let path = finder.findPath(data.origin.x, data.origin.z, data.dest.x, data.dest.z, grid)
+        res(path)
     })
 
     socket.on('send_PF_Data', function (data, res) {
