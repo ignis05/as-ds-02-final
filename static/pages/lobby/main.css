@@ -197,10 +197,63 @@
     height: 100%;
     background-color: #0000007F;
     border: 5px inset #0000007F;
-    padding: 3px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    --headerHeight: 40px;
+}
+
+#unit-settings-header {
+    width: 100%;
+    height: var(--headerHeight);
+    line-height: calc(var(--headerHeight) - 4px);
+    text-align: center;
+    font-size: 2em;
+    color: #DFDFDF;
+    border-bottom: 2px solid #DFDFDF7F;
+}
+
+#unit-settings-list {
+    width: 100%;
+    height: calc(100% - var(--headerHeight));
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    align-items: center;
+    overflow: hidden auto;
+}
+
+.unit-settings-elem {
+    width: 100%;
+    height: 40px;
+    display: flex;
+    font-size: 1.5em;
+    color: #2FCF2F;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.unit-settings-label {
+    width: 150px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+}
+
+.unit-settings-input {
+    width: 60px;
+    height: 20px;
+
+    background-color: #0000007F;
+    border: none;
+
+    font-weight: bold;
+    color: #2FCF2F;
+    line-height: 40px;
+    text-align: center;
 }
 
 #region-chat {

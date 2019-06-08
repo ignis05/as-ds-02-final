@@ -596,12 +596,12 @@ async function UpdateUnitsSelector() {
     for (let unitName in MASTER_Units) {
         let group = $(`<div class='unit-settings-elem'>`)
         group.appendTo(div)
-        group.html(`<label class='settings-unit-label'>${unitName}</label><input name='${unitName}' type='number' value='${~~unitsArray[unitName]}' min='0' max='5' step='1' class='settings-unit-input' id='settings-unit-input-${unitName}' ${admin ? '' : 'disabled'}>`)
+        group.html(`<div class='unit-settings-label'>${unitName}</div><input name='${unitName}' type='number' value='${~~unitsArray[unitName]}' min='0' max='5' step='1' class='unit-settings-input' id='unit-settings-input-${unitName}' ${admin ? '' : 'disabled'}>`)
     }
 
     if (admin) {
-        $('.settings-unit-input').on('input', () => {
-            let inputs = Object.values(document.getElementsByClassName('settings-unit-input'))
+        $('.unit-settings-input').on('input', () => {
+            let inputs = Object.values(document.getElementsByClassName('unit-settings-input'))
             let unitsArray = {}
             for (let input of inputs) {
                 unitsArray[input.name] = input.value
