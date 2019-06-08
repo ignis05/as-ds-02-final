@@ -235,7 +235,6 @@ class Game {
         console.log('My turn');
         if (Object.values(this.avalUnits).some(val => val > 0)) { // if spawning turn
             $("#button-end-turn").attr("disabled", true)
-            $("#button-end-turn").css("color", "blue")
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
         }
         else { // if normal turn
@@ -502,8 +501,7 @@ class Game {
             this.avalUnits[unit.name]--
             ui.UpdateSpawnControls()
             if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
-                $("#button-end-turn").attr("disabled", false);
-                $("#button-end-turn").css("color", "initial");
+                $("#button-end-turn").attr("disabled", false)
                 $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
             }
         }
