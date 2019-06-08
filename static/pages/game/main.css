@@ -513,6 +513,10 @@ body {
     background: #2FCFCF7F;
 }
 
+.ui-spawn-controls-container-active:hover {
+    background: #CF2F2F7F;
+}
+
 .ui-spawn-controls-container-empty img {
     opacity: 0.5;
 }

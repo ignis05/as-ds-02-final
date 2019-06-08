@@ -60,6 +60,11 @@ class UI {
                     event.target.classList.add('ui-spawn-controls-container-active')
                 }
             })
+            console.log(game.unitToSpawn + ' == ' + unitName)
+            if (game.unitToSpawn == unitName) {
+                console.log(true)
+                container.addClass('ui-spawn-controls-container-active')
+            } else console.log(false)
         }
     }
 
