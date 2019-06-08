@@ -57,6 +57,7 @@ $(document).ready(async () => {
         }
         $("#button-end-turn").attr("disabled", true)
         $('#ui-top-turn-status').html('-').css('background-color', '#3F3F3F')
+        if (!game.spawnTurn && ((game.unitsSpawned.map(clickObj => clickObj.parent)).every(unit => unit.owner == token))) socket.triggerWin() // win condition
     })
     // #endregion ui listeners
 })
