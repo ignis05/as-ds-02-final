@@ -49,24 +49,14 @@ $(document).ready(async () => {
         console.log('click - end turn')
         socket.endTurn(moves) // send array of made moves
         moves = [] // reset array of moves
+        if (game.avalMoveTab.length > 0) {
+            for (let recolor of game.avalMoveTab) {
+                recolor.material[2].color.set(recolor.color)
+            }
+            game.avalMoveTab = []
+        }
         $("#button-end-turn").attr("disabled", true)
         $('#ui-top-turn-status').html('-').css('background-color', '#3F3F3F')
-    })
-
-    $('#button-test-addTestUnit').click(() => { // button to test moves - spawns testunit on radom tile
-        let tile
-        // select random tile that doesn't have unit on it
-        do {
-            tile = game.map.level[Math.floor(Math.random() * game.map.level.length)]
-        } while (tile.unit)
-
-        console.log(`adding random unit to tile ${tile.id}`)
-
-
-
-        // spawn unit client-sided
-        let unit = new Unit('spider', token)
-        game.spawnUnit(tile.id, unit, true)
     })
     // #endregion ui listeners
 })

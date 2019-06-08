@@ -9,6 +9,19 @@ let input
 let mapsDB
 
 const cellSize = 30
+
+const ownerColors = {
+    everyone: '#FFFFFF',
+    neutral: '#000000',
+    player0: '#FF0000',
+    player1: '#FF7F00',
+    player2: '#FFFF00',
+    player3: '#0000FF',
+    player4: '#000000',
+    player5: '#FF00FF',
+    player6: '#00FFFF',
+    player7: '#00FF00'
+}
 //#endregion 
 
 /* ===================================================== *
@@ -30,6 +43,7 @@ $(document).ready(async () => {
     cellSettings = {
         height: 15,
         type: 'dirt',
+        owner: 'everyone'
     }
 
     InputInit()
@@ -87,6 +101,24 @@ async function CtrlsInit() {
 
             iter++
         }
+    }
+
+    iter = 0
+    for (let i in ownerColors) {
+        let ownerButton = $('<button>')
+            .attr('id', 'ctrl-owner' + iter)
+            .html(i)
+            .click(e => {
+                cellSettings.owner = (e.target.innerHTML).toLowerCase()
+                clearOwners()
+                e.target.className = 'active'
+            })
+
+        if (i == cellSettings.owner) ownerButton.addClass('active')
+
+        $('#ctrl-owners').append(ownerButton)
+
+        iter++
     }
 
     $('#editor-save').click(async e => {
@@ -154,6 +186,13 @@ function clearTypes() {
     }
 }
 
+function clearOwners() {
+    let buts = Array.from($('#ctrl-owners')[0].children)
+    for (let i in buts) {
+        buts[i].className = ''
+    }
+}
+
 function createTiles() {
     return new Promise((resolve, reject) => {
         pack.level = []
@@ -183,13 +222,16 @@ function cellClick() {
     let cellArray = Array.from($(document).find('.cell-active'))
     let height = cellSettings.height
     let type = cellSettings.type
+    let owner = cellSettings.owner
     for (let i in cellArray) {
         let cell = cellArray[i]
         cell.cell.type = type
+        cell.cell.owner = owner
         cell.cell.height = height
 
         let datapack = pack.level[cell.cell.z * pack.size + cell.cell.x]
         datapack.type = type
+        datapack.owner = owner
         datapack.height = height
         cell.cell.setup()
     }
@@ -210,6 +252,8 @@ function loadMap(dataPack) {
             cells[dataPack.id].x = parseInt(dataPack.x)
             cells[dataPack.id].z = parseInt(dataPack.z)
             cells[dataPack.id].type = dataPack.type
+            if (dataPack.owner == undefined) dataPack.owner = 'everyone'
+            cells[dataPack.id].owner = dataPack.owner
             cells[dataPack.id].height = parseInt(dataPack.height)
             cells[dataPack.id].setup()
         }
@@ -227,6 +271,7 @@ class Cell {
         this.x = x
         this.z = z
         this.height = cellSettings.height
+        this.owner = cellSettings.owner
         this.type = cellSettings.type
 
         this.create()
@@ -270,6 +315,7 @@ class Cell {
             x: this.x,
             z: this.z,
             type: this.type,
+            owner: this.owner,
             height: this.height
         }
         pack.level.push(datacont)
@@ -280,6 +326,7 @@ class Cell {
 
         this.object.css('backgroundColor', cellInfo.color)
         this.object.css('color', cellInfo.fontColor)
+        this.object.css('borderColor', ownerColors[this.owner])
 
         this.object.html(this.height)
     }
@@ -591,7 +638,7 @@ function DisplayWorking(title = 'Please wait...') {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('<img id=\'popup-working-spinner\' src=\'/static/res/img/flavicon.png\'>')
+    popup.append('<img id=\'popup-working-spinner\' src=\'/static/res/img/favicon.png\'>')
 
     popup.dialog({
         closeOnEscape: false,

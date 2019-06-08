@@ -96,6 +96,9 @@ app.get("/lobby", function (req, res) {
 app.get("/game", function (req, res) {
     res.sendFile(path.join(__dirname + `/static/pages/game/main.html`))
 })
+app.get("/favicon.ico", function (req, res) { // default favicon for all pages
+    res.sendFile(path.join(__dirname + `/static/res/img/favicon.png`))
+})
 // #endregion static routing
 
 // automatic routing
@@ -245,7 +248,7 @@ app.post("/getModels", function (req, res) {
     let dirs = fs.readdirSync(path.join(__dirname + "/static/res/models/")).map(name => path.join(__dirname + "/static/res/models/" + name)).filter(that => fs.lstatSync(that).isDirectory()).map(path => path.split("\\")[path.split("\\").length - 1])
     let models = []
     dirs.forEach(dir => {
-        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf")).map(file => `${dir}/${file}`)
+        let files = fs.readdirSync(path.join(__dirname + "/static/res/models/" + dir)).filter(filename => filename.endsWith(".fbx") || filename.endsWith(".gltf") || filename.endsWith(".obj")).map(file => `${dir}/${file}`)
         models.push({
             name: dir,
             files: files
@@ -538,6 +541,7 @@ lobby.io.on('connect', socket => {
             inProgress: false, // if session is already in progress
             movesList: [], // list of changes to map since start of the game
             unitsToSpawn: JSON.parse(JSON.stringify(room.units)), // refrence for whole room - to load all models at start
+            tempMatrixChanges: [],
         })
         console.log('-->> MAPDATA:');
         console.log(game.sessions[game.sessions.length - 1].mapData);
@@ -729,6 +733,7 @@ game.io.on('connect', socket => {
 
         client.id = socket.id // update socket id
         client.connected = true // update status
+        client.tempMatrixChanges = []
 
     }
     else {
@@ -766,12 +771,25 @@ game.io.on('connect', socket => {
     socket.on('disconnect', () => {
         console.log(`${socket.id} disconnected`);
 
-        var client = game.getClientByID(socket.id)
         let session = game.getSessionByClientID(socket.id)
+        if(!session) return
+        var client = game.getClientByID(socket.id)
 
         game.io.to(session.id).emit('player_disconnected', socket.id) // notify room
 
         session.clients[session.clients.indexOf(client)].connected = false
+
+        if (client.tempMatrixChanges.length > 0) { // client modified matrix, but didnt upload moves to server - restore matrix
+            let map = (loadedMaps.find(map => map.session == session.id))
+            if (map && map.matrix) {
+                let matrix = map.matrix
+                for (let change of client.tempMatrixChanges) {
+                    if (change.old) matrix[change.old.z][change.old.x][0] = 1
+                    if (change.new) matrix[change.new.z][change.new.x][0] = 0
+                }
+                client.tempMatrixChanges = []
+            }
+        }
 
         // delete session if last player leaves
         let empty = true
@@ -824,42 +842,92 @@ game.io.on('connect', socket => {
         res(client)
     })
 
+    socket.on('check_PF_Data', (data, res) => {
+        console.log(data);
+        let matrix = (loadedMaps.find(map => map.session == session.id)).matrix
+        let lengths = data.destArray.map(dest => {
+            let grid = new PF.Grid(matrix)
+            let path = finder.findPath(data.origin.x, data.origin.z, dest.x, dest.z, grid)
+            return path.length
+        })
+        res(lengths)
+    })
+
     socket.on('send_PF_Data', function (data, res) {
+        let client = game.getClientByID(socket.id)
         let matrix
         let grid
         let PFpath
+
+        // michał pls
+        matrix = (loadedMaps.find(map => map.session == session.id)).matrix
+        grid = new PF.Grid(matrix)
+        /* 
         for (let maps in loadedMaps) {
             if (loadedMaps[maps].session == session.id) {
                 console.log("found one!");
-                
+
                 matrix = loadedMaps[maps].matrix
                 grid = new PF.Grid(matrix)
                 break
             }
-        }
+        } 
+        */
+
         console.log(data);
         PFpath = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
-        if(PFpath.length > 1){
+        if (PFpath.length > 1) {
             matrix[data.z][data.x][0] = 0
             matrix[data.zn][data.xn][0] = 1
+            client.tempMatrixChanges.push({ old: { z: data.z, x: data.x }, new: { z: data.zn, x: data.xn } }) // save move as not uploaded
         }
         res(PFpath)
     })
 
+    socket.on('unit_killed', data => {
+        console.log('unit killed!', data);
+        let client = game.getClientByID(socket.id)
+        var matrix = (loadedMaps.find(map => map.session == session.id)).matrix
+        matrix[data.z][data.x][0] = 0
+        client.tempMatrixChanges.push({ old: { z: data.z, x: data.x } })
+    })
+
     socket.on('send_Spawn_Data', function (data, res) {
+        let client = game.getClientByID(socket.id)
+        console.log('873');
+        console.log(client);
         for (let maps in loadedMaps) {
             if (loadedMaps[maps].session == session.id) {
                 console.log("found one!");
                 loadedMaps[maps].matrix[data.z][data.x][0] = 1
+                client.tempMatrixChanges.push({ new: { z: data.z, x: data.x } })
                 break
             }
         }
+    })
+
+    socket.on('victory', () => {
+        let client = game.getClientByID(socket.id)
+        let session = game.getSessionByClientID(socket.id)
+        console.log('victory');
+        // delete session
+        let i = game.sessions.indexOf(session)
+        for (let index in loadedMaps) {
+            if (loadedMaps[index].session == session.id) {
+                loadedMaps.splice(index, 1)
+                break
+            }
+        }
+        game.sessions.splice(i, 1)
+        // notify players
+        game.io.to(session.id).emit('end_of_game', client.name)
     })
 
     socket.on('end_turn', data => {
         let session = game.getSessionByClientID(socket.id)
         let client = game.getClientByID(socket.id)
 
+        client.tempMatrixChanges = [] //  clear not uploaded moves
 
         for (let move of data) {
             // ---
@@ -891,61 +959,6 @@ game.io.on('connect', socket => {
     // #endregion custom events
 })
 // #endregion socket.io - game
-
-// #region socket.io - pathfinding-test
-var pathfindingTest = {
-    io: io.of('/pathfindingTest'), // separate instace for pathfindingTest
-}
-pathfindingTest.io.on('connect', socket => {
-    console.log(`${socket.id} connected`);
-
-    var cookies = cookie.parse(socket.handshake.headers.cookie);
-    var token = cookies["token"]
-    console.log(`user token: ${token}`)
-
-    socket.on('disconnect', () => {
-        for (let index in loadedMaps) {
-            if (loadedMaps[index].session == socket.id) {
-                loadedMaps.splice(index, 1)
-                break
-            }
-        }
-    })
-
-    // #region custom events
-
-    // load selected map
-    socket.on('load_selected_map', mapName => {
-        let db = new Datastore({
-            filename: path.join(__dirname + `/static/database/maps.db`),
-            autoload: true
-        });
-
-        db.findOne({
-            mapName: mapName
-        }, function (err, doc) {
-            loadedMaps.push({ grid: new PF.Grid(createMatrix(doc.mapData)), session: socket.id })
-            console.log("length (added map from PF):" + loadedMaps.length);
-        })
-    })
-
-    socket.on('send_PF_Data', function (data, res) {
-        let grid
-        for (maps in loadedMaps) {
-            if (loadedMaps[maps].session == socket.id) {
-                grid = loadedMaps[maps].grid.clone()
-                break
-            }
-        }
-        data = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
-        console.log(data.length);
-
-        res(data)
-    })
-
-    // #endregion custom events
-})
-// #endregion socket.io - pathfindingTest
 
 //nasłuch na określonym porcie
 server.listen(PORT, function () {

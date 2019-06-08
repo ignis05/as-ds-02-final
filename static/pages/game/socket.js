@@ -42,6 +42,25 @@ socket.send = function (msg) { // chat msg
     socket.emit('send', msg)
 }
 
+socket.checkPath = async (origin, dest) => {
+    return new Promise(resolve => {
+        socket.emit('check_PF_Data', { origin: origin, dest: dest }, res => {
+            console.log("path", res);
+            console.log('path -- length:', res.length);
+            resolve(res)
+        })
+    })
+}
+
+socket.checkPaths = async (origin, destArray) => {
+    return new Promise(resolve => {
+        socket.emit('check_PF_Data', { origin: origin, destArray: destArray }, res => {
+            console.log("paths", res);
+            resolve(res)
+        })
+    })
+}
+
 socket.sendPFData = async (positions) => {
     return new Promise(resolve => {
         socket.emit('send_PF_Data', positions, res => {
@@ -52,6 +71,12 @@ socket.sendPFData = async (positions) => {
     })
 }
 
+socket.triggerWin = () => {
+    console.log('i won');
+    socket.emit('victory')
+    console.log('still ok');
+}
+
 socket.sendSpawnData = async (positions) => {
     return new Promise(resolve => {
         socket.emit('send_Spawn_Data', positions, res => {
@@ -59,7 +84,16 @@ socket.sendSpawnData = async (positions) => {
         })
     })
 }
+socket.notifyUnitKilled = async (pos) => {
+    socket.emit('unit_killed', pos)
+}
 // #region socket triggers
+
+socket.on('end_of_game', winner => {
+    console.log('GAME ENDED');
+    window.alert(`User ${winner} is victorious!`)
+    window.location = '/'
+})
 
 socket.on('chat', msg => {
     console.log(msg);

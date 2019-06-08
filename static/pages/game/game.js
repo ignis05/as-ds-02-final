@@ -73,6 +73,7 @@ class Game {
         this.unitToSpawn = null // unit that will be spawned on click
         this.avalUnits // units avalible for this player to spawn
         this.avalMoveTab = [] // tab of possible moves
+        this.avalMoveTiles = []
         this.myUnits = [] // units belinging to current player
         socket.getMyself().then(me => {
             this.avalUnits = me.unitsToSpawn
@@ -238,6 +239,10 @@ class Game {
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
         }
         else { // if normal turn
+            if (this.myUnits.length < 1) { // if no units alive - end turn immediately
+                moves = []
+                socket.endTurn(moves)
+            }
             $("#button-end-turn").attr("disabled", false)
             $('#ui-top-turn-status').html('My turn').css('background-color', '#2FCF2F')
             this.spawnTurn = false
@@ -271,6 +276,7 @@ class Game {
             if (intersects.length > 0) {
                 let obj = intersects[0].object
                 console.log(obj);
+                if (!obj.walkable) return
                 let tile = this.map.level.find(tile => tile.id == obj.tileID)
                 console.log(tile);
                 if (tile && !tile.unit) {
@@ -283,7 +289,7 @@ class Game {
         var raycaster = new THREE.Raycaster();
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
-        this.selectU = () => {
+        this.selectU = async () => {
             if (!this.myTurn || this.spawnTurn) return // do nothing if someone else's turn or its spawning turn
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
@@ -305,8 +311,9 @@ class Game {
                 console.log(attackRange);
                 let moveRange = MASTER_Units[this.selectedUnit.model.name].stats.mobility
                 console.log(moveRange);
-                for (var i = -moveRange; i <= moveRange; i++) {
-                    for (var j = -moveRange; j <= moveRange; j++) {
+                var tempMoves = []
+                for (var i = -moveRange; i <= moveRange + 1; i++) {
+                    for (var j = -moveRange; j <= moveRange + 1; j++) {
                         if (parseInt(this.selectedUnit.tileData.z) + i >= 0 &&
                             parseInt(this.selectedUnit.tileData.z) + i < this.map.size &&
                             parseInt(this.selectedUnit.tileData.x) + j >= 0 &&
@@ -317,11 +324,19 @@ class Game {
                                 z: parseInt(this.selectedUnit.tileData.z) + i
                             }
                             if (this.map.matrix[avalMove.z][avalMove.x].walkable) {
-                                this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
-                                this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
+                                tempMoves.push(avalMove)
                             }
                         }
                     }
+                }
+                let lengths = await socket.checkPaths(this.selectedUnit.tileData, tempMoves)
+                this.avalMoveTiles = []
+                for (let i in tempMoves) {
+                    if (lengths[i] < 1 || lengths[i] - 1 > moveRange) continue
+                    let avalMove = tempMoves[i]
+                    this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
+                    this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
+                    this.avalMoveTiles.push(this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z))
                 }
                 $('#game').on('click', this.moveU)
                 $('#game').off('click', this.selectU)
@@ -338,14 +353,47 @@ class Game {
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
             raycaster.setFromCamera(mouseVector, this.camera);
-            var intersects = raycaster.intersectObjects(this.map.group.children, true);
 
+            // check for click on other unit
+            var modelsIntersects = raycaster.intersectObjects(this.unitsSpawned, true);
+            if (modelsIntersects.length > 0) {
+                console.log('unit clicked');
+                let enemyUnitMesh = modelsIntersects[0].object.parent
+                let targetTile = this.map.level.find(tile => tile.x == enemyUnitMesh.tileData.x && tile.z == enemyUnitMesh.tileData.z)
+                let enemyUnit = targetTile.unit
+                console.log(enemyUnit);
+                if (enemyUnit.owner == token) return
+
+                $('#game').off('click', this.moveU)
+
+                console.log('valid hostile unit');
+                // distance check
+                let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
+                let unit = tile.unit
+                // distance check
+                if (Math.abs(tile.x - targetTile.x) > unit.range && Math.abs(tile.z - targetTile.z) > unit.range) {
+                    return
+                }
+                for (let recolor of this.avalMoveTab) {
+                    recolor.material[2].color.set(recolor.color)
+                }
+                this.avalMoveTab = []
+
+                this.attackUnit(tile.id, targetTile.id, true)
+
+                $('#game').on('click', this.selectU)
+                $("#selected-unit").html('')
+                return
+            }
+
+            // check for click on map
+            var intersects = raycaster.intersectObjects(this.map.group.children, true);
             if (intersects.length > 0) {
                 let obj = intersects[0].object
                 console.log(obj);
                 let tile = this.map.level.find(tile => tile.id == obj.tileID)
                 console.log(tile);
-                if (tile.type != "rock" && tile.type != "river" && tile.type != "sea") {
+                if (tile.type != "rock" && tile.type != "river" && tile.type != "sea" && this.avalMoveTiles.indexOf(tile) != -1) {
                     $('#game').off('click', this.moveU)
                     this.selectedTile = tile
                     for (let recolor of this.avalMoveTab) {
@@ -367,6 +415,7 @@ class Game {
                         $("#selected-unit").html('')
                     })
                 }
+                return
             }
         }
     }
@@ -397,34 +446,19 @@ class Game {
         })
     }
     renderMoves(moves) {
-        // list of moves: - in case any new moves are possible to be sent, they should be added to this list
-        /*
-            {
-            action: 'spawn',
-            unitData: {
-                name: '_name_of_unit',
-                owner: _owner's_token,
-                },
-            tileID: _id_of_tile_unit_should_be_spawned_on
-            }
-            {
-            action: 'move',
-            unitData: {
-                x: _x_position,
-                z: _z_position,
-                height: _guess
-                },
-            unit: unit_which_is_used
-            }
-        */
-        console.log('renering moves:');
-        console.log(moves);
+        console.log('renering moves:')
+        console.log(moves)
         for (let move of moves) {
             if (move.action == 'spawn') {
                 this.spawnUnit(move.tileID, new Unit(move.unitData.name, move.unitData.owner))
-            } else if (move.action == 'move') {
+            }
+            else if (move.action == 'move') {
                 console.log("selu", move);
                 this.moveUnit(move.moves, move.tileID)
+            }
+            else if (move.action == 'attack') {
+                console.log('attack');
+                this.attackUnit(move.attackerTileID, move.targetTileID)
             }
         }
     }
@@ -531,6 +565,38 @@ class Game {
 
 
         /* Pathfinder.moveTiles(moves, this.map.matrix, this.map, unit.container) */
+    }
+
+    attackUnit(attackerTileID, targetTileID, addToMoves) {
+        let tile = this.map.level.find(tile => tile.id == attackerTileID)
+        let unit = tile.unit
+        let enemyTile = this.map.level.find(tile => tile.id == targetTileID)
+        let enemyUnit = enemyTile.unit
+
+        enemyUnit.health -= unit.damage
+        if (enemyUnit.health < 1) { // rip
+            this.scene.remove(enemyUnit.container)
+            this.unitsSpawned.splice(this.unitsSpawned.indexOf(enemyUnit.container.clickBox), 1)
+            this.map.matrix[enemyTile.z][enemyTile.x].walkable = true
+            enemyTile.unit = null
+            if (addToMoves) socket.notifyUnitKilled({ x: enemyTile.x, z: enemyTile.z })
+            if (enemyUnit.owner == token) {
+                this.myUnits.splice(this.myUnits.indexOf(enemyUnit), 1)
+            }
+        }
+        // --- sth that will update hp display ---
+
+        if (addToMoves) {
+            moves.push({
+                action: 'attack',
+                attackerTileID: attackerTileID,
+                targetTileID: targetTileID,
+            })
+            tile.unit.canMakeMove = false
+            if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
+                $('#turn-status').html('No available moves')
+            }
+        }
     }
     // #endregion functions
 }

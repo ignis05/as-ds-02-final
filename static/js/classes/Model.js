@@ -22,6 +22,10 @@ class Model {
                     await this.loadFBX()
                     resolve()
                     break;
+                case "obj":
+                    await this.loadOBJ()
+                    resolve()
+                    break;
                 default:
                     reject("invalid extention")
             }
@@ -50,6 +54,7 @@ class Model {
 
     // generate animations buttons on page
     createButtons() {
+        if (!this.animations) return
         $("#animationDisplayButtonsContainer").remove()
         let container = document.createElement("div")
         container.id = "animationDisplayButtonsContainer"
@@ -136,6 +141,56 @@ class Model {
                     console.error('An error happened', error);
                 },
             );
+        })
+    }
+    loadOBJ() { // loads obj file
+        return new Promise(resolve => {
+            var mtlLoader = new THREE.MTLLoader();
+            mtlLoader.setPath((this.path.split('/').slice(0, this.path.split('/').length - 1)).join("/") + "/");
+            mtlLoader.load(this.path.split('/')[this.path.split('/').length - 1], materials => {
+                materials.preload();
+                var objLoader = new THREE.OBJLoader();
+                objLoader.setMaterials(materials);
+                objLoader.load(this.path, mesh => {
+                    // console.log(mesh);
+                    this.mesh = mesh
+                    this.mesh.name = this.name
+
+                    this.animations = this.mesh.animations
+                    this.mixer = new THREE.AnimationMixer(this.mesh);
+                    resolve()
+                },
+                    (xhr) => {
+                        // called while loading is progressing
+                        console.log(`${~~((xhr.loaded / xhr.total * 100))}% loaded`);
+                    },
+                    (error) => {
+                        // called when loading has errors
+                        console.error('An error happened', error);
+                    },
+                );
+            });
+            // const loader = new THREE.OBJLoader();
+            // loader.load(this.path, mesh => {
+            //     // console.log(mesh);
+            //     this.mesh = mesh
+            //     this.mesh.name = this.name
+
+            //     this.animations = this.mesh.animations
+            //     this.mixer = new THREE.AnimationMixer(this.mesh);
+            //     resolve()
+
+
+            // },
+            //     (xhr) => {
+            //         // called while loading is progressing
+            //         console.log(`${~~((xhr.loaded / xhr.total * 100))}% loaded`);
+            //     },
+            //     (error) => {
+            //         // called when loading has errors
+            //         console.error('An error happened', error);
+            //     },
+            // );
         })
     }
     // #endregion loaders
