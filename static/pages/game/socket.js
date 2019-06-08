@@ -71,6 +71,12 @@ socket.sendPFData = async (positions) => {
     })
 }
 
+socket.triggerWin = () => {
+    console.log('i won');
+    socket.emit('victory')
+    console.log('still ok');
+}
+
 socket.sendSpawnData = async (positions) => {
     return new Promise(resolve => {
         socket.emit('send_Spawn_Data', positions, res => {
@@ -78,7 +84,16 @@ socket.sendSpawnData = async (positions) => {
         })
     })
 }
+socket.notifyUnitKilled = async (pos) => {
+    socket.emit('unit_killed', pos)
+}
 // #region socket triggers
+
+socket.on('end_of_game', winner => {
+    console.log('GAME ENDED');
+    window.alert(`User ${winner} is victorious!`)
+    window.location = '/'
+})
 
 socket.on('chat', msg => {
     console.log(msg);

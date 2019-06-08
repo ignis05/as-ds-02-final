@@ -28,7 +28,7 @@ class Unit {
         }
         this.container.add(this.model.mesh)
         let boxGeometry = new THREE.BoxGeometry(MASTER_BlockSizeParams.blockSize, MASTER_BlockSizeParams.blockSize, MASTER_BlockSizeParams.blockSize)
-        let boxMaterial = new THREE.MeshBasicMaterial({ color: (ownerToken == token ? 0x00ff00 : 0x0000ff), opacity: 1 })
+        let boxMaterial = new THREE.MeshBasicMaterial({ color: (ownerToken == token ? 0x00ff00 : 0x0000ff), opacity: 0.1 })
         let box = new THREE.Mesh(boxGeometry, boxMaterial)
         this.container.add(box)
         this.container.model = this.model
@@ -38,6 +38,7 @@ class Unit {
         // statistics
         this.mobility = unitData.stats.mobility
         this.damage = unitData.stats.damage
+        this.maxHealth = unitData.stats.health
         this.health = unitData.stats.health
         this.range = unitData.stats.range
         this.name = unitName

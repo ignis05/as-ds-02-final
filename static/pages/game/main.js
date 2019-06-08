@@ -57,6 +57,8 @@ $(document).ready(async () => {
         }
         $("#button-end-turn").attr("disabled", true)
         $('#turn-status').html('-')
+        console.log(game.unitsSpawned.map(clickObj => clickObj.parent));
+        if (!game.spawnTurn && ((game.unitsSpawned.map(clickObj => clickObj.parent)).every(unit => unit.owner == token))) socket.triggerWin() // win condition
     })
     // #endregion ui listeners
 })
