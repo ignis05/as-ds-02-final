@@ -446,7 +446,7 @@ class Game {
             resolve('End')
         })
     }
-    renderMoves(moves) {
+    renderMoves(moves, reconnect) {
         console.log('renering moves:')
         console.log(moves)
         for (let move of moves) {
@@ -455,7 +455,7 @@ class Game {
             }
             else if (move.action == 'move') {
                 console.log("selu", move);
-                this.moveUnit(move.moves, move.tileID)
+                this.moveUnit(move.moves, move.tileID, false, reconnect)
             }
             else if (move.action == 'attack') {
                 console.log('attack');
@@ -508,7 +508,7 @@ class Game {
             }
         }
     }
-    moveUnit(path, tileID, addToMoves) {
+    moveUnit(path, tileID, addToMoves, fast_forward) {
         console.log('moving');
         let tile = this.map.level.find(tile => tile.id == tileID)
         if (!tile || !tile.unit) return
@@ -529,6 +529,23 @@ class Game {
         var movePath = path
         var map = this.map
         var matrix = map.matrix
+
+        if (fast_forward) { // reconnecting
+            let lastPos = movePath[movePath.length - 1]
+            console.log(lastPos);
+            map.matrix[movePath[0][1]][movePath[0][0]].walkable = true
+            map.matrix[lastPos[1]][lastPos[0]].walkable = false
+            let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
+            console.log(newTile);
+            newTile.unit = tile.unit
+            tile.unit = null
+
+            unit.tileData.z = lastPos[1]
+            unit.tileData.x = lastPos[0]
+            unit.position.y = matrix[unit.tileData.z][unit.tileData.x].position.y * 2
+            unit.position.set(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize)
+            return
+        }
 
         let move = 0
         var moveInterval = setInterval(() => {
