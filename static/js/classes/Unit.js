@@ -54,4 +54,8 @@ class Unit {
     get roation() {
         return this.model.mesh.roation
     }
+    lookAt(vector3) {
+        let pos = new THREE.Vector3(vector3.x, vector3.y + this.model.mesh.position.y, vector3.z)
+        this.model.mesh.lookAt(pos)
+    }
 }
