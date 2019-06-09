@@ -522,8 +522,7 @@ class Game {
             })
             tile.unit.canMakeMove = false
         }
-        console.log(tile);
-        console.log(unit);
+
 
 
         var movePath = path
@@ -531,55 +530,34 @@ class Game {
         var matrix = map.matrix
 
         let lastPos = movePath[movePath.length - 1]
-        console.log(lastPos);
         map.matrix[movePath[0][1]][movePath[0][0]].walkable = true
         map.matrix[lastPos[1]][lastPos[0]].walkable = false
         let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
-        console.log(newTile);
         newTile.unit = tile.unit
         tile.unit = null
-        
+
         if (fast_forward) { // reconnecting
-            console.log('!!!reconnecting!!! !!!fats forward!!!');
+            console.warn('!!!reconnecting!!! !!!fast forward!!!');
             unit.tileData.z = lastPos[1]
             unit.tileData.x = lastPos[0]
             unit.position.y = matrix[unit.tileData.z][unit.tileData.x].position.y * 2
             unit.position.set(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize)
             return
         }
-        else {
-            if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
-                $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
-            }
+
+        if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
+            $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
         }
 
         let move = 0
         var moveInterval = setInterval(() => {
             if (move > movePath.length - 1) {
-                /*  console.log(clickFunction); */
-
-                /*  $('#game').on('click', clickFunction) */
                 window.clearInterval(moveInterval)
-                // let lastPos = movePath[movePath.length - 1]
-                // console.log(lastPos);
-                // map.matrix[movePath[0][1]][movePath[0][0]].walkable = true
-                // map.matrix[lastPos[1]][lastPos[0]].walkable = false
-                // let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
-                // console.log(newTile);
-                // newTile.unit = tile.unit
-                // tile.unit = null
-
-                // console.log(this.myUnits);
-                
             } else {
-                console.log(movePath[move]);
                 unit.tileData.z = movePath[move][1]
                 unit.tileData.x = movePath[move][0]
                 unit.position.y = matrix[unit.tileData.z][unit.tileData.x].position.y * 2
                 unit.position.set(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize)
-                console.log(unit.position);
-                /*  matrix[unit.tileData.z][unit.tileData.x].material.color.set(0xff0000) */
-                console.log(matrix[unit.tileData.z][unit.tileData.x].position);
                 move++
             }
         }, 250)
