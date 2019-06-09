@@ -68,6 +68,7 @@ class Game {
         this.initRaycaster_unitSelect()
         this.initRaycaster_movePoint()
 
+        this.defeated = false
         this.myTurn = false
         this.spawnTurn = true
         this.unitToSpawn = null // unit that will be spawned on click
@@ -238,7 +239,11 @@ class Game {
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
         }
         else { // if normal turn
-            if (this.myUnits.length < 1) { // if no units alive - end turn immediately
+            // if (this.myUnits.length < 1) { // if no units alive - end turn immediately
+            //     moves = []
+            //     socket.endTurn(moves)
+            // }
+            if (this.defeated) {
                 moves = []
                 socket.endTurn(moves)
             }
@@ -582,6 +587,11 @@ class Game {
             if (addToMoves) socket.notifyUnitKilled({ x: enemyTile.x, z: enemyTile.z })
             if (enemyUnit.owner == token) {
                 this.myUnits.splice(this.myUnits.indexOf(enemyUnit), 1)
+                if (this.myUnits.length < 1) { // no units left
+                    this.defeated = true
+                    moves = []
+                    socket.endTurn(moves)
+                }
             }
         }
         // --- sth that will update hp display ---
