@@ -521,6 +521,18 @@ lobby.io.on('connect', socket => {
         }
         let sessionId = Math.random().toString(36).substring(2, 10)
 
+        mapDataBase = new Datastore({
+            filename: path.join(__dirname + `/static/database/maps.db`),
+            autoload: true
+        });
+
+        mapDataBase.getMapByName = function (name) {
+            return new Promise(res => {
+                this.findOne({ mapName: name }, function (err, entry) {
+                    res(entry)
+                });
+            })
+        }
         let map = await mapDataBase.getMapByName(room.map)
 
         game.sessions.push({ // push game session to game instance of socket
@@ -772,7 +784,7 @@ game.io.on('connect', socket => {
         console.log(`${socket.id} disconnected`);
 
         let session = game.getSessionByClientID(socket.id)
-        if(!session) return
+        if (!session) return
         var client = game.getClientByID(socket.id)
 
         game.io.to(session.id).emit('player_disconnected', socket.id) // notify room
