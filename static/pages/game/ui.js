@@ -2,14 +2,18 @@ class UI {
     static get memberColors() {
         return ['#CF2F2F', '#CF7F2F', '#CFCF2F', '#2F2FCF', '#2F2F2F', '#CF2FCF', '#2FCFCF', '#2FCF2F']
     }
-    constructor() {
+    constructor(levelData) {
         $('#ui').removeAttr('style')
 
         this.buildCategories = Array.from($('.ui-build-cat'))
         this.buildTabs = Array.from($('.ui-build-tab'))
+
+        this.levelData = levelData
     }
 
-    UpdateMinimap(levelPack) {
+    UpdateMinimap() {
+        let levelPack = this.levelData
+
         let canvas = $('#minimap-canvas')
             .attr('width', parseInt(levelPack.size) * 8)
             .attr('height', parseInt(levelPack.size) * 8)
@@ -22,6 +26,33 @@ class UI {
             ctx.fillStyle = MASTER_BlockTypes[levelPack.level[i].type].editor.color
             ctx.fillRect(parseInt(levelPack.level[i].x), parseInt(levelPack.level[i].z), parseInt(levelPack.level[i].x) + 1, parseInt(levelPack.level[i].z) + 1)
         }
+    }
+
+    UpdateMinimapCamera(posX, posZ, distance, rotation) {
+        let levelPack = this.levelData
+        let wrkDistance = distance / 20
+
+        let canvas = $('#minimap-camera')
+            .attr('width', parseInt(levelPack.size) * 64)
+            .attr('height', parseInt(levelPack.size) * 64)
+
+        let ctx = canvas[0].getContext('2d')
+
+        ctx.scale(8, 8)
+
+        let drawX = posX * 8
+        let drawZ = posZ * 8
+
+        ctx.translate(drawX, drawZ)
+        ctx.rotate(-rotation)
+
+        ctx.lineWidth = "1"
+        ctx.strokeStyle = "#FFFFFF"
+        ctx.rect(-wrkDistance, -wrkDistance, wrkDistance * 2, wrkDistance * 2)
+        ctx.stroke()
+
+        ctx.rotate(rotation)
+        ctx.translate(-drawX, -drawZ)
     }
 
     debug_uiDisable(boolean) {

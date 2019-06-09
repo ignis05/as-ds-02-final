@@ -19,8 +19,8 @@ $(document).ready(async () => {
 
     mapData = await socket.getMapData() // load map from session instead of database
 
-    ui = new UI()
-    ui.UpdateMinimap(mapData) // initial minimap calculation
+    ui = new UI(mapData)
+    ui.UpdateMinimap() // initial minimap calculation
 
     game = new Game('#game') // create game display in '#game' div
     ui.debug_uiDisable(true)
