@@ -252,8 +252,11 @@ class CameraController { // camera controller
             if (this.anchor.position.x > mapData.size * blockSize - blockSize / 2) this.anchor.position.x = mapData.size * blockSize - blockSize / 2
             if (this.anchor.position.z > mapData.size * blockSize - blockSize / 2) this.anchor.position.z = mapData.size * blockSize - blockSize / 2
 
-            let anchorMapX = Math.floor((this.anchor.position.x + blockSize / 2) / blockSize)
-            let anchorMapZ = Math.floor((this.anchor.position.z + blockSize / 2) / blockSize)
+            let anchorAccurateMapX = (this.anchor.position.x + blockSize / 2) / blockSize
+            let anchorAccurateMapZ = (this.anchor.position.z + blockSize / 2) / blockSize
+
+            let anchorMapX = Math.floor(anchorAccurateMapX)
+            let anchorMapZ = Math.floor(anchorAccurateMapZ)
 
             anchorMapX = anchorMapX == mapData.size ? anchorMapX - 1 : anchorMapX
             anchorMapZ = anchorMapZ == mapData.size ? anchorMapZ - 1 : anchorMapZ
@@ -267,6 +270,8 @@ class CameraController { // camera controller
             this.camera.position.z = this.anchor.position.z + this.distance * Math.cos(this.angle)
             this.camera.position.y = this.anchor.position.y + this.distance
             this.camera.lookAt(this.anchor.position)
+
+            ui.UpdateMinimapCamera(anchorAccurateMapX, anchorAccurateMapZ, this.distance, this.angle)
         }
     }
 
