@@ -30,11 +30,12 @@ class UI {
 
     UpdateMinimapCamera(posX, posZ, distance, rotation) {
         let levelPack = this.levelData
-        let wrkDistance = distance / 20
+        let wrkDistance = distance / CameraController.cameraLimits().minDist
+        let blockSize = 8
 
         let canvas = $('#minimap-camera')
-            .attr('width', parseInt(levelPack.size) * 64)
-            .attr('height', parseInt(levelPack.size) * 64)
+            .attr('width', parseInt(levelPack.size) * blockSize * blockSize)
+            .attr('height', parseInt(levelPack.size) * blockSize * blockSize)
 
         let ctx = canvas[0].getContext('2d')
 
@@ -48,7 +49,14 @@ class UI {
 
         ctx.lineWidth = "1"
         ctx.strokeStyle = "#FFFFFF"
-        ctx.rect(-wrkDistance, -wrkDistance, wrkDistance * 2, wrkDistance * 2)
+
+        ctx.beginPath()
+        ctx.moveTo(-blockSize * 3 * wrkDistance, -blockSize * 5 / 2 * wrkDistance)
+        ctx.lineTo(blockSize * 3 * wrkDistance, -blockSize * 5 / 2 * wrkDistance)
+        ctx.lineTo(blockSize * wrkDistance, blockSize * 3 / 2 * wrkDistance)
+        ctx.lineTo(-blockSize * wrkDistance, blockSize * 3 / 2 * wrkDistance)
+        ctx.closePath()
+        
         ctx.stroke()
 
         ctx.rotate(rotation)
