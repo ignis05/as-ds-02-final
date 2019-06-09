@@ -751,6 +751,7 @@ game.io.on('connect', socket => {
 
         if (session.turn.id == socket.id) { // if it's reconnected player's turn
             game.io.to(session.turn.id).emit('my_turn')
+            console.log('emit from recconect');
         }
     }
 
@@ -759,12 +760,13 @@ game.io.on('connect', socket => {
     for (player of session.clients) {
         if (player.connected) readyCount++
     }
-    if (readyCount == session.clients.length) {
+    if (!session.inProgress && readyCount == session.clients.length) {
         session.inProgress = true
         // notify players
         game.io.to(session.id).emit('all_players_connected')
         session.turn = session.clients[0]
         game.io.to(session.turn.id).emit('my_turn')
+        console.log('emit game start');
     }
 
     // built in disconnect event :
@@ -772,7 +774,7 @@ game.io.on('connect', socket => {
         console.log(`${socket.id} disconnected`);
 
         let session = game.getSessionByClientID(socket.id)
-        if(!session) return
+        if (!session) return
         var client = game.getClientByID(socket.id)
 
         game.io.to(session.id).emit('player_disconnected', socket.id) // notify room
@@ -843,7 +845,7 @@ game.io.on('connect', socket => {
     })
 
     socket.on('check_PF_Data', (data, res) => {
-        console.log(data);
+        // console.log(data);
         let matrix = (loadedMaps.find(map => map.session == session.id)).matrix
         let lengths = data.destArray.map(dest => {
             let grid = new PF.Grid(matrix)
@@ -874,7 +876,7 @@ game.io.on('connect', socket => {
         } 
         */
 
-        console.log(data);
+        // console.log(data);
         PFpath = finder.findPath(data.x, data.z, data.xn, data.zn, grid)
         if (PFpath.length > 1) {
             matrix[data.z][data.x][0] = 0
@@ -894,11 +896,8 @@ game.io.on('connect', socket => {
 
     socket.on('send_Spawn_Data', function (data, res) {
         let client = game.getClientByID(socket.id)
-        console.log('873');
-        console.log(client);
         for (let maps in loadedMaps) {
             if (loadedMaps[maps].session == session.id) {
-                console.log("found one!");
                 loadedMaps[maps].matrix[data.z][data.x][0] = 1
                 client.tempMatrixChanges.push({ new: { z: data.z, x: data.x } })
                 break
@@ -925,6 +924,7 @@ game.io.on('connect', socket => {
 
     socket.on('end_turn', data => {
         let session = game.getSessionByClientID(socket.id)
+        if(!session) return
         let client = game.getClientByID(socket.id)
 
         client.tempMatrixChanges = [] //  clear not uploaded moves
@@ -944,14 +944,17 @@ game.io.on('connect', socket => {
 
         // notify next player about their turn
         let i = session.clients.indexOf(session.turn)
+        console.log('player turn:', i);
         if (i == -1) {
             console.error('invalid data in turn')
             return
         }
         if (i == session.clients.length - 1) i = 0
         else i++
+        console.log('new player tunr:', i);
         session.turn = session.clients[i]
         game.io.to(session.turn.id).emit('my_turn')
+        console.log('emit from end turn');
     })
 
 
