@@ -106,7 +106,7 @@ socket.on('reconnecting', moves => { // triggers when user is reconencing to ong
         if (game && game.map && game.modelsLoaded) {
             let me = await socket.getMyself()
             game.avalUnits = me.unitsToSpawn
-            game.renderMoves(moves)
+            game.renderMoves(moves, true)
             clearInterval(x)
         }
     }, 1000)
