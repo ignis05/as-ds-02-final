@@ -573,6 +573,9 @@ class Game {
         let enemyTile = this.map.level.find(tile => tile.id == targetTileID)
         let enemyUnit = enemyTile.unit
 
+        let pos = new THREE.Vector3(enemyUnit.position.x, unit.model.mesh.position.y, enemyUnit.position.z)
+        unit.model.mesh.lookAt(pos)
+
         enemyUnit.health -= unit.damage
         if (enemyUnit.health < 1) { // rip
             this.scene.remove(enemyUnit.container)

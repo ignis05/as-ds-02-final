@@ -28,7 +28,7 @@ class Unit {
         }
         this.container.add(this.model.mesh)
         let boxGeometry = new THREE.BoxGeometry(MASTER_BlockSizeParams.blockSize, 1, MASTER_BlockSizeParams.blockSize)
-        let boxMaterial = new THREE.MeshStandardMaterial({ color: (ownerToken == token ? 0x00ff00 : 0x0000ff), transparent: true, visible: true ,opacity: 0.5 })
+        let boxMaterial = new THREE.MeshStandardMaterial({ color: (ownerToken == token ? 0x00ff00 : 0x0000ff), transparent: true, visible: true, opacity: 0.5 })
         let box = new THREE.Mesh(boxGeometry, boxMaterial)
         this.container.add(box)
         this.container.model = this.model
@@ -50,5 +50,8 @@ class Unit {
     }
     get position() { // so u can use unit.position.set() instead of unit.container.position.set()
         return this.container.position
+    }
+    get roation() {
+        return this.model.mesh.roation
     }
 }
