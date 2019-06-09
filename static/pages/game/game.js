@@ -18,6 +18,7 @@ class Game {
         this.models = {} // all models meshes will be loaded here when game is started
         this.modelsLoaded = false
 
+        this.unitsInPlay = []
         this.unitsSpawned = []
         this.selectedUnit = null
         this.selectedTile = null
@@ -471,6 +472,7 @@ class Game {
             return
         }
         tile.unit = unit
+        this.unitsInPlay.push(unit)
         this.unitsSpawned.push(unit.container.clickBox)
         unit.addTo(this.scene)
         socket.sendSpawnData({

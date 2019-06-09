@@ -63,6 +63,24 @@ class UI {
         ctx.translate(-drawX, -drawZ)
     }
 
+    UpdateMinimapUnits() {
+        let levelPack = this.levelData
+
+        let canvas = $('#minimap-units')
+            .attr('width', parseInt(levelPack.size) * 8)
+            .attr('height', parseInt(levelPack.size) * 8)
+
+        let ctx = canvas[0].getContext('2d')
+
+        ctx.scale(8, 8)
+
+        for (let i in game.unitsInPlay) {
+            console.log(game.unitsInPlay[i].owner)
+            ctx.fillStyle = "#FF0000"
+            ctx.fillRect(parseInt(game.unitsInPlay[i].container.tileData.x), parseInt(game.unitsInPlay[i].container.tileData.z), parseInt(game.unitsInPlay[i].container.tileData.x) + 1, parseInt(game.unitsInPlay[i].container.tileData.z) + 1)
+        }
+    }
+
     debug_uiDisable(boolean) {
         game.debug_log('ui.debug_uiDisable: ' + boolean, 2)
         if (boolean)
