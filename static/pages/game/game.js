@@ -538,9 +538,12 @@ class Game {
 
         if (fast_forward) { // reconnecting
             console.warn('!!!reconnecting!!! !!!fast forward!!!');
+            let almostLastPos = movePath[movePath.length - 2]
+            unit.position.set(almostLastPos[0] * MASTER_BlockSizeParams.blockSize, matrix[almostLastPos[1]][almostLastPos[0]].position.y * 2, almostLastPos[1] * MASTER_BlockSizeParams.blockSize)
             unit.tileData.z = lastPos[1]
             unit.tileData.x = lastPos[0]
             unit.position.y = matrix[unit.tileData.z][unit.tileData.x].position.y * 2
+            unit.lookAt(new THREE.Vector3(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize))
             unit.position.set(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize)
             return
         }
@@ -554,6 +557,7 @@ class Game {
             if (move > movePath.length - 1) {
                 window.clearInterval(moveInterval)
             } else {
+                unit.lookAt(new THREE.Vector3(movePath[move][0] * MASTER_BlockSizeParams.blockSize, unit.position.y, movePath[move][1] * MASTER_BlockSizeParams.blockSize))
                 unit.tileData.z = movePath[move][1]
                 unit.tileData.x = movePath[move][0]
                 unit.position.y = matrix[unit.tileData.z][unit.tileData.x].position.y * 2
