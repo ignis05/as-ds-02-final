@@ -381,7 +381,8 @@ class Game {
                 this.attackUnit(tile.id, targetTile.id, true)
 
                 $('#game').on('click', this.selectU)
-                $("#selected-unit").html('')
+                $("#ui-top-selected-unit").html('')
+                this.selectedUnit = null
                 return
             }
 
@@ -411,7 +412,8 @@ class Game {
                         }
                         $('#game').on('click', this.selectU)
                         this.avalMoveTab = []
-                        $("#selected-unit").html('')
+                        $("#ui-top-selected-unit").html('')
+                        this.selectedUnit = null
                     })
                 }
                 return
@@ -592,7 +594,7 @@ class Game {
             })
             tile.unit.canMakeMove = false
             if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
-                $('#turn-status').html('No available moves')
+                $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
             }
         }
     }
