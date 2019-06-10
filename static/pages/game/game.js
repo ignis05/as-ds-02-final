@@ -241,7 +241,8 @@ class Game {
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
             this.highlightSpawnZones()
 
-            DisplayMegalovania()
+            console.error(help.spawnTurn)
+            if (help.spawnTurn) DisplaySpawnTurn()
         }
         else { // if normal turn
             if (this.defeated) {
@@ -266,7 +267,7 @@ class Game {
                 tile.material[2].color.set(tile.owner == "everyone" ? 0x222222 : UI.memberColors[tile.owner])
             }
             if (tile.owner == index || tile.owner == "everyone") {
-                console.log(`valid spawn tile: ${tile.id}`);
+                /* console.log(`valid spawn tile: ${tile.id}`); */
                 this.spawnTiles.push(tile)
             }
         }

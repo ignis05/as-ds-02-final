@@ -54,6 +54,8 @@ function DisplaySpawnTurn() {
                 text: "Ok",
                 'class': 'ui-dialog-button',
                 click: function () {
+                    help.spawnTurn = false
+                    Cookies.set('help-spawnTurn', false, 7)
                     $(this).dialog("close")
                     overlay.css('display', 'none')
                 }
