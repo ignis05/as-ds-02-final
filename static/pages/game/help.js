@@ -150,7 +150,7 @@ function DisplayActionTurn() {
         dialogClass: 'no-close ui-dialog-errormsg',
         width: 500,
         height: 300,
-        title: '[HELP] Spawn Turn',
+        title: '[HELP] Action Turn',
         buttons: [
             {
                 text: "Ok",
