@@ -240,6 +240,8 @@ class Game {
             $("#button-end-turn").attr("disabled", true)
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
             this.highlightSpawnZones()
+
+            DisplayMegalovania()
         }
         else { // if normal turn
             if (this.defeated) {

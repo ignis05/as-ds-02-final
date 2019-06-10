@@ -4,6 +4,13 @@ var moves = []
 var token = Cookies.get('token')
 var mapData
 
+var help = {
+    spawnTurn: Cookies.get('help-spawnTurn') === 'true',
+    spanwEnd: Cookies.get('help-spawnEnd') === 'true',
+    enemyTurn: Cookies.get('help-enemyTurn') === 'true',
+    actionTurn: Cookies.get('help-actionTurn') === 'true',
+}
+
 // ============================================================= //
 //  TODO: Move debug to external file (loaded first, universal)  //
 // ============================================================= //
