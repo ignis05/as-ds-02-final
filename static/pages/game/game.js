@@ -259,6 +259,7 @@ class Game {
         // let me = session.clients.find(client => client.token == token)
         let index = session.clients.findIndex(client => client.token == token)
         for (let tile of this.map.group.children) {
+            if (!tile.walkable) continue
             if (tile.owner != "neutral") {
                 tile.material[2].color.set(tile.owner == "everyone" ? 0x222222 : UI.memberColors[tile.owner])
             }
