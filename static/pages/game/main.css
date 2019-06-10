@@ -425,7 +425,7 @@ body {
     position: absolute;
     top: 0;
     right: 0;
-    height: 150px;
+    height: 100px;
     width: 150px;
     border: 2px outset #BFBFBF;
     background-color: #2F2F2F;
@@ -455,8 +455,9 @@ body {
 
 #ui-top-buttons-container button:disabled {
     background-color: #3F3F3F;
-    color: #AFAFAF;
+    color: #9F9F9F;
     font-size: initial;
+    border: 2px solid #9F9F9F;
 }
 
 #ui-top-selected-unit {
