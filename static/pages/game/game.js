@@ -76,6 +76,7 @@ class Game {
         this.avalMoveTab = [] // tab of possible moves
         this.avalMoveTiles = []
         this.myUnits = [] // units belinging to current player
+        this.spawnTiles = []
         socket.getMyself().then(me => {
             this.avalUnits = me.unitsToSpawn
             ui.UpdateSpawnControls()
@@ -237,12 +238,9 @@ class Game {
         if (Object.values(this.avalUnits).some(val => val > 0)) { // if spawning turn
             $("#button-end-turn").attr("disabled", true)
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
+            this.highlightSpawnZones()
         }
         else { // if normal turn
-            // if (this.myUnits.length < 1) { // if no units alive - end turn immediately
-            //     moves = []
-            //     socket.endTurn(moves)
-            // }
             if (this.defeated) {
                 moves = []
                 socket.endTurn(moves)
@@ -253,6 +251,26 @@ class Game {
             for (let unit of this.myUnits) {
                 unit.canMakeMove = true
             }
+        }
+    }
+    async highlightSpawnZones() {
+        this.spawnTiles = []
+        let session = await socket.getSession()
+        // let me = session.clients.find(client => client.token == token)
+        let index = session.clients.findIndex(client => client.token == token)
+        for (let tile of this.map.group.children) {
+            if (tile.owner != "neutral") {
+                tile.material[2].color.set(tile.owner == "everyone" ? 0x222222 : UI.memberColors[tile.owner])
+            }
+            if (tile.owner == index || tile.owner == "everyone") {
+                console.log(`valid spawn tile: ${tile.id}`);
+                this.spawnTiles.push(tile)
+            }
+        }
+    }
+    clearSpawnZones() {
+        for (let tile of this.map.group.children) {
+            tile.material[2].color.set(tile.color)
         }
     }
     selectUnitToSpawn(unitName) {
@@ -275,7 +293,7 @@ class Game {
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
             raycaster.setFromCamera(mouseVector, this.camera);
 
-            var intersects = raycaster.intersectObjects(this.map.group.children, true);
+            var intersects = raycaster.intersectObjects(this.spawnTiles, true);
 
             if (intersects.length > 0) {
                 let obj = intersects[0].object
@@ -510,6 +528,7 @@ class Game {
             if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
                 $("#button-end-turn").attr("disabled", false)
                 $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
+                this.clearSpawnZones()
             }
         }
     }
@@ -574,7 +593,6 @@ class Game {
 
         /* Pathfinder.moveTiles(moves, this.map.matrix, this.map, unit.container) */
     }
-
     attackUnit(attackerTileID, targetTileID, addToMoves) {
         let tile = this.map.level.find(tile => tile.id == attackerTileID)
         let unit = tile.unit
