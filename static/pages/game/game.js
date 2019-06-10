@@ -330,8 +330,6 @@ class Game {
             this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
             this.avalMoveTiles.push(this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z))
         }
-        $('#game').on('click', this.moveU)
-        $('#game').off('click', this.selectU)
     }
     initRaycaster_unitSelect() {
         var raycaster = new THREE.Raycaster();
@@ -347,6 +345,8 @@ class Game {
 
             if (intersects.length > 0) {
                 this.selectUnit(intersects)
+                $('#game').on('click', this.moveU)
+                $('#game').off('click', this.selectU)
             }
         }
         $('#game').on('click', this.selectU)
@@ -374,7 +374,13 @@ class Game {
                         recolor.material[2].color.set(recolor.color)
                     }
                     this.avalMoveTab = []
-                    this.selectUnit(modelsIntersects)
+                    if (enemyUnitMesh == this.selectedUnit) { // click on already selected unit
+                        $("#ui-top-selected-unit").html('')
+                        this.selectedUnit = null
+                    }
+                    else {
+                        this.selectUnit(modelsIntersects)
+                    }
                     return
                 }
 
@@ -385,19 +391,18 @@ class Game {
                 let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
                 let unit = tile.unit
                 // distance check
-                if (Math.abs(tile.x - targetTile.x) > unit.range && Math.abs(tile.z - targetTile.z) > unit.range) {
-                    return
-                }
                 for (let recolor of this.avalMoveTab) {
                     recolor.material[2].color.set(recolor.color)
                 }
                 this.avalMoveTab = []
-
-                this.attackUnit(tile.id, targetTile.id, true)
-
                 $('#game').on('click', this.selectU)
                 $("#ui-top-selected-unit").html('')
                 this.selectedUnit = null
+
+                if (Math.abs(tile.x - targetTile.x) > unit.range && Math.abs(tile.z - targetTile.z) > unit.range) {
+                    return
+                }
+                this.attackUnit(tile.id, targetTile.id, true)
                 return
             }
 
