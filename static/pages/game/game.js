@@ -18,6 +18,7 @@ class Game {
         this.models = {} // all models meshes will be loaded here when game is started
         this.modelsLoaded = false
 
+        this.unitsInPlay = []
         this.unitsSpawned = []
         this.selectedUnit = null
         this.selectedTile = null
@@ -234,7 +235,7 @@ class Game {
         }
     }
     activateMyTurn() {
-        console.log('My turn');
+        console.log('My turn')
         if (Object.values(this.avalUnits).some(val => val > 0)) { // if spawning turn
             $("#button-end-turn").attr("disabled", true)
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
@@ -505,6 +506,7 @@ class Game {
                 this.attackUnit(move.attackerTileID, move.targetTileID)
             }
         }
+        setTimeout(() => ui.UpdateMinimapUnits(), 1000)
     }
     async spawnUnit(tileID, unit, addToMoves) {
         let size = MASTER_BlockSizeParams.blockSize
@@ -514,6 +516,7 @@ class Game {
             return
         }
         tile.unit = unit
+        this.unitsInPlay.push(unit)
         this.unitsSpawned.push(unit.container.clickBox)
         unit.addTo(this.scene)
         socket.sendSpawnData({

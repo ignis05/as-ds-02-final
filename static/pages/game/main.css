@@ -257,6 +257,16 @@ body {
     top: 5px;
 }
 
+#minimap-units {
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    background-color: transparent;
+    border: 5px inset #7F7F2F;
+    position: absolute;
+    left: 5px;
+    top: 5px;
+}
+
 #ui-main {
     height: 200px;
     width: 500px;
