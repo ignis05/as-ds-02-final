@@ -77,6 +77,7 @@ class Game {
         this.avalMoveTiles = []
         this.myUnits = [] // units belinging to current player
         this.spawnTiles = []
+        this.evemyHighlights = []
         socket.getMyself().then(me => {
             this.avalUnits = me.unitsToSpawn
             ui.UpdateSpawnControls()
@@ -334,6 +335,13 @@ class Game {
                         x: parseInt(this.selectedUnit.tileData.x) + j,
                         z: parseInt(this.selectedUnit.tileData.z) + i
                     }
+                    let tile = this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z )
+                    console.log(tile)
+                    if (Math.abs(tile.x - this.selectedUnit.tileData.x) <= attackRange && Math.abs(tile.z - this.selectedUnit.tileData.z) <= attackRange && Math.abs(tile.height - this.selectedUnit.position.y) <= 16 && tile.unit && tile.unit.owner != token) {
+                        this.evemyHighlights.push(this.map.matrix[avalMove.z][avalMove.x])
+                        this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0xff0000)
+                        console.log('marked enemy on tile ' + tile.id);
+                    }
                     if (this.map.matrix[avalMove.z][avalMove.x].walkable) {
                         tempMoves.push(avalMove)
                     }
@@ -391,6 +399,10 @@ class Game {
                 let enemyUnit = targetTile.unit
                 console.log(enemyUnit);
                 if (enemyUnit.owner == token) { // own unit
+                    for (let t of this.evemyHighlights) {
+                        t.material[2].color.set(t.color)
+                    }
+                    this.evemyHighlights = []
                     for (let recolor of this.avalMoveTab) {
                         recolor.material[2].color.set(recolor.color)
                     }
@@ -419,6 +431,10 @@ class Game {
                     recolor.material[2].color.set(recolor.color)
                 }
                 this.avalMoveTab = []
+                for (let t of this.evemyHighlights) {
+                    t.material[2].color.set(t.color)
+                }
+                this.evemyHighlights = []
                 $('#game').off('click', this.moveU)
 
                 $('#game').on('click', this.selectU)
