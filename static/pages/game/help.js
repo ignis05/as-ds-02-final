@@ -38,7 +38,7 @@ function DisplaySpawnTurn() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('-- PLACEHOLDER --')
+    popup.append('In this turn, you have to select units from the box at the bottom of the UI (next to the minimap) and choose a position for them to spawn.\nGet clickin!')
 
     popup.dialog({
         closeOnEscape: false,
@@ -72,7 +72,7 @@ function DisplaySpawnEnd() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('-- PLACEHOLDER --')
+    popup.append('Congratulations!\nYou have just placed all your units, now click the \'End Turn\' button in the top right corner to let the game advance')
 
     popup.dialog({
         closeOnEscape: false,
@@ -106,7 +106,7 @@ function DisplayEnemyTurn() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('-- PLACEHOLDER --')
+    popup.append('Now your opponent is making his moves, wait patiently for your turn...\n...or yell at him to make it quick, I am not your mother!')
 
     popup.dialog({
         closeOnEscape: false,
@@ -140,7 +140,7 @@ function DisplayActionTurn() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('-- PLACEHOLDER --')
+    popup.append('Okay, this is where the fun begins!\nYou made it to the action turn, feel free to select your units (left click on their cells) and then tell them one by one to move to their destination.\nIf you are in range you might even choose to attack an enemy unit!\nNow, get playing, let\'s get this bread!')
 
     popup.dialog({
         closeOnEscape: false,
