@@ -336,6 +336,7 @@ class Game {
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
         this.selectU = async () => {
+            console.log('>>>> SELECT UNIT <<<<');
             if (!this.myTurn || this.spawnTurn) return // do nothing if someone else's turn or its spawning turn
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
@@ -356,6 +357,7 @@ class Game {
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
         this.moveU = () => {
+            console.log('>>>> MOVE UNIT <<<<');
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
@@ -384,24 +386,27 @@ class Game {
                     return
                 }
 
-                $('#game').off('click', this.moveU)
-
                 console.log('valid hostile unit');
                 // distance check
                 let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
                 let unit = tile.unit
                 // distance check
+                if (Math.abs(tile.x - targetTile.x) > unit.range || Math.abs(tile.z - targetTile.z) > unit.range) {
+                    console.log('----- invalid range');
+                    return
+                }
+
                 for (let recolor of this.avalMoveTab) {
                     recolor.material[2].color.set(recolor.color)
                 }
                 this.avalMoveTab = []
+                $('#game').off('click', this.moveU)
+
                 $('#game').on('click', this.selectU)
                 $("#ui-top-selected-unit").html('')
                 this.selectedUnit = null
 
-                if (Math.abs(tile.x - targetTile.x) > unit.range && Math.abs(tile.z - targetTile.z) > unit.range) {
-                    return
-                }
+
                 this.attackUnit(tile.id, targetTile.id, true)
                 return
             }
