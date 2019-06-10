@@ -46,6 +46,7 @@ $(document).ready(async () => {
 
     // #region ui listeners
     $('#button-end-turn').click(() => {
+        game.camCtrl.debug_forceStop()
         console.log('click - end turn')
         socket.endTurn(moves) // send array of made moves
         moves = [] // reset array of moves
@@ -58,6 +59,7 @@ $(document).ready(async () => {
         $("#button-end-turn").attr("disabled", true)
         $('#ui-top-turn-status').html('-').css('background-color', '#3F3F3F')
         if (!game.spawnTurn && ((game.unitsSpawned.map(clickObj => clickObj.parent)).every(unit => unit.owner == token))) socket.triggerWin() // win condition
+        $('#game').focus()
     })
     // #endregion ui listeners
 })
