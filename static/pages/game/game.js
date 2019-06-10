@@ -241,8 +241,8 @@ class Game {
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
             this.highlightSpawnZones()
 
-            console.error(help.spawnTurn)
-            if (help.spawnTurn) DisplaySpawnTurn()
+            /* console.error(help.spawnTurn)
+            if (help.spawnTurn) DisplaySpawnTurn() */
         }
         else { // if normal turn
             if (this.defeated) {
