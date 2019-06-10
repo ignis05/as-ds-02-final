@@ -56,14 +56,14 @@ class UI {
         ctx.lineTo(blockSize * wrkDistance, blockSize * 3 / 2 * wrkDistance)
         ctx.lineTo(-blockSize * wrkDistance, blockSize * 3 / 2 * wrkDistance)
         ctx.closePath()
-        
+
         ctx.stroke()
 
         ctx.rotate(rotation)
         ctx.translate(-drawX, -drawZ)
     }
 
-    UpdateMinimapUnits() {
+    async UpdateMinimapUnits() {
         let levelPack = this.levelData
 
         let canvas = $('#minimap-units')
@@ -74,10 +74,15 @@ class UI {
 
         ctx.scale(8, 8)
 
+        let session = await socket.getSession()
+
         for (let i in game.unitsInPlay) {
-            console.log(game.unitsInPlay[i].owner)
-            ctx.fillStyle = "#FF0000"
-            ctx.fillRect(parseInt(game.unitsInPlay[i].container.tileData.x), parseInt(game.unitsInPlay[i].container.tileData.z), parseInt(game.unitsInPlay[i].container.tileData.x) + 1, parseInt(game.unitsInPlay[i].container.tileData.z) + 1)
+            ctx.fillStyle = "#000000"
+            for (let j in session.clients) {
+                if (session.clients[j].token == game.unitsInPlay[i].owner)
+                    ctx.fillStyle = UI.memberColors[j]
+            }
+            ctx.fillRect(parseInt(game.unitsInPlay[i].container.tileData.x), parseInt(game.unitsInPlay[i].container.tileData.z), 1, 1)
         }
     }
 

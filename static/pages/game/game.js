@@ -233,7 +233,7 @@ class Game {
         }
     }
     activateMyTurn() {
-        console.log('My turn');
+        console.log('My turn')
         if (Object.values(this.avalUnits).some(val => val > 0)) { // if spawning turn
             $("#button-end-turn").attr("disabled", true)
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
@@ -463,6 +463,7 @@ class Game {
                 this.attackUnit(move.attackerTileID, move.targetTileID)
             }
         }
+        ui.UpdateMinimapUnits()
     }
     async spawnUnit(tileID, unit, addToMoves) {
         let size = MASTER_BlockSizeParams.blockSize
