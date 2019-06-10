@@ -218,6 +218,21 @@ class CameraController { // camera controller
             }
         })
     }
+    
+    debug_forceStop() {
+        this.input = {
+            rotLeft: false,
+            rotRight: false,
+
+            zoomIn: false,
+            zoomOut: false,
+
+            moveLeft: false,
+            moveRight: false,
+            moveUp: false,
+            moveDown: false,
+        }
+    }
 
     update() {
 
