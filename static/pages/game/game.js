@@ -289,6 +289,50 @@ class Game {
             }
         })
     }
+    async selectUnit(intersects) {
+        this.selectedUnit = intersects[0].object.parent
+        console.log("selu", this.selectedUnit);
+        if (this.selectedUnit.owner != token) return // do nothing if someone else's unit
+        let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
+        console.log(this.myUnits);
+        console.log(tile.unit);
+        if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
+
+        $("#ui-top-selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
+        let attackRange = MASTER_Units[this.selectedUnit.model.name].stats.range
+        console.log(attackRange);
+        let moveRange = MASTER_Units[this.selectedUnit.model.name].stats.mobility
+        console.log(moveRange);
+        var tempMoves = []
+        for (var i = -moveRange; i <= moveRange + 1; i++) {
+            for (var j = -moveRange; j <= moveRange + 1; j++) {
+                if (parseInt(this.selectedUnit.tileData.z) + i >= 0 &&
+                    parseInt(this.selectedUnit.tileData.z) + i < this.map.size &&
+                    parseInt(this.selectedUnit.tileData.x) + j >= 0 &&
+                    parseInt(this.selectedUnit.tileData.x) + j < this.map.size &&
+                    Math.abs(i) + Math.abs(j) <= moveRange) {
+                    let avalMove = {
+                        x: parseInt(this.selectedUnit.tileData.x) + j,
+                        z: parseInt(this.selectedUnit.tileData.z) + i
+                    }
+                    if (this.map.matrix[avalMove.z][avalMove.x].walkable) {
+                        tempMoves.push(avalMove)
+                    }
+                }
+            }
+        }
+        let lengths = await socket.checkPaths(this.selectedUnit.tileData, tempMoves)
+        this.avalMoveTiles = []
+        for (let i in tempMoves) {
+            if (lengths[i] < 1 || lengths[i] - 1 > moveRange) continue
+            let avalMove = tempMoves[i]
+            this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
+            this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
+            this.avalMoveTiles.push(this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z))
+        }
+        $('#game').on('click', this.moveU)
+        $('#game').off('click', this.selectU)
+    }
     initRaycaster_unitSelect() {
         var raycaster = new THREE.Raycaster();
         this.raycaster_unitSelect = raycaster
@@ -302,48 +346,7 @@ class Game {
             var intersects = raycaster.intersectObjects(this.unitsSpawned, true);
 
             if (intersects.length > 0) {
-                this.selectedUnit = intersects[0].object.parent
-                console.log("selu", this.selectedUnit);
-                if (this.selectedUnit.owner != token) return // do nothing if someone else's unit
-                let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
-                console.log(this.myUnits);
-                console.log(tile.unit);
-                if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
-
-                $("#ui-top-selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
-                let attackRange = MASTER_Units[this.selectedUnit.model.name].stats.range
-                console.log(attackRange);
-                let moveRange = MASTER_Units[this.selectedUnit.model.name].stats.mobility
-                console.log(moveRange);
-                var tempMoves = []
-                for (var i = -moveRange; i <= moveRange + 1; i++) {
-                    for (var j = -moveRange; j <= moveRange + 1; j++) {
-                        if (parseInt(this.selectedUnit.tileData.z) + i >= 0 &&
-                            parseInt(this.selectedUnit.tileData.z) + i < this.map.size &&
-                            parseInt(this.selectedUnit.tileData.x) + j >= 0 &&
-                            parseInt(this.selectedUnit.tileData.x) + j < this.map.size &&
-                            Math.abs(i) + Math.abs(j) <= moveRange) {
-                            let avalMove = {
-                                x: parseInt(this.selectedUnit.tileData.x) + j,
-                                z: parseInt(this.selectedUnit.tileData.z) + i
-                            }
-                            if (this.map.matrix[avalMove.z][avalMove.x].walkable) {
-                                tempMoves.push(avalMove)
-                            }
-                        }
-                    }
-                }
-                let lengths = await socket.checkPaths(this.selectedUnit.tileData, tempMoves)
-                this.avalMoveTiles = []
-                for (let i in tempMoves) {
-                    if (lengths[i] < 1 || lengths[i] - 1 > moveRange) continue
-                    let avalMove = tempMoves[i]
-                    this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
-                    this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
-                    this.avalMoveTiles.push(this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z))
-                }
-                $('#game').on('click', this.moveU)
-                $('#game').off('click', this.selectU)
+                this.selectUnit(intersects)
             }
         }
         $('#game').on('click', this.selectU)
@@ -366,7 +369,14 @@ class Game {
                 let targetTile = this.map.level.find(tile => tile.x == enemyUnitMesh.tileData.x && tile.z == enemyUnitMesh.tileData.z)
                 let enemyUnit = targetTile.unit
                 console.log(enemyUnit);
-                if (enemyUnit.owner == token) return
+                if (enemyUnit.owner == token) { // own unit
+                    for (let recolor of this.avalMoveTab) {
+                        recolor.material[2].color.set(recolor.color)
+                    }
+                    this.avalMoveTab = []
+                    this.selectUnit(modelsIntersects)
+                    return
+                }
 
                 $('#game').off('click', this.moveU)
 
