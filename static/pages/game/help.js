@@ -148,8 +148,8 @@ function DisplayActionTurn() {
         draggable: false,
         resizable: false,
         dialogClass: 'no-close ui-dialog-errormsg',
-        width: 500,
-        height: 300,
+        width: 700,
+        height: 350,
         title: '[HELP] Action Turn',
         buttons: [
             {
