@@ -463,7 +463,7 @@ class Game {
                 this.attackUnit(move.attackerTileID, move.targetTileID)
             }
         }
-        setTimeout(() => ui.UpdateMinimapUnits(), 2000)
+        setTimeout(() => ui.UpdateMinimapUnits(), 1000)
     }
     async spawnUnit(tileID, unit, addToMoves) {
         let size = MASTER_BlockSizeParams.blockSize
