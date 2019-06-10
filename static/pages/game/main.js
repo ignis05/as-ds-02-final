@@ -19,8 +19,8 @@ $(document).ready(async () => {
 
     mapData = await socket.getMapData() // load map from session instead of database
 
-    ui = new UI()
-    ui.UpdateMinimap(mapData) // initial minimap calculation
+    ui = new UI(mapData)
+    ui.UpdateMinimap() // initial minimap calculation
 
     game = new Game('#game') // create game display in '#game' div
     ui.debug_uiDisable(true)
@@ -57,6 +57,7 @@ $(document).ready(async () => {
         }
         $("#button-end-turn").attr("disabled", true)
         $('#ui-top-turn-status').html('-').css('background-color', '#3F3F3F')
+        if (!game.spawnTurn && ((game.unitsSpawned.map(clickObj => clickObj.parent)).every(unit => unit.owner == token))) socket.triggerWin() // win condition
     })
     // #endregion ui listeners
 })

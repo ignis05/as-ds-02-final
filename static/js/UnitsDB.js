@@ -25,7 +25,7 @@ const MASTER_Units = {
     overlord: {
         modelURL: '/static/res/models/overlord/model.fbx',
         scale: 0.2,
-        posY: 20,
+        posY: 40,
         stats: {
             mobility: 5,
             health: 10,

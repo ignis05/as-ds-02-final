@@ -237,6 +237,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
 }
 
 #minimap-canvas {
@@ -244,7 +245,16 @@ body {
     height: 100%;
     background-color: transparent;
     border: 5px inset #7F7F2F;
-    background-color: #000000;
+}
+
+#minimap-camera {
+    width: calc(100% - 10px);
+    height: calc(100% - 10px);
+    background-color: transparent;
+    border: 5px inset #7F7F2F;
+    position: absolute;
+    left: 5px;
+    top: 5px;
 }
 
 #ui-main {

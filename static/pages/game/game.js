@@ -68,6 +68,7 @@ class Game {
         this.initRaycaster_unitSelect()
         this.initRaycaster_movePoint()
 
+        this.defeated = false
         this.myTurn = false
         this.spawnTurn = true
         this.unitToSpawn = null // unit that will be spawned on click
@@ -238,7 +239,11 @@ class Game {
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
         }
         else { // if normal turn
-            if (this.myUnits.length < 1) { // if no units alive - end turn immediately
+            // if (this.myUnits.length < 1) { // if no units alive - end turn immediately
+            //     moves = []
+            //     socket.endTurn(moves)
+            // }
+            if (this.defeated) {
                 moves = []
                 socket.endTurn(moves)
             }
@@ -247,7 +252,7 @@ class Game {
             this.spawnTurn = false
             for (let unit of this.myUnits) {
                 unit.canMakeMove = true
-                unit.moveIndicator.material.color.set(0x578be0)
+                if(unit.moveIndicator) unit.moveIndicator.material.color.set(0x578be0)
             }
         }
     }
@@ -285,11 +290,54 @@ class Game {
             }
         })
     }
+    async selectUnit(intersects) {
+        this.selectedUnit = intersects[0].object.parent
+        console.log("selu", this.selectedUnit);
+        if (this.selectedUnit.owner != token) return // do nothing if someone else's unit
+        let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
+        console.log(this.myUnits);
+        console.log(tile.unit);
+        if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
+
+        $("#ui-top-selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
+        let attackRange = MASTER_Units[this.selectedUnit.model.name].stats.range
+        console.log(attackRange);
+        let moveRange = MASTER_Units[this.selectedUnit.model.name].stats.mobility
+        console.log(moveRange);
+        var tempMoves = []
+        for (var i = -moveRange; i <= moveRange + 1; i++) {
+            for (var j = -moveRange; j <= moveRange + 1; j++) {
+                if (parseInt(this.selectedUnit.tileData.z) + i >= 0 &&
+                    parseInt(this.selectedUnit.tileData.z) + i < this.map.size &&
+                    parseInt(this.selectedUnit.tileData.x) + j >= 0 &&
+                    parseInt(this.selectedUnit.tileData.x) + j < this.map.size &&
+                    Math.abs(i) + Math.abs(j) <= moveRange) {
+                    let avalMove = {
+                        x: parseInt(this.selectedUnit.tileData.x) + j,
+                        z: parseInt(this.selectedUnit.tileData.z) + i
+                    }
+                    if (this.map.matrix[avalMove.z][avalMove.x].walkable) {
+                        tempMoves.push(avalMove)
+                    }
+                }
+            }
+        }
+        let lengths = await socket.checkPaths(this.selectedUnit.tileData, tempMoves)
+        this.avalMoveTiles = []
+        for (let i in tempMoves) {
+            if (lengths[i] < 1 || lengths[i] - 1 > moveRange) continue
+            let avalMove = tempMoves[i]
+            this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0x000000)
+            this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
+            this.avalMoveTiles.push(this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z))
+        }
+    }
     initRaycaster_unitSelect() {
         var raycaster = new THREE.Raycaster();
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
         this.selectU = async () => {
+            console.log('>>>> SELECT UNIT <<<<');
             if (!this.myTurn || this.spawnTurn) return // do nothing if someone else's turn or its spawning turn
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
@@ -305,7 +353,7 @@ class Game {
                 console.log(this.myUnits);
                 console.log(tile.unit);
                 if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
-                tile.unit.moveIndicator.material.color.set(0xf9f22a)
+                if(tile.unit.moveIndicator) tile.unit.moveIndicator.material.color.set(0xf9f22a)
                 $("#ui-top-selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
                 let attackRange = MASTER_Units[this.selectedUnit.model.name].stats.range
                 console.log(attackRange);
@@ -338,6 +386,7 @@ class Game {
                     this.avalMoveTab.push(this.map.matrix[avalMove.z][avalMove.x])
                     this.avalMoveTiles.push(this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z))
                 }
+                this.selectUnit(intersects)
                 $('#game').on('click', this.moveU)
                 $('#game').off('click', this.selectU)
             }
@@ -349,6 +398,7 @@ class Game {
         this.raycaster_unitSelect = raycaster
         this.debug_log(`Raycaster.unitSelect.initialized`, 0)
         this.moveU = () => {
+            console.log('>>>> MOVE UNIT <<<<');
             var mouseVector = new THREE.Vector2()
             mouseVector.x = (event.clientX / $(window).width()) * 2 - 1
             mouseVector.y = -(event.clientY / $(window).height()) * 2 + 1
@@ -362,26 +412,43 @@ class Game {
                 let targetTile = this.map.level.find(tile => tile.x == enemyUnitMesh.tileData.x && tile.z == enemyUnitMesh.tileData.z)
                 let enemyUnit = targetTile.unit
                 console.log(enemyUnit);
-                if (enemyUnit.owner == token) return
-
-                $('#game').off('click', this.moveU)
+                if (enemyUnit.owner == token) { // own unit
+                    for (let recolor of this.avalMoveTab) {
+                        recolor.material[2].color.set(recolor.color)
+                    }
+                    this.avalMoveTab = []
+                    if (enemyUnitMesh == this.selectedUnit) { // click on already selected unit
+                        $("#ui-top-selected-unit").html('')
+                        this.selectedUnit = null
+                    }
+                    else {
+                        this.selectUnit(modelsIntersects)
+                    }
+                    return
+                }
 
                 console.log('valid hostile unit');
                 // distance check
                 let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
                 let unit = tile.unit
                 // distance check
-                if (Math.abs(tile.x - targetTile.x) > unit.range && Math.abs(tile.z - targetTile.z) > unit.range) {
+                if (Math.abs(tile.x - targetTile.x) > unit.range || Math.abs(tile.z - targetTile.z) > unit.range) {
+                    console.log('----- invalid range');
                     return
                 }
+
                 for (let recolor of this.avalMoveTab) {
                     recolor.material[2].color.set(recolor.color)
                 }
                 this.avalMoveTab = []
+                $('#game').off('click', this.moveU)
+
+                $('#game').on('click', this.selectU)
+                $("#ui-top-selected-unit").html('')
+                this.selectedUnit = null
+
 
                 this.attackUnit(tile.id, targetTile.id, true)
-
-                $("#selected-unit").html('')
                 return
             }
 
@@ -410,7 +477,8 @@ class Game {
                             this.moveUnit(result, tile.id, true)
                         }
                         this.avalMoveTab = []
-                        $("#selected-unit").html('')
+                        $("#ui-top-selected-unit").html('')
+                        this.selectedUnit = null
                     })
                 }
                 return
@@ -443,7 +511,7 @@ class Game {
             resolve('End')
         })
     }
-    renderMoves(moves) {
+    renderMoves(moves, reconnect) {
         console.log('renering moves:')
         console.log(moves)
         for (let move of moves) {
@@ -452,7 +520,7 @@ class Game {
             }
             else if (move.action == 'move') {
                 console.log("selu", move);
-                this.moveUnit(move.moves, move.tileID)
+                this.moveUnit(move.moves, move.tileID, false, reconnect)
             }
             else if (move.action == 'attack') {
                 console.log('attack');
@@ -505,7 +573,7 @@ class Game {
             }
         }
     }
-    moveUnit(path, tileID, addToMoves) {
+    moveUnit(path, tileID, addToMoves, fast_forward) {
         console.log('moving');
         let tile = this.map.level.find(tile => tile.id == tileID)
         if (!tile || !tile.unit) return
@@ -519,20 +587,39 @@ class Game {
             })
             tile.unit.canMakeMove = false
         }
-        console.log(tile);
-        console.log(unit);
+
 
 
         var movePath = path
         var map = this.map
         var matrix = map.matrix
 
+        let lastPos = movePath[movePath.length - 1]
+        map.matrix[movePath[0][1]][movePath[0][0]].walkable = true
+        map.matrix[lastPos[1]][lastPos[0]].walkable = false
+        let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
+        newTile.unit = tile.unit
+        tile.unit = null
+
+        if (fast_forward) { // reconnecting
+            console.warn('!!!reconnecting!!! !!!fast forward!!!');
+            let almostLastPos = movePath[movePath.length - 2]
+            unit.position.set(almostLastPos[0] * MASTER_BlockSizeParams.blockSize, matrix[almostLastPos[1]][almostLastPos[0]].position.y * 2, almostLastPos[1] * MASTER_BlockSizeParams.blockSize)
+            unit.tileData.z = lastPos[1]
+            unit.tileData.x = lastPos[0]
+            unit.position.y = matrix[unit.tileData.z][unit.tileData.x].position.y * 2
+            unit.lookAt(new THREE.Vector3(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize))
+            unit.position.set(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize)
+            return
+        }
+
+        if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
+            $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
+        }
+
         let move = 0
         var moveInterval = setInterval(() => {
             if (move > movePath.length - 1) {
-                /*  console.log(clickFunction); */
-
-                /*  $('#game').on('click', clickFunction) */
                 window.clearInterval(moveInterval)
                 let lastPos = movePath[movePath.length - 1]
                 console.log(lastPos);
@@ -541,7 +628,9 @@ class Game {
                 let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
                 console.log(newTile);
                 newTile.unit = tile.unit
-                tile.unit.moveIndicator.material.color.set(0xff0000)
+                console.log(tile);
+                
+                if(tile.unit.moveIndicator) tile.unit.moveIndicator.material.color.set(0xff0000)
                 tile.unit = null
                 $('#game').on('click', this.selectU)
 
@@ -550,14 +639,11 @@ class Game {
                     $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
                 }
             } else {
-                console.log(movePath[move]);
+                unit.lookAt(new THREE.Vector3(movePath[move][0] * MASTER_BlockSizeParams.blockSize, unit.position.y, movePath[move][1] * MASTER_BlockSizeParams.blockSize))
                 unit.tileData.z = movePath[move][1]
                 unit.tileData.x = movePath[move][0]
                 unit.position.y = matrix[unit.tileData.z][unit.tileData.x].position.y * 2
                 unit.position.set(unit.tileData.x * MASTER_BlockSizeParams.blockSize, unit.position.y, unit.tileData.z * MASTER_BlockSizeParams.blockSize)
-                console.log(unit.position);
-                /*  matrix[unit.tileData.z][unit.tileData.x].material.color.set(0xff0000) */
-                console.log(matrix[unit.tileData.z][unit.tileData.x].position);
                 move++
             }
         }, 250)
@@ -572,6 +658,8 @@ class Game {
         let enemyTile = this.map.level.find(tile => tile.id == targetTileID)
         let enemyUnit = enemyTile.unit
 
+        unit.lookAt(enemyUnit.position)
+
         enemyUnit.health -= unit.damage
         
         if (enemyUnit.health < 1) { // rip
@@ -582,12 +670,19 @@ class Game {
             if (addToMoves) socket.notifyUnitKilled({ x: enemyTile.x, z: enemyTile.z })
             if (enemyUnit.owner == token) {
                 this.myUnits.splice(this.myUnits.indexOf(enemyUnit), 1)
+                if (this.myUnits.length < 1) { // no units left
+                    this.defeated = true
+                    moves = []
+                    socket.endTurn(moves)
+                }
             }
         }
 
         // --- update hp display, state display ---
         enemyUnit.statBar.hp.scale.x = (enemyUnit.health/(enemyUnit.health + unit.damage)) * enemyUnit.statBar.hp.scale.x
-        unit.moveIndicator.material.color.set(0xff0000)
+        console.log(unit);
+        
+        if(unit.moveIndicator) unit.moveIndicator.material.color.set(0xff0000)
 
         $('#game').on('click', this.selectU)
 
@@ -597,10 +692,12 @@ class Game {
                 attackerTileID: attackerTileID,
                 targetTileID: targetTileID,
             })
+            console.log(tile.unit);
+            
             tile.unit.canMakeMove = false
             if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
-                $('#turn-status').html('No available moves')
-            }
+                $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
+             }
         }
     }
     // #endregion functions
