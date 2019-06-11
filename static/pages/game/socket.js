@@ -107,6 +107,10 @@ socket.on('reconnecting', moves => { // triggers when user is reconencing to ong
             let me = await socket.getMyself()
             game.avalUnits = me.unitsToSpawn
             game.renderMoves(moves, true)
+            for (let unit of game.myUnits) {
+                unit.canMakeMove = true
+                unit.moveIndicator.material.color.set(0x578be0)
+            }
             clearInterval(x)
         }
     }, 1000)

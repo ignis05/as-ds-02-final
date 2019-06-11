@@ -28,12 +28,43 @@ class Unit {
         }
         this.container.add(this.model.mesh)
         let boxGeometry = new THREE.BoxGeometry(MASTER_BlockSizeParams.blockSize, 1, MASTER_BlockSizeParams.blockSize)
-        let boxMaterial = new THREE.MeshStandardMaterial({ color: (ownerToken == token ? 0x00ff00 : 0x0000ff), transparent: true, visible: true, opacity: 0.5 })
+        let boxMaterial = new THREE.MeshStandardMaterial({ color: (ownerToken == token ? 0x00ff00 : 0x0000ff), transparent: true, visible: true, opacity: 0 })
         let box = new THREE.Mesh(boxGeometry, boxMaterial)
         this.container.add(box)
         this.container.model = this.model
         this.container.clickBox = box
         this.container.owner = ownerToken
+
+        //HP bar
+        let hpbarMaterial = new THREE.SpriteMaterial({color: (ownerToken == token ? 0x00ff00 : 0xff0000)})
+        let bgbarMaterial = new THREE.SpriteMaterial({color: 0x777777})        
+
+        let spriteY = new THREE.Box3().setFromObject(this.model.mesh).max.y + MASTER_BlockSizeParams.blockSize/4
+        console.log(spriteY);
+        
+
+        let bgbarSprite = new THREE.Sprite(bgbarMaterial)
+        bgbarSprite.scale.set(MASTER_BlockSizeParams.blockSize + MASTER_BlockSizeParams.blockSize/25, MASTER_BlockSizeParams.blockSize/7, 1)
+        bgbarSprite.position.y = spriteY
+        let hpSprite = new THREE.Sprite(hpbarMaterial)
+        hpSprite.scale.set(MASTER_BlockSizeParams.blockSize, MASTER_BlockSizeParams.blockSize/8.5, 1)
+        hpSprite.position.y = spriteY
+
+        this.container.add(bgbarSprite)
+        this.container.add(hpSprite)
+        this.statBar = { hp: hpSprite }
+
+        //move possibility rhombus
+        if(ownerToken == token) {
+ 
+        let moveSpriteMaterial = new THREE.SpriteMaterial({color: 0xff0000, rotation: Math.PI/4})
+
+        let moveSprite = new THREE.Sprite(moveSpriteMaterial)
+        moveSprite.scale.set(MASTER_BlockSizeParams.blockSize/17, MASTER_BlockSizeParams.blockSize/17, 2137)
+        moveSprite.position.y = spriteY + MASTER_BlockSizeParams.blockSize/4
+        this.moveIndicator = moveSprite 
+        this.container.add(moveSprite)
+        }
 
         // statistics
         this.mobility = unitData.stats.mobility

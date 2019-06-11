@@ -56,7 +56,6 @@ class UI {
         ctx.lineTo(blockSize * wrkDistance, blockSize * 3 / 2 * wrkDistance)
         ctx.lineTo(-blockSize * wrkDistance, blockSize * 3 / 2 * wrkDistance)
         ctx.closePath()
-
         ctx.stroke()
 
         ctx.rotate(rotation)
