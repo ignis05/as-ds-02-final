@@ -113,6 +113,16 @@ class UI {
             container.appendTo(div)
             container.html(`<img src="/static/res/img/thumb_${unitName}.png"><p>${unitName}: ${game.avalUnits[unitName]} left</p>`)
 
+            let summary = $('<div>')
+                .addClass('ui-spawn-controls-summary')
+                .appendTo(container)
+
+            for (let stat in MASTER_Units[unitName].stats) {
+                $('<div>')
+                    .html(stat + ': ' + MASTER_Units[unitName].stats[stat])
+                    .appendTo(summary)
+            }
+
             if (!parseInt(game.avalUnits[unitName]))
                 container.addClass('ui-spawn-controls-container-empty') // Slightly fade out menu item when no more units available
 
