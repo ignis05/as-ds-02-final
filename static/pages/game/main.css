@@ -600,6 +600,7 @@ body {
 }
 
 .ui-spawn-controls-container {
+    position: relative;
     cursor: pointer;
     width: 100px;
     height: 120px;
@@ -639,12 +640,37 @@ body {
 }
 
 .ui-spawn-controls-container-empty img {
-    opacity: 0.5;
+    opacity: 0.2;
 }
 
 .ui-spawn-controls-container-empty:hover {
     background-color: transparent;
     cursor: default;
+}
+
+.ui-spawn-controls-summary {
+    opacity: 0;
+    position: absolute;
+    z-index: 20;
+    pointer-events: none;
+    left: 100px;
+    width: 120px;
+    height: 120px;
+    background-color: #3F3F3FCF;
+    border: 2px outset #BFBFBF;
+    color: #DFDFDF;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.ui-spawn-controls-container:hover .ui-spawn-controls-summary {
+    opacity: 1;
+}
+
+.ui-spawn-controls-container-empty:hover .ui-spawn-controls-summary {
+    opacity: 0;
 }
 
 .ui-placeholder-cat {
