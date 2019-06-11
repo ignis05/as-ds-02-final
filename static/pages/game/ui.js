@@ -100,18 +100,20 @@ class UI {
 
         if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no units left to spawn
             game.debug_log(`All units spawned - removing spawn controls`, 0)
-            div.html('-- EMPTY --')
+            div.html('')
             return
         }
+
+        console.log(game.avalUnits)
 
         div.html('')
 
         for (let unitName in game.avalUnits) {
             let container = $(`<div class='ui-spawn-controls-container'>`)
             container.appendTo(div)
-            container.html(`<img src="http://www.stleos.uq.edu.au/wp-content/uploads/2016/08/image-placeholder-350x350.png"><p>${unitName}: ${game.avalUnits[unitName]} left</p>`)
+            container.html(`<img src="/static/res/img/thumb_${unitName}.png"><p>${unitName}: ${game.avalUnits[unitName]} left</p>`)
 
-            if (!game.avalUnits[unitName])
+            if (!parseInt(game.avalUnits[unitName]))
                 container.addClass('ui-spawn-controls-container-empty') // Slightly fade out menu item when no more units available
 
             container.click(() => {
@@ -124,7 +126,7 @@ class UI {
                 }
             })
             console.log(game.unitToSpawn + ' == ' + unitName)
-            if (game.unitToSpawn == unitName) {
+            if (game.unitToSpawn == unitName && game.avalUnits[unitName]) {
                 console.log(true)
                 container.addClass('ui-spawn-controls-container-active')
             } else console.log(false)
