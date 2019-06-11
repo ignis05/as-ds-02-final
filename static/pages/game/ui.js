@@ -56,11 +56,33 @@ class UI {
         ctx.lineTo(blockSize * wrkDistance, blockSize * 3 / 2 * wrkDistance)
         ctx.lineTo(-blockSize * wrkDistance, blockSize * 3 / 2 * wrkDistance)
         ctx.closePath()
-        
         ctx.stroke()
 
         ctx.rotate(rotation)
         ctx.translate(-drawX, -drawZ)
+    }
+
+    async UpdateMinimapUnits() {
+        let levelPack = this.levelData
+
+        let canvas = $('#minimap-units')
+            .attr('width', parseInt(levelPack.size) * 8)
+            .attr('height', parseInt(levelPack.size) * 8)
+
+        let ctx = canvas[0].getContext('2d')
+
+        ctx.scale(8, 8)
+
+        let session = await socket.getSession()
+
+        for (let i in game.unitsInPlay) {
+            ctx.fillStyle = "#000000"
+            for (let j in session.clients) {
+                if (session.clients[j].token == game.unitsInPlay[i].owner)
+                    ctx.fillStyle = UI.memberColors[j]
+            }
+            ctx.fillRect(parseInt(game.unitsInPlay[i].container.tileData.x), parseInt(game.unitsInPlay[i].container.tileData.z), 1, 1)
+        }
     }
 
     debug_uiDisable(boolean) {

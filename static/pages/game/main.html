@@ -9,11 +9,11 @@
 
     <link rel="shortcut icon" href="/static/res/img/favicon.png" type="image/x-icon">
     <link rel="stylesheet" href="/static/css/reset.css">
-    <!-- <link rel="stylesheet" href="/static/css/dialogs.css"> -->
+    <link rel="stylesheet" href="/static/css/dialogs.css">
     <link rel="stylesheet" href="/static/pages/game/main.css">
 
     <script src="/libs/jquery-3.3.1.js"></script>
-    <!-- <script src="/libs/jquery-ui.js"></script> -->
+    <script src="/libs/jquery-ui.js"></script>
 
     <script src="/libs/three.js"></script>
     <script src="/libs/Loaders/GLTFLoader.js"></script>
@@ -43,6 +43,7 @@
     <script src="/static/js/classes/Model.js"></script>
     <script src="/static/js/classes/Unit.js"></script>
 
+    <script src="/static/pages/game/help.js"></script>
     <script src="/static/pages/game/socket.js"></script>
     <script src="/static/pages/game/ui.js"></script>
     <script src="/static/pages/game/game.js"></script>
@@ -61,7 +62,10 @@
         <div id="debug-fps" style="display: none"></div>
     </div>
     <div id="loading"></div>
-    <div id="overlay"></div>
+    <div id="overlay" style="display: none">
+        <div id="backdrop"></div>
+        <div id="dialog"></div>
+    </div>
     <div id="ui" style="display: none;">
         <div id="ui-top-container">
             <div id="ui-top-left-panel">
@@ -74,7 +78,6 @@
                 <div id="ui-top-turn-status"></div>
                 <div id="ui-top-selected-unit"></div>
                 <div id="ui-top-buttons-container">
-                    <button id="temp" disabled="true">MENU</button>
                     <button id="button-end-turn" disabled="true">END TURN</button>
                 </div>
             </div>
@@ -84,6 +87,7 @@
             <div id="ui-bottom-panel">
                 <div id="ui-minimap">
                     <canvas id="minimap-canvas"></canvas>
+                    <canvas id="minimap-units"></canvas>
                     <canvas id="minimap-camera"></canvas>
                 </div>
                 <div id="ui-main">

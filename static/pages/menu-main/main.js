@@ -54,6 +54,19 @@ function InitCookies() {
 
     if (Cookies.get('settings-resScale') === '')
         Cookies.set('settings-resScale', 1, 7)
+
+    // Initialize in-game help cookies
+    if (Cookies.get('help-spawnTurn') === '')
+        Cookies.set('help-spawnTurn', true, 7)
+
+    if (Cookies.get('help-spawnEnd') === '')
+        Cookies.set('help-spawnEnd', true, 7)
+
+    if (Cookies.get('help-enemyTurn') === '')
+        Cookies.set('help-enemyTurn', true, 7)
+
+    if (Cookies.get('help-actionTurn') === '')
+        Cookies.set('help-actionTurn', true, 7)
 }
 
 function InitName() {

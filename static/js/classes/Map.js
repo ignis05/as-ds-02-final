@@ -54,6 +54,7 @@ class MapDisplay {
             cube.color = color
             cube.walkable = walkable
             cube.tileID = cell.id
+            cube.owner = cell.owner.startsWith("player") ? cell.owner[cell.owner.length - 1] : cell.owner // strap 'player' - save only 0,1,2 etc
             if (parseInt(cell.height) == 0) cube.visible = false // invisible cell
 
 
@@ -61,8 +62,8 @@ class MapDisplay {
             cube.position.set(size * cell.x, parseInt(cell.height) / 2, size * cell.z)
 
             // black frame - placeholder
-           /*  let _geometry = new THREE.BoxGeometry(size, parseInt(cell.height), size)
-            let _material = new THREE.MeshLambertMaterial({ color: 0x000000, wireframe: true }) */
+            /*  let _geometry = new THREE.BoxGeometry(size, parseInt(cell.height), size)
+             let _material = new THREE.MeshLambertMaterial({ color: 0x000000, wireframe: true }) */
             /* let frame = new THREE.Mesh(_geometry, _material) */
             /* cube.add(frame) */
 

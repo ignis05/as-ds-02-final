@@ -4,6 +4,13 @@ var moves = []
 var token = Cookies.get('token')
 var mapData
 
+var help = {
+    spawnTurn: Cookies.get('help-spawnTurn') === 'true',
+    spawnEnd: Cookies.get('help-spawnEnd') === 'true',
+    enemyTurn: Cookies.get('help-enemyTurn') === 'true',
+    actionTurn: Cookies.get('help-actionTurn') === 'true'
+}
+
 // ============================================================= //
 //  TODO: Move debug to external file (loaded first, universal)  //
 // ============================================================= //
@@ -46,6 +53,7 @@ $(document).ready(async () => {
 
     // #region ui listeners
     $('#button-end-turn').click(() => {
+        game.camCtrl.debug_forceStop()
         console.log('click - end turn')
         socket.endTurn(moves) // send array of made moves
         moves = [] // reset array of moves
@@ -55,9 +63,13 @@ $(document).ready(async () => {
             }
             game.avalMoveTab = []
         }
+        setTimeout(() => ui.UpdateMinimapUnits(), 1000)
         $("#button-end-turn").attr("disabled", true)
         $('#ui-top-turn-status').html('-').css('background-color', '#3F3F3F')
         if (!game.spawnTurn && ((game.unitsSpawned.map(clickObj => clickObj.parent)).every(unit => unit.owner == token))) socket.triggerWin() // win condition
+        $('#game').focus()
+
+        if (help.enemyTurn) DisplayEnemyTurn()
     })
     // #endregion ui listeners
 })
