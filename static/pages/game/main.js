@@ -42,11 +42,11 @@ $(document).ready(async () => {
 
     game.camCtrl.initCamera()
     // game.debug_addAmbientLight(1)
-    game.debug_cameraEnable(true, false, true)
+    game.debug_cameraEnable(false, false, true)
 
     ui.debug_uiDisable(false)
     ui.initChat()
-    ui.debug_perfMonitor()
+    // ui.debug_perfMonitor()
     //game.enableOrbitContols()
     game.addSunLight()
 
@@ -73,3 +73,7 @@ $(document).ready(async () => {
     })
     // #endregion ui listeners
 })
+
+function showFPS() {
+    ui.debug_perfMonitor()
+}
