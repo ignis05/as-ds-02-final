@@ -255,7 +255,7 @@ class Game {
             this.spawnTurn = false
             for (let unit of this.myUnits) {
                 unit.canMakeMove = true
-                if(unit.moveIndicator) unit.moveIndicator.material.color.set(0x578be0)
+                unit.moveIndicator.material.color.set(0x578be0)
             }
         }
     }
@@ -338,6 +338,7 @@ class Game {
             return
         }
 
+        tile.unit.moveIndicator.material.color.set(0xffff00)
         $("#ui-top-selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
         let attackRange = MASTER_Units[this.selectedUnit.model.name].stats.range
         console.log(attackRange);
@@ -356,7 +357,7 @@ class Game {
                         z: parseInt(this.selectedUnit.tileData.z) + i
                     }
                     let tile = this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z)
-                    console.log(tile)
+                    // console.log(tile)
                     if (Math.abs(tile.x - this.selectedUnit.tileData.x) <= attackRange && Math.abs(tile.z - this.selectedUnit.tileData.z) <= attackRange && Math.abs(tile.height - this.selectedUnit.position.y) <= 16 && tile.unit && tile.unit.owner != token) {
                         this.evemyHighlights.push(this.map.matrix[avalMove.z][avalMove.x])
                         this.map.matrix[avalMove.z][avalMove.x].material[2].color.set(0xff0000)
@@ -402,7 +403,6 @@ class Game {
                 let targetUnit = targetTile.unit
                 console.log(targetUnit);
                 if (targetUnit.owner == token) { // own unit
-                    if(targetUnit.moveIndicator) targetUnit.moveIndicator.material.color.set(0xffff00)
 
                     // reset highlights
                     for (let t of this.evemyHighlights) {
@@ -417,11 +417,17 @@ class Game {
                     // click on already selected unit
                     if (clickedUnit == this.selectedUnit) {
                         $("#ui-top-selected-unit").html('')
-                        if(targetUnit.moveIndicator) targetUnit.moveIndicator.material.color.set(0x578be0)
+                        targetUnit.moveIndicator.material.color.set(0x578be0)
                         this.selectedUnit = null
                     }
                     else {
                         let tile = this.map.level.find(tile => tile.x == clickedUnit.tileData.x && tile.z == clickedUnit.tileData.z)
+                        if (this.selectedUnit) {
+                            console.log(this.selectedUnit);
+                            let t = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
+                            console.log(t.unit);
+                            t.unit.moveIndicator.material.color.set(0x578be0)
+                        }
                         // console.log(tile.unit);
                         if (!tile.unit || !tile.unit.canMakeMove) { // unit made move this turn
                             $("#ui-top-selected-unit").html('')
@@ -463,6 +469,8 @@ class Game {
                 // deselect unit
                 $("#ui-top-selected-unit").html('')
                 this.selectedUnit = null
+                tile.unit.moveIndicator.material.color.set(0xff0000)
+
 
                 // trigger attack
                 this.attackUnit(tile.id, targetTile.id, true)
@@ -504,6 +512,7 @@ class Game {
                         zn: tile.z
                     }).then((result) => {
                         let tile = this.map.level.find(tile => tile.x == this.selectedUnit.tileData.x && tile.z == this.selectedUnit.tileData.z)
+                        tile.unit.moveIndicator.material.color.set(0xff0000)
                         this.moveUnit(result, tile.id, true)
                         this.avalMoveTab = []
                         $("#ui-top-selected-unit").html('')
@@ -633,7 +642,6 @@ class Game {
         map.matrix[lastPos[1]][lastPos[0]].walkable = false
         let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
         newTile.unit = tile.unit
-        if(tile.unit.moveIndicator) tile.unit.moveIndicator.material.color.set(0xff0000)
         tile.unit = null
 
         if (fast_forward) { // reconnecting
@@ -678,7 +686,7 @@ class Game {
         unit.lookAt(enemyUnit.position)
 
         enemyUnit.health -= unit.damage
-        
+
         if (enemyUnit.health < 1) { // rip
             this.scene.remove(enemyUnit.container)
             this.unitsSpawned.splice(this.unitsSpawned.indexOf(enemyUnit.container.clickBox), 1)
@@ -696,10 +704,9 @@ class Game {
         }
 
         // --- update hp display, state display ---
-        enemyUnit.statBar.hp.scale.x = (enemyUnit.health/(enemyUnit.health + unit.damage)) * enemyUnit.statBar.hp.scale.x
+        enemyUnit.statBar.hp.scale.x = (enemyUnit.health / (enemyUnit.health + unit.damage)) * enemyUnit.statBar.hp.scale.x
         console.log(unit);
-        
-        if(unit.moveIndicator) unit.moveIndicator.material.color.set(0xff0000)
+
 
         $('#game').on('click', this.selectU)
 
@@ -710,7 +717,7 @@ class Game {
                 targetTileID: targetTileID,
             })
             console.log(tile.unit);
-            
+
             tile.unit.canMakeMove = false
             if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
                 $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
