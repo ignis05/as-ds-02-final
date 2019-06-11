@@ -650,6 +650,7 @@ class Game {
         enemyUnit.health -= unit.damage
         if (enemyUnit.health < 1) { // rip
             this.scene.remove(enemyUnit.container)
+            this.unitsInPlay.splice(this.unitsInPlay.indexOf(enemyUnit), 1)
             this.unitsSpawned.splice(this.unitsSpawned.indexOf(enemyUnit.container.clickBox), 1)
             this.map.matrix[enemyTile.z][enemyTile.x].walkable = true
             enemyTile.unit = null
