@@ -354,7 +354,7 @@
 /* #region BACKGROUND */
 
 #background {
-    background-image: url("https://yurination.files.wordpress.com/2013/08/planeptune.jpg");
+    background-image: url("/static/res/img/background_lobby.png");
     background-size: cover;
     position: absolute;
     top: 0;
