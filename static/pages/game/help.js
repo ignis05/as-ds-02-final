@@ -34,6 +34,9 @@ function DisplaySpawnTurn() {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
 
+    $('#help-spawnTurn').removeAttr('style')
+    $('#help-enemyTurn').css('display', 'none')
+
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
     $(window).off('keydown')
@@ -56,6 +59,7 @@ function DisplaySpawnTurn() {
                 click: function () {
                     help.spawnTurn = false
                     Cookies.set('help-spawnTurn', false, 7)
+                    $('#help-spawnTurn').css('display', 'none')
                     $(this).dialog("close")
                     overlay.css('display', 'none')
                 }
@@ -67,6 +71,9 @@ function DisplaySpawnTurn() {
 function DisplaySpawnEnd() {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
+
+    $('#help-spawnEnd').removeAttr('style')
+    $('#help-enemyTurn').css('display', 'none')
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
@@ -90,6 +97,7 @@ function DisplaySpawnEnd() {
                 click: function () {
                     help.spawnEnd = false
                     Cookies.set('help-spawnEnd', false, 7)
+                    $('#help-spawnEnd').css('display', 'none')
                     $(this).dialog("close")
                     overlay.css('display', 'none')
                 }
@@ -102,11 +110,13 @@ function DisplayEnemyTurn() {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
 
+    $('#help-enemyTurn').removeAttr('style')
+
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('Now your opponent is making his moves, wait patiently for your turn...<br>...or yell at him to make it quick, I am not your mother!')
+    popup.append('Now your opponent is making his moves, wait patiently for your turn...<br>You will get notified in the upper right corner when your turn comes')
 
     popup.dialog({
         closeOnEscape: false,
@@ -124,6 +134,7 @@ function DisplayEnemyTurn() {
                 click: function () {
                     help.enemyTurn = false
                     Cookies.set('help-enemyTurn', false, 7)
+                    $('#help-enemyTurn').css('display', 'none')
                     $(this).dialog("close")
                     overlay.css('display', 'none')
                 }
@@ -135,6 +146,9 @@ function DisplayEnemyTurn() {
 function DisplayActionTurn() {
     let overlay = $('#overlay')
     let popup = $('#dialog').html('')
+
+    /* $('#help-actionTurn').removeAttr('style') */
+    $('#help-enemyTurn').css('display', 'none')
 
     if (overlay.css('display') == 'none')
         overlay.removeAttr('style')
@@ -158,10 +172,27 @@ function DisplayActionTurn() {
                 click: function () {
                     help.actionTurn = false
                     Cookies.set('help-actionTurn', false, 7)
+                    /* $('#help-actionTurn').css('display', 'none') */
                     $(this).dialog("close")
                     overlay.css('display', 'none')
                 }
             }
         ]
     })
+}
+
+function debug_resetHelp() {
+    help = {
+        spawnTurn: true,
+        spawnEnd: true,
+        enemyTurn: true,
+        actionTurn: true
+    }
+
+    Cookies.set('help-spawnTurn', true, 7)
+    Cookies.set('help-spawnEnd', true, 7)
+    Cookies.set('help-enemyTurn', true, 7)
+    Cookies.set('help-actionTurn', true, 7)
+
+    window.location = '/game'
 }

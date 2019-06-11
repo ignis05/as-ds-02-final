@@ -62,6 +62,31 @@ body {
     z-index: 5;
 }
 
+/* #region HELP */
+
+#help-spawnTurn {
+    height: 160px;
+    width: 500px;
+    position: absolute;
+    bottom: 0;
+    left: 300px;
+    z-index: 15;
+    border: 2px solid #FFFF00;
+    animation-name: help-spawnTurn;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate-reverse;
+}
+
+@keyframes help-spawnTurn {
+    from {
+        box-shadow: -1px -1px 8px #FFFF00, 1px -1px 8px #FFFF00, -1px 1px 8px #FFFF00, 1px 1px 8px #FFFF00;
+    }
+    to {
+        box-shadow: -1px -1px 2px #FFFF00, 1px -1px 2px #FFFF00, -1px 1px 2px #FFFF00, 1px 1px 2px #FFFF00;
+    }
+}
+
 #help-spawnEnd {
     width: 100px;
     height: 50px;
@@ -84,6 +109,31 @@ body {
         box-shadow: -1px -1px 2px #FFFF00, 1px -1px 2px #FFFF00, -1px 1px 2px #FFFF00, 1px 1px 2px #FFFF00;
     }
 }
+
+#help-enemyTurn {
+    width: 200px;
+    height: 60px;
+    position: absolute;
+    top: 0px;
+    right: 150px;
+    z-index: 15;
+    border: 2px solid #FFFF00;
+    animation-name: help-enemyTurn;
+    animation-duration: 0.5s;
+    animation-iteration-count: infinite;
+    animation-direction: alternate-reverse;
+}
+
+@keyframes help-enemyTurn {
+    from {
+        box-shadow: -1px -1px 8px #FFFF00, 1px -1px 8px #FFFF00, -1px 1px 8px #FFFF00, 1px 1px 8px #FFFF00;
+    }
+    to {
+        box-shadow: -1px -1px 2px #FFFF00, 1px -1px 2px #FFFF00, -1px 1px 2px #FFFF00, 1px 1px 2px #FFFF00;
+    }
+}
+
+/* #endregion */
 
 #overlay * {
     pointer-events: all;
@@ -312,6 +362,7 @@ body {
     /* background-color: #8F3F3F; */
     display: flex;
     flex-direction: column;
+    justify-content: flex-end;
 }
 
 #ui-build-cats {
@@ -361,7 +412,7 @@ body {
 
 #ui-build-tabs {
     border: 2px outset #CFCFCF;
-    border-top: none;
+    /* border-top: none; */
     height: 160px;
     line-height: 158px;
     width: 100%;

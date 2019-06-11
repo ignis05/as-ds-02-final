@@ -7,7 +7,7 @@ const dtOptions = {
 // will be heavly integrated with socket.js so i suggest keeping it as local file instead of global class
 
 // ======================================================================= //
-//  Debug will be moved (mostly intact) to a global class at a later date  //
+//  Debug will be moved (mostly intact) to a global class at a later date  //     Yeah... NO
 // ======================================================================= //
 
 class Game {
