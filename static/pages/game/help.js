@@ -140,7 +140,7 @@ function DisplayActionTurn() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('Okay, this is where the fun begins!\nYou made it to the action turn, feel free to select your units (left click on their cells) and then tell them one by one to move to their destination.\nIf you are in range you might even choose to attack an enemy unit!\nNow, get playing, let\'s get this bread!')
+    popup.append('Okay, this is where the fun begins!\nLet\'s quickly go over the UI:\n-Bars above characters represent HP, green are yours, red are opponents\nAs for status diamonds:\n - Blue means this unit can still move\n - Yellow means this unit is currently selected\n - Red means this unit has already spent its action this turn\n\nGot it?\nWell then, let\'s get this bread!')
 
     popup.dialog({
         closeOnEscape: false,
@@ -149,7 +149,7 @@ function DisplayActionTurn() {
         resizable: false,
         dialogClass: 'no-close ui-dialog-errormsg',
         width: 700,
-        height: 350,
+        height: 550,
         title: '[HELP] Action Turn',
         buttons: [
             {
