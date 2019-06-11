@@ -73,6 +73,8 @@ class UI {
 
         ctx.scale(8, 8)
 
+        ctx.clearRect(0, 0, parseInt(levelPack.size) * 8, parseInt(levelPack.size) * 8)
+
         let session = await socket.getSession()
 
         for (let i in game.unitsInPlay) {

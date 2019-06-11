@@ -72,6 +72,8 @@ $(document).ready(async () => {
         if (help.enemyTurn) DisplayEnemyTurn()
     })
     // #endregion ui listeners
+    
+    if (help.enemyTurn) DisplayEnemyTurn()
 })
 
 function showFPS() {

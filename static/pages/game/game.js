@@ -7,7 +7,7 @@ const dtOptions = {
 // will be heavly integrated with socket.js so i suggest keeping it as local file instead of global class
 
 // ======================================================================= //
-//  Debug will be moved (mostly intact) to a global class at a later date  //
+//  Debug will be moved (mostly intact) to a global class at a later date  //     Yeah... NO
 // ======================================================================= //
 
 class Game {
@@ -697,6 +697,7 @@ class Game {
         enemyUnit.health -= unit.damage * multi
         if (enemyUnit.health < 1) { // rip
             this.scene.remove(enemyUnit.container)
+            this.unitsInPlay.splice(this.unitsInPlay.indexOf(enemyUnit), 1)
             this.unitsSpawned.splice(this.unitsSpawned.indexOf(enemyUnit.container.clickBox), 1)
             this.map.matrix[enemyTile.z][enemyTile.x].walkable = true
             enemyTile.unit = null
