@@ -42,7 +42,7 @@ class Unit {
         this.health = unitData.stats.health
         this.range = unitData.stats.range
         this.name = unitName
-
+        this.element = unitData.stats.element
         this.owner = ownerToken
     }
     addTo(parent) { //adds apropriate element to parent
