@@ -252,7 +252,7 @@ class Game {
             this.spawnTurn = false
             for (let unit of this.myUnits) {
                 unit.canMakeMove = true
-                if(unit.moveIndicator) unit.moveIndicator.material.color.set(0x578be0)
+                // if(unit.moveIndicator) unit.moveIndicator.material.color.set(0x578be0)
             }
         }
     }
@@ -353,7 +353,7 @@ class Game {
                 console.log(this.myUnits);
                 console.log(tile.unit);
                 if (!tile.unit || !tile.unit.canMakeMove) return // unit made move this turn
-                if(tile.unit.moveIndicator) tile.unit.moveIndicator.material.color.set(0xf9f22a)
+                // if(tile.unit.moveIndicator) tile.unit.moveIndicator.material.color.set(0xf9f22a)
                 $("#ui-top-selected-unit").html(`${tile.unit.name} / ${tile.unit.model.mesh.uuid.slice(-4)}`)
                 let attackRange = MASTER_Units[this.selectedUnit.model.name].stats.range
                 console.log(attackRange);
@@ -630,7 +630,7 @@ class Game {
                 newTile.unit = tile.unit
                 console.log(tile);
                 
-                if(tile.unit.moveIndicator) tile.unit.moveIndicator.material.color.set(0xff0000)
+                // if(tile.unit.moveIndicator) tile.unit.moveIndicator.material.color.set(0xff0000)
                 tile.unit = null
                 $('#game').on('click', this.selectU)
 
@@ -682,7 +682,7 @@ class Game {
         enemyUnit.statBar.hp.scale.x = (enemyUnit.health/(enemyUnit.health + unit.damage)) * enemyUnit.statBar.hp.scale.x
         console.log(unit);
         
-        if(unit.moveIndicator) unit.moveIndicator.material.color.set(0xff0000)
+        // if(unit.moveIndicator) unit.moveIndicator.material.color.set(0xff0000)
 
         $('#game').on('click', this.selectU)
 
