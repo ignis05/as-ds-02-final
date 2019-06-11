@@ -55,16 +55,16 @@ class Unit {
         this.statBar = { hp: hpSprite }
 
         //move possibility rhombus
-        // if(ownerToken == token) {
+        if(ownerToken == token) {
  
-        // let moveSpriteMaterial = new THREE.SpriteMaterial({color: 0xff0000, rotation: Math.PI/4})
+        let moveSpriteMaterial = new THREE.SpriteMaterial({color: 0xff0000, rotation: Math.PI/4})
 
-        // let moveSprite = new THREE.Sprite(moveSpriteMaterial)
-        // moveSprite.scale.set(MASTER_BlockSizeParams.blockSize/17, MASTER_BlockSizeParams.blockSize/17, 2137)
-        // moveSprite.position.y = spriteY + MASTER_BlockSizeParams.blockSize/4
-        // this.moveIndicator = moveSprite 
-        // this.container.add(moveSprite)
-        // }
+        let moveSprite = new THREE.Sprite(moveSpriteMaterial)
+        moveSprite.scale.set(MASTER_BlockSizeParams.blockSize/17, MASTER_BlockSizeParams.blockSize/17, 2137)
+        moveSprite.position.y = spriteY + MASTER_BlockSizeParams.blockSize/4
+        this.moveIndicator = moveSprite 
+        this.container.add(moveSprite)
+        }
 
         // statistics
         this.mobility = unitData.stats.mobility

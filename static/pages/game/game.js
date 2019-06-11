@@ -255,7 +255,7 @@ class Game {
             this.spawnTurn = false
             for (let unit of this.myUnits) {
                 unit.canMakeMove = true
-                // if(unit.moveIndicator) unit.moveIndicator.material.color.set(0x578be0)
+                if(unit.moveIndicator) unit.moveIndicator.material.color.set(0x578be0)
             }
         }
     }
@@ -402,6 +402,7 @@ class Game {
                 let targetUnit = targetTile.unit
                 console.log(targetUnit);
                 if (targetUnit.owner == token) { // own unit
+                    if(targetUnit.moveIndicator) targetUnit.moveIndicator.material.color.set(0xffff00)
 
                     // reset highlights
                     for (let t of this.evemyHighlights) {
@@ -416,6 +417,7 @@ class Game {
                     // click on already selected unit
                     if (clickedUnit == this.selectedUnit) {
                         $("#ui-top-selected-unit").html('')
+                        if(targetUnit.moveIndicator) targetUnit.moveIndicator.material.color.set(0x578be0)
                         this.selectedUnit = null
                     }
                     else {
@@ -631,6 +633,7 @@ class Game {
         map.matrix[lastPos[1]][lastPos[0]].walkable = false
         let newTile = this.map.level.find(tile => tile.x == lastPos[0] && tile.z == lastPos[1])
         newTile.unit = tile.unit
+        if(tile.unit.moveIndicator) tile.unit.moveIndicator.material.color.set(0xff0000)
         tile.unit = null
 
         if (fast_forward) { // reconnecting
@@ -696,7 +699,7 @@ class Game {
         enemyUnit.statBar.hp.scale.x = (enemyUnit.health/(enemyUnit.health + unit.damage)) * enemyUnit.statBar.hp.scale.x
         console.log(unit);
         
-        // if(unit.moveIndicator) unit.moveIndicator.material.color.set(0xff0000)
+        if(unit.moveIndicator) unit.moveIndicator.material.color.set(0xff0000)
 
         $('#game').on('click', this.selectU)
 
