@@ -154,7 +154,7 @@ function DisplayActionTurn() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('Okay, this is where the fun begins!\nLet\'s quickly go over the UI:\n-Bars above characters represent HP, green are yours, red are opponents\nAs for status diamonds:\n - Blue means this unit can still move\n - Yellow means this unit is currently selected\n - Red means this unit has already spent its action this turn\n\nGot it?\nWell then, let\'s get this bread!')
+    popup.append('Okay, this is where the fun begins!<br><p></p><br>Let\'s quickly go over the UI:<br>-Bars above characters represent HP, green are yours, red are opponents<br>As for status diamonds:<br> - Blue means this unit can still move<br> - Yellow means this unit is currently selected<br> - Red means this unit has already spent its action this turn<br><p></p><br>Got it?<br>Well then, let\'s get this bread!')
 
     popup.dialog({
         closeOnEscape: false,
@@ -162,7 +162,7 @@ function DisplayActionTurn() {
         draggable: false,
         resizable: false,
         dialogClass: 'no-close ui-dialog-errormsg',
-        width: 700,
+        width: 500,
         height: 550,
         title: '[HELP] Action Turn',
         buttons: [
