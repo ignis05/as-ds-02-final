@@ -685,8 +685,16 @@ class Game {
 
         unit.lookAt(enemyUnit.position)
 
-        enemyUnit.health -= unit.damage
+        console.log('attacker: ' + unit.element);
+        console.log('target: ' + enemyUnit.element);
 
+        let multi = 1 // damage multiplier
+        if (MASTER_Counters[unit.element] == enemyUnit.element || MASTER_Counters[unit.element] == "all") {
+            console.log('mathching element - bonus damage!');
+            multi = 1.75
+        }
+
+        enemyUnit.health -= unit.damage * multi
         if (enemyUnit.health < 1) { // rip
             this.scene.remove(enemyUnit.container)
             this.unitsSpawned.splice(this.unitsSpawned.indexOf(enemyUnit.container.clickBox), 1)
