@@ -264,13 +264,23 @@ class Game {
         // let me = session.clients.find(client => client.token == token)
         let index = session.clients.findIndex(client => client.token == token)
         for (let tile of this.map.group.children) {
-            if (!tile.walkable) continue
-            if (tile.owner != "neutral") {
-                tile.material[2].color.set(tile.owner == "everyone" ? 0x222222 : UI.memberColors[tile.owner])
+
+            // unspawnable tiles
+            if (!tile.walkable || tile.owner == "neutral") {
+                tile.material[2].color.set(0x000000)
             }
-            if (tile.owner == index || tile.owner == "everyone") {
-                /* console.log(`valid spawn tile: ${tile.id}`); */
+            // if own tile
+            else if (tile.owner == index) {
+                tile.material[2].color.set(0x00ff00)
                 this.spawnTiles.push(tile)
+            }
+            // if everyone can spawn here
+            else if (tile.owner == "everyone") {
+                this.spawnTiles.push(tile)
+            }
+            // if enemy tile
+            else {
+                tile.material[2].color.set(0xff0000)
             }
         }
     }
@@ -339,7 +349,7 @@ class Game {
                         x: parseInt(this.selectedUnit.tileData.x) + j,
                         z: parseInt(this.selectedUnit.tileData.z) + i
                     }
-                    let tile = this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z )
+                    let tile = this.map.level.find(tile => tile.x == avalMove.x && tile.z == avalMove.z)
                     console.log(tile)
                     if (Math.abs(tile.x - this.selectedUnit.tileData.x) <= attackRange && Math.abs(tile.z - this.selectedUnit.tileData.z) <= attackRange && Math.abs(tile.height - this.selectedUnit.position.y) <= 16 && tile.unit && tile.unit.owner != token) {
                         this.evemyHighlights.push(this.map.matrix[avalMove.z][avalMove.x])
