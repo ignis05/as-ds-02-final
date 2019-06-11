@@ -12,7 +12,7 @@ Repozytoria:
 - custom modules:    [cinnamon-game-modules](https://github.com/ignis05/cinnamon-game-modules)
 
 # Instalacja i uruchamianie:
-Projekt wymaga zainstalowanego pakietu [node.js](https://nodejs.org/en/)
+Projekt wymaga zainstalowanego pakietu [node.js](https://nodejs.org/en/) w wersji 10.3 lub nowszej.
 
 1.) Pobrać [projekt](https://github.com/ignis05/cinnamon-game) jako [.zip](https://github.com/ignis05/cinnamon-game/archive/master.zip) i wypakować, lub użyć `git clone`<br>
 2.) Uruchomić wiersz poleceń w głównym katalogu aplikacji<br>
