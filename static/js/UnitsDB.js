@@ -5,9 +5,9 @@ const MASTER_Units = {
         scale: 0.2,
         posY: 40,
         stats: {
-            mobility: 5,
+            mobility: 6,
             health: 10,
-            damage: 5,
+            damage: 20,
             range: 1,
             element: "magic"
         }
@@ -17,9 +17,9 @@ const MASTER_Units = {
         scale: 0.015,
         posY: 0,
         stats: {
-            mobility: 5,
-            health: 10,
-            damage: 5,
+            mobility: 8,
+            health: 15,
+            damage: 10,
             range: 1,
             element: "fire"
         }
@@ -29,9 +29,9 @@ const MASTER_Units = {
         scale: 1.3,
         posY: 0,
         stats: {
-            mobility: 5,
-            health: 10,
-            damage: 5,
+            mobility: 10,
+            health: 20,
+            damage: 8,
             range: 1,
             element: "nature"
         }
@@ -42,8 +42,8 @@ const MASTER_Units = {
         posY: 127,
         stats: {
             mobility: 5,
-            health: 10,
-            damage: 5,
+            health: 15,
+            damage: 10,
             range: 1,
             element: "death"
         }
