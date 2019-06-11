@@ -38,7 +38,7 @@ function DisplaySpawnTurn() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('In this turn, you have to select units from the box at the bottom of the UI (next to the minimap) and choose a position for them to spawn.\nGet clickin!')
+    popup.append('In this turn, you have to select units from the box at the bottom of the UI (next to the minimap) and choose a position for them to spawn.<br>Get clickin!')
 
     popup.dialog({
         closeOnEscape: false,
@@ -47,7 +47,7 @@ function DisplaySpawnTurn() {
         resizable: false,
         dialogClass: 'no-close ui-dialog-errormsg',
         width: 500,
-        height: 300,
+        height: 350,
         title: '[HELP] Spawn Turn',
         buttons: [
             {
@@ -72,7 +72,7 @@ function DisplaySpawnEnd() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('Congratulations!\nYou have just placed all your units, now click the \'End Turn\' button in the top right corner to let the game advance')
+    popup.append('Congratulations!<br>You have just placed all your units, now click the \'End Turn\' button in the top right corner to let the game advance')
 
     popup.dialog({
         closeOnEscape: false,
@@ -106,7 +106,7 @@ function DisplayEnemyTurn() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('Now your opponent is making his moves, wait patiently for your turn...\n...or yell at him to make it quick, I am not your mother!')
+    popup.append('Now your opponent is making his moves, wait patiently for your turn...<br>...or yell at him to make it quick, I am not your mother!')
 
     popup.dialog({
         closeOnEscape: false,
@@ -140,7 +140,7 @@ function DisplayActionTurn() {
         overlay.removeAttr('style')
     $(window).off('keydown')
 
-    popup.append('Okay, this is where the fun begins!\nYou made it to the action turn, feel free to select your units (left click on their cells) and then tell them one by one to move to their destination.\nIf you are in range you might even choose to attack an enemy unit!\nNow, get playing, let\'s get this bread!')
+    popup.append('Okay, this is where the fun begins!<br>You made it to the action turn, feel free to select your units (left click on their cells) and then tell them one by one to move to their destination.<br>If you are in range you might even choose to attack an enemy unit!<br>Now, get playing, let\'s get this bread!')
 
     popup.dialog({
         closeOnEscape: false,
@@ -149,7 +149,7 @@ function DisplayActionTurn() {
         resizable: false,
         dialogClass: 'no-close ui-dialog-errormsg',
         width: 700,
-        height: 350,
+        height: 400,
         title: '[HELP] Action Turn',
         buttons: [
             {
