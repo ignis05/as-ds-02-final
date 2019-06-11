@@ -201,7 +201,6 @@
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-
     --headerHeight: 40px;
 }
 
@@ -246,14 +245,16 @@
 .unit-settings-input {
     width: 60px;
     height: 20px;
-
     background-color: #0000007F;
     border: none;
-
     font-weight: bold;
     color: #2FCF2F;
-    line-height: 40px;
+    line-height: 20px;
     text-align: center;
+}
+
+.unit-settings-input::-webkit-inner-spin-button, .unit-settings-input::-webkit-outer-spin-button {
+    opacity: 1;
 }
 
 #region-chat {
