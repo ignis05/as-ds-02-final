@@ -6,9 +6,9 @@ var mapData
 
 var help = {
     spawnTurn: Cookies.get('help-spawnTurn') === 'true',
-    spanwEnd: Cookies.get('help-spawnEnd') === 'true',
+    spawnEnd: Cookies.get('help-spawnEnd') === 'true',
     enemyTurn: Cookies.get('help-enemyTurn') === 'true',
-    actionTurn: Cookies.get('help-actionTurn') === 'true',
+    actionTurn: Cookies.get('help-actionTurn') === 'true'
 }
 
 // ============================================================= //
@@ -68,6 +68,8 @@ $(document).ready(async () => {
         $('#ui-top-turn-status').html('-').css('background-color', '#3F3F3F')
         if (!game.spawnTurn && ((game.unitsSpawned.map(clickObj => clickObj.parent)).every(unit => unit.owner == token))) socket.triggerWin() // win condition
         $('#game').focus()
+
+        if (help.enemyTurn) DisplayEnemyTurn()
     })
     // #endregion ui listeners
 })

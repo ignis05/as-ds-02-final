@@ -840,7 +840,11 @@ game.io.on('connect', socket => {
     })
 
     socket.on('get_session', res => { // get session info (without mapData & movesList)
-        let session = JSON.parse(JSON.stringify(game.getSessionByClientID(socket.id)))
+        let session
+        try {
+            session = JSON.parse(JSON.stringify(game.getSessionByClientID(socket.id)))
+        }
+        catch { return }
         session.mapData = null
         session.movesList = null
         res(session)
@@ -936,7 +940,7 @@ game.io.on('connect', socket => {
 
     socket.on('end_turn', data => {
         let session = game.getSessionByClientID(socket.id)
-        if(!session) return
+        if (!session) return
         let client = game.getClientByID(socket.id)
 
         client.tempMatrixChanges = [] //  clear not uploaded moves
