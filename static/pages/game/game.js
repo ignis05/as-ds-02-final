@@ -241,10 +241,11 @@ class Game {
             $('#ui-top-turn-status').html('Spawning turn').css('background-color', '#2F2FCF')
             this.highlightSpawnZones()
 
-            /* console.error(help.spawnTurn)
-            if (help.spawnTurn) DisplaySpawnTurn() */
+            if (help.spawnTurn) DisplaySpawnTurn()
         }
         else { // if normal turn
+            if (help.actionTurn) DisplayActionTurn()
+
             if (this.defeated) {
                 moves = []
                 socket.endTurn(moves)
@@ -537,6 +538,7 @@ class Game {
         })
     }
     renderMoves(moves, reconnect) {
+        if (help.enemyTurn && !reconnect) DisplayEnemyTurn()
         console.log('renering moves:')
         console.log(moves)
         for (let move of moves) {
@@ -595,6 +597,7 @@ class Game {
             this.avalUnits[unit.name]--
             ui.UpdateSpawnControls()
             if (!(Object.values(game.avalUnits).some(val => val > 0))) { // no more units to spawn
+                if (help.spawnEnd) DisplaySpawnEnd()
                 $("#button-end-turn").attr("disabled", false)
                 $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
                 this.clearSpawnZones()
