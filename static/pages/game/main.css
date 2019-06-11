@@ -369,6 +369,11 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    pointer-events: none;
+}
+
+#ui-main * {
+    pointer-events: all;
 }
 
 #ui-build-cats {
@@ -515,6 +520,10 @@ body {
     justify-content: space-between;
 }
 
+#ui-top-right-panel * {
+    pointer-events: all;
+}
+
 #ui-top-buttons-container {
     position: absolute;
     top: 0;
@@ -539,6 +548,7 @@ body {
     background-color: #4F4F4F;
     color: #DFDFDF;
     font-size: initial;
+    pointer-events: all;
 }
 
 #ui-top-buttons-container button:hover {
