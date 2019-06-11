@@ -111,9 +111,7 @@ class UI {
             container.appendTo(div)
             container.html(`<img src="/static/res/img/thumb_${unitName}.png"><p>${unitName}: ${game.avalUnits[unitName]} left</p>`)
 
-            console.log()
-
-            if (!game.avalUnits[unitName])
+            if (!parseInt(game.avalUnits[unitName]))
                 container.addClass('ui-spawn-controls-container-empty') // Slightly fade out menu item when no more units available
 
             container.click(() => {
@@ -126,7 +124,7 @@ class UI {
                 }
             })
             console.log(game.unitToSpawn + ' == ' + unitName)
-            if (game.unitToSpawn == unitName) {
+            if (game.unitToSpawn == unitName && game.avalUnits[unitName]) {
                 console.log(true)
                 container.addClass('ui-spawn-controls-container-active')
             } else console.log(false)
