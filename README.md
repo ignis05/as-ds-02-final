@@ -20,8 +20,8 @@ Projekt wymaga zainstalowanego pakietu [node.js](https://nodejs.org/en/) w wersj
 4.) Uruchomić serwer za pomocą `node server.js`<br>
 5.) Wejść w przeglądarce na adres ip komputera na którym został uruchomiony serwer (port 3000)<br>
 # Założenia:
-![image error](https://i.ibb.co/jJWKwzH/spec-pl.png)
 
 
-Pozdrawiam<br>
-DS
+
+
+
