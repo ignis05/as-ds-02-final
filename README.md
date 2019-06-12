@@ -19,7 +19,13 @@ Projekt wymaga zainstalowanego pakietu [node.js](https://nodejs.org/en/) w wersj
 3.) Zainstalować moduły za pomocą `npm i` (tylko przy pierwszym uruchomieniu)<br>
 4.) Uruchomić serwer za pomocą `node server.js`<br>
 5.) Wejść w przeglądarce na adres ip komputera na którym został uruchomiony serwer (port 3000)<br>
-# Założenia:
+
+# Sterowanie
+Po wejściu na stronę należy:
+1) Kliknąć `PLAY`
+2) Utworzyć pokój lub dołączyć do istniejącego
+
+
 
 
 
