@@ -20,10 +20,24 @@ Projekt wymaga zainstalowanego pakietu [node.js](https://nodejs.org/en/) w wersj
 4.) Uruchomić serwer za pomocą `node server.js`<br>
 5.) Wejść w przeglądarce na adres ip komputera na którym został uruchomiony serwer (port 3000)<br>
 
-# Sterowanie
+# Rozpoczęcie gry
 Po wejściu na stronę należy:
 1) Kliknąć `PLAY`
 2) Utworzyć pokój lub dołączyć do istniejącego
+3) Kiedy wszyscy raczej będą gotowi i zostanie wybrana mapa, będzie można rozpocząć grę
+
+# Sterowanie
+1) Lewy przycisk myszy jest przyciskiem akcji
+2) Kamerą można sterować za pomocą klawiatury:
+   - WASD służą do poruszania kamerą
+   - QE powodują jej obrót
+   - RT pozwalają przybliżać i oddalać
+3) Alternatywnie można poruszać kamerą za pomocą myszy:
+   - Przesunięcie kursora do krawędzi ekranu powoduje przesunięcie kamery
+   - Kółkiem myszy można kontrolować zbliżenie
+   - Naciśnięcie kółka myszy i przesunięcie kursora powoduje obrót
+   
+  
 
 
 
