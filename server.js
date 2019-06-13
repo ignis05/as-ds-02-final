@@ -947,6 +947,7 @@ game.io.on('connect', socket => {
         let session = game.getSessionByClientID(socket.id)
         if (!session) return
         let client = game.getClientByID(socket.id)
+        console.log(`client ${client.name} ends turn`);
 
         client.tempMatrixChanges = [] //  clear not uploaded moves
 

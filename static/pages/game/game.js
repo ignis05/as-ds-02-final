@@ -249,6 +249,10 @@ class Game {
             if (this.defeated) {
                 moves = []
                 socket.endTurn(moves)
+                setTimeout(() => ui.UpdateMinimapUnits(), 1000)
+                $("#button-end-turn").attr("disabled", true)
+                $('#ui-top-turn-status').html('-').css('background-color', '#3F3F3F')
+                return
             }
             $("#button-end-turn").attr("disabled", false)
             $('#ui-top-turn-status').html('My turn').css('background-color', '#2FCF2F')
@@ -656,7 +660,7 @@ class Game {
             return
         }
 
-        if (this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
+        if (addToMoves && this.myUnits.every(unit => unit.canMakeMove == false)) { // no more unit moves available
             $('#ui-top-turn-status').html('No available moves').css('background-color', '#7F2F2F')
         }
 
@@ -706,8 +710,6 @@ class Game {
                 this.myUnits.splice(this.myUnits.indexOf(enemyUnit), 1)
                 if (this.myUnits.length < 1) { // no units left
                     this.defeated = true
-                    moves = []
-                    socket.endTurn(moves)
                 }
             }
         }
