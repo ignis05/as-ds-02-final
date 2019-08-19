@@ -3,9 +3,7 @@ aplikacje serwerowe - projekt końcowy
 <br>
 # Projekt:
 Autorzy:
-- Jakub Dyrcz
-- Michał Piwowarski
-- Grzegorz Mikołajczyk
+   - I tak jest w commitach, ale teraz nie wyszuka w google
 
 Repozytoria:
 - main repository:    [cinnamon-game](https://github.com/ignis05/cinnamon-game)
