@@ -24,6 +24,6 @@
     "express": "^4.17.1",
     "nedb": "^1.8.0",
     "pathfinding": "https://github.com/ignis05/cinnamon-game-modules/tarball/pathfinding-customized",
-    "socket.io": "^2.2.0"
+    "socket.io": "^2.4.0"
   }
 }
